@@ -1,0 +1,25 @@
+.boardInstance {
+  position:relative;
+width:100%;
+height:100%;
+}
+.boardInstance .row {
+  position:relative;
+width:100%;
+}
+
+.boardInstance .column {
+  position:relative;
+display:inline-block;
+border:1px solid black;
+width:100px;
+height:100px;
+}
+.owned_1 {
+  background: greenyellow;
+  
+}
+.owned_2 {
+   background:#292929;
+  
+}

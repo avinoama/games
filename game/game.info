@@ -1,0 +1,12 @@
+name = Game
+description = base game development properties.
+package = Game
+version = VERSION
+core = 7.x
+
+dependencies[] = entity
+dependencies[] = views
+
+files[] = game.controller.inc
+files[] = game.actions.inc
+files[] = game.triggers.inc

@@ -1,0 +1,12 @@
+name = Game Board
+description = base game board infastruction.
+package = Game
+version = VERSION
+core = 7.x
+
+dependencies[] = entity
+dependencies[] = views
+dependencies[] = game
+
+
+files[] = game_board.actions.inc
