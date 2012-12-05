@@ -173,10 +173,14 @@ function game_entity_info_alter(&$entity_info) {
 function game_menu() {
   $items = array();
   //  this will add a url in the main Trigger module to show all triggers that can be made
+  /*
   $items['admin/structure/trigger/game'] = array(
       'title' => 'Game',
   );
-  //  
+   * 
+   */
+  // form to add game
+  /*
   $items['game/add'] = array(
       'title' => 'Add game',
       'page callback' => 'game_admin_add_page',
@@ -190,7 +194,6 @@ function game_menu() {
   $game_uri = 'game/%game';
   $play_uri = 'play/%game_instance';
   $game_uri_argument_position = 1;
-
 
   // will show game page
   $items[$play_uri] = array(
@@ -256,17 +259,7 @@ function game_menu() {
       'type' => MENU_LOCAL_TASK,
       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
   );
-  /*
-    $items[$game_uri . '/play'] = array(
-    'title' => 'Play',
-    'page callback' => 'game_create_instance',
-    'page arguments' => array( $game_uri_argument_position),
-    'access arguments' => array('administer game types'),
-    'file' => 'game.admin.inc',
-    'type' => MENU_LOCAL_TASK,
-    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-    );
-   */
+
   foreach (game_types() as $type => $info) {
     $items['game/add/' . $type] = array(
         'title' => 'Add game',
@@ -278,9 +271,6 @@ function game_menu() {
     );
   }
 
-
-
-
   $items['admin/structure/game-types/%game_type/delete'] = array(
       'title' => 'Delete',
       'page callback' => 'drupal_get_form',
@@ -290,7 +280,9 @@ function game_menu() {
       'type' => MENU_NORMAL_ITEM,
       'file' => 'game.admin.inc',
   );
-
+*
+ * 
+ */
   return $items;
 }
 
@@ -529,12 +521,15 @@ function game_instance_delete_multiple($game_instance_ids) {
 /**
  * Implements hook_views_api().
  */
+/*
 function game_views_api() {
   return array(
       'api' => 3,
       'path' => drupal_get_path('module', 'game'),
   );
 }
+ * 
+ */
 
 function game_trigger_info() {
   return array(

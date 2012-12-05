@@ -1,8 +1,9 @@
 (function ($) {
+  
   Drupal.behaviors.gameInstance = {
-    //serverTime:'',
     attach: function (context, settings) {
       //console.log(Drupal.settings);
+      //alert(Drupal.settings.gameInstance.instance.status);
       //console.log(Drupal.settings.gameInstance);
       //console.log(location.pathname);
       if(Drupal.settings.gameInstance.instance.status==1) {
@@ -87,6 +88,7 @@
     },
     show_start_game_button: function() {
             div = $("<div>");
+            div.addClass("messages").addClass("status");
             input2 = $("<input>").attr("type","submit").val(Drupal.t("Start Game"));
             input2.bind("click",function(){
               start_game();
@@ -180,30 +182,28 @@
     
   }
   function start_game() {
-    $.ajax({
-      url: location.pathname+"/ajax",
-      data: {
+    data = {
         action: {
           command: 'trigger',
           hook:"game_start"
         }
-      }, 
+      };
+    $.ajax({
+      url: location.pathname+"/ajax",
+      data: data, 
       dataType :"json",
       type:"post",
       success: function(data) {
         console.log(data);
         
       //  no data sholud be returned maybe just an ok for validational resons
-      /*data.message;
-        $(".messages.status").text(data.message);
-        Drupal.behaviors.gameInstance.serverTime = data.time;        */
+        //$(".messages.status").text(data.message);
+        Drupal.behaviors.gameInstance.serverTime = data.time;        
       },
       error: function(jqXHR, textStatus, errorThrow) {
         console.log(jqXHR+ " " + textStatus + " " +errorThrow );
       }
-    });        
-    
-    
+    });
   }
   
 })(jQuery);

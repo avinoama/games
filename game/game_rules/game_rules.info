@@ -1,0 +1,9 @@
+name = Game Rules
+description = adds base rules to game logic
+package = Game
+version = VERSION
+core = 7.x
+
+dependencies[] = entity
+dependencies[] = views
+dependencies[] = game

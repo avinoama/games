@@ -89,8 +89,7 @@ function game_type_form_delete_confirm($form, &$form_state, $game_type) {
  */
 function game_type_form_delete_confirm_submit($form, &$form_state) {
   $game_type = $form_state['game_type'];
-  //dpm($game_type);
-
+  
   game_type_delete($game_type);
 
   watchdog('game_type', '@type: deleted %title.', array('@type' => $game_type->type, '%title' => $game_type->label));
@@ -424,6 +423,7 @@ function game_instance_form_delete_confirm_submit($form, &$form_state) {
 }
 
 function game_create_instance($game) {
+  
   // create instance and redirect to that instance to start playing
   return game_instance_create_instance($game);
 }

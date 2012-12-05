@@ -8,5 +8,4 @@ dependencies[] = entity
 dependencies[] = views
 
 files[] = game.controller.inc
-files[] = game.actions.inc
-files[] = game.triggers.inc
+files[] = game.rules.inc

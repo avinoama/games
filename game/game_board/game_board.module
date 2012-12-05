@@ -14,6 +14,8 @@ function game_board_uninstall() {
 function game_board_game_instance_presave($game_instance) {
   //foreach($entities as $key=>$entity) {
   if ($game_instance->type == "board_game") {
+
+
     if (isset($game_instance->field_board_width) && isset($game_instance->field_board_height)) {
       $bundle = $game_instance->type;
       $entity_type = 'game_instance';
@@ -25,13 +27,16 @@ function game_board_game_instance_presave($game_instance) {
       $field_name = 'field_matrix';
       $field_type = 'text';
       $field_label = 'matrix';
+      $count_tiles = $game_instance->field_board_width + $game_instance->field_board_height;
+
 
       if (isset($game_instance->is_new)) {
+        //dpm("Game is new");
         /**
          *  for each filed i whant to add to game instance of type game board
          */
         if (!field_info_field($field_name)) {
-
+          //dpm("No field create new");
           $field = array(
               'field_name' => $field_name,
               'type' => $field_type,
@@ -41,6 +46,9 @@ function game_board_game_instance_presave($game_instance) {
                   'target_bundles' => array($bundle),
               ),
           );
+          for ($i = 0; i < $count_tiles; $i++) {
+            $field['default_value'] = 0;
+          }
           field_create_field($field);
         }
         $instance = array(
@@ -52,6 +60,7 @@ function game_board_game_instance_presave($game_instance) {
         //$game_instance
         $instances = field_info_instances(null, $field_name);
         if (!isset($instances['game_instance']['board_game'])) {
+          //dpm("Create Instance");
           field_create_instance($instance);
 
           $game_instance->new_field = array(
@@ -61,11 +70,13 @@ function game_board_game_instance_presave($game_instance) {
               'bundle' => $instance['bundle'],
           );
         } else {
+          //dpm("instances already exsit");
           $game_instance->new_field = $instances['game_instance']['board_game']['field_matrix'];
         }
 
         field_attach_insert('game_instance', $game_instance);
       } else {
+        //dpm("field_attach_update");
         field_attach_update('game_instance', $game_instance);
       }
 
@@ -73,10 +84,18 @@ function game_board_game_instance_presave($game_instance) {
        * end for
        * 
        */
+    } else {
+      //dpm("else");
+
+      if (isset($game_instance->is_new)) {
+        //dpm($game_instance);
+        //$gi = game_instance_load($game_instance->gid);
+        //dpm($gi);
+      }
     }
   }
 }
-
+/*
 function game_board_trigger_info() {
   return array(
       'game' => array(
@@ -102,7 +121,7 @@ function game_board_action_info() {
       ),
   );
 }
-
+*/
 function game_board_tile_set_owner_action(&$game_instance, $context = array()) {
   if ($context['game_id'] == $game_instance->gid) {
 
@@ -115,7 +134,7 @@ function game_board_tile_set_owner_action(&$game_instance, $context = array()) {
     // dpm($game_instance->field_matrix['und']);
     if ($game_instance->field_matrix['und'][$context['params']]['value'] == 0 || empty($game_instance->field_matrix['und'][$context['params']]['value'])) {
       $game_instance->field_matrix['und'][$context['params']]['value'] = $player->participant_turn;
-      
+
       if ($game_instance->save()) {
         $params = array("tile_id" => $context['params'], "participant_turn" => $player->participant_turn);
         $game_instance_command = array();
@@ -124,9 +143,8 @@ function game_board_tile_set_owner_action(&$game_instance, $context = array()) {
         $game_instance_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "callback" => array("module" => "boardGame", "fn" => $context['callback'], "params" => $params), "time" => time()));
         $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
         $game_instance_command_entity->save();
-        
       } else {
-        
+
         dpm("cant save game instance");
       }
     } else {

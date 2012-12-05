@@ -1,0 +1,118 @@
+<?php
+
+function game_ui_menu() {
+  $items = array();
+
+  // form to add game
+  $items['games/add'] = array(
+      'title' => 'Add game',
+      'page callback' => 'game_ui_admin_add_page',
+      'access arguments' => array('administer game entities'),
+      'file' => 'game_ui.admin.inc',
+      'type' => MENU_LOCAL_ACTION,
+      'tab_parent' => 'game',
+      'tab_root' => 'game',
+  );
+
+  $game_uri = 'game/%game';
+  $play_uri = 'play/%game_instance';
+  $game_uri_argument_position = 1;
+
+  // will show game page
+  $items[$play_uri] = array(
+      'title' => 'Play',
+      //'title arguments' => array('game_instance', $game_uri_argument_position),
+      'page callback' => 'game_ui_play',
+      'page arguments' => array($game_uri_argument_position),
+      'access arguments' => array('play game entities'),
+      'file' => 'game_ui.pages.inc',
+  );
+  $items[$play_uri . "/ajax"] = array(
+      'page callback' => 'game_ui_instance_ajax_callback',
+      'page arguments' => array($game_uri_argument_position),
+      'access arguments' => array('play game entities'),
+      'type' => MENU_CALLBACK,
+      'file' => 'game_ui.actions.inc',
+  );
+
+  // will show game page
+  $items[$game_uri] = array(
+      'title callback' => 'entity_label',
+      'title arguments' => array('game', $game_uri_argument_position),
+      'page callback' => 'game_ui_view',
+      'page arguments' => array($game_uri_argument_position),
+      'access callback' => 'entity_access',
+      'access arguments' => array('view', 'game', $game_uri_argument_position),
+      'file' => 'game_ui.pages.inc',
+  );
+  // will show the view page
+  $items[$game_uri . '/view'] = array(
+      'title' => 'View',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => -10,
+  );
+
+  $items[$game_uri . '/delete'] = array(
+      'title' => 'Delete game',
+      'title callback' => 'game_label',
+      'title arguments' => array($game_uri_argument_position),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('game_delete_form', $game_uri_argument_position),
+      'access callback' => 'entity_access',
+      'access arguments' => array('edit', 'game', $game_uri_argument_position),
+      'file' => 'game_ui.admin.inc',
+  );
+
+  $items[$game_uri . '/edit'] = array(
+      'title' => 'Edit',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('game_ui_form', $game_uri_argument_position),
+      'access callback' => 'entity_access',
+      'access arguments' => array('edit', 'game', $game_uri_argument_position),
+      'file' => 'game_ui.admin.inc',
+      'type' => MENU_LOCAL_TASK,
+      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+  $items[$game_uri . '/play'] = array(
+      'title' => 'Play',
+      'page callback' => 'game_ui_create_instance',
+      'page arguments' => array($game_uri_argument_position),
+      'access arguments' => array('administer game types'),
+      'file' => 'game_ui.admin.inc',
+      'type' => MENU_LOCAL_TASK,
+      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+
+  foreach (game_types() as $type => $info) {
+    $items['game/add/' . $type] = array(
+        'title' => 'Add game',
+        'page callback' => 'game_ui_add',
+        'page arguments' => array(2),
+        'access callback' => 'entity_access',
+        'access arguments' => array('create', 'game', $type),
+        'file' => 'game_ui.admin.inc',
+    );
+  }
+
+  $items['admin/structure/game-types/%game_type/delete'] = array(
+      'title' => 'Delete',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('game_type_form_delete_confirm', 4),
+      'access arguments' => array('administer game types'),
+      'weight' => 1,
+      'type' => MENU_NORMAL_ITEM,
+      'file' => 'game_ui.admin.inc',
+  );
+
+  return $items;
+}
+function game_ui_views_api() {
+  return array(
+      'api' => 3,
+      'path' => drupal_get_path('module', 'game_ui'),
+  );
+}
+function game_ui_view() {
+  return "11";
+  
+}

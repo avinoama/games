@@ -1,4 +1,5 @@
 (function ($) {
+ 
   Drupal.behaviors.boardGame = {
     attach: function (context, settings) {
       
@@ -62,13 +63,13 @@
   function game_board_tile_on_click(tile) {
     
     id=$(tile).attr("id").replace("tile_","");
-    //alert(id);
+    
     $.ajax({
       url: location.pathname+"/ajax",
       data: {
         action: {
           command: 'trigger',
-          hook:"game_board_tile_on_click",
+          hook:"tile_click",
           params: id
         }
       }, 
@@ -82,8 +83,7 @@
             if(data[r][i]!=null){
               if(data[r][i].callback) {
                 c= data[r][i].callback;
-                Drupal.behaviors[c.module][c.fn](c.params);          
-          
+                Drupal.behaviors[c.module][c.fn](c.params);
               }
             }
         }
