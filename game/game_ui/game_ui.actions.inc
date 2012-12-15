@@ -89,16 +89,16 @@ function game_ui_instance_ajax_callback($game_instance) {
         if ($game_instance_command_entity->save()) {
           if (count($result['game_instance_participant']) >= $game->field_max_nim_players['und'][0]['value']) {
             //  allow game to start
-            $game_instance_command = array();
-            $game_instance_command['instance_id'] = $game_instance->id;
-            $game_instance_command['command_id'] = 1;
-            $game_instance_command['command_data'] = drupal_json_encode(array("callback" => array("fn" => "show_start_game_button", "module" => "gameInstance", "params" => "1"), "time" => time()));
-            $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
-            $game_instance_command_entity->save();
+            $game_instance_command2 = array();
+            $game_instance_command2['instance_id'] = $game_instance->id;
+            $game_instance_command2['command_id'] = 1;
+            $game_instance_command2['command_data'] = drupal_json_encode(array("callback" => array("fn" => "show_start_game_button", "module" => "gameInstance", "params" => "1"), "time" => time()));
+            $game_instance_command_entity2 = entity_create("game_instance_command", $game_instance_command2);
+            $game_instance_command_entity2->save();
 
-            echo drupal_json_encode(array("message" => "user has joined the game, to start game press here", "time" => time()));
+            echo drupal_json_encode(array("message" => "user ". $player_name . " has joined the game, to start game press the start button", "time" => time()));
           } else {
-            echo drupal_json_encode(array("message" => "user has joined the game", "time" => time()));
+            echo drupal_json_encode(array("message" => "user ". $player_name . " has joined the game", "time" => time()));
           }
           return null;
         } else {
@@ -213,7 +213,7 @@ function game_ui_instance_ajax_callback($game_instance) {
     case "command":
 
 
-      /* check id a user is idle for over a minutel */
+      /* check id a user is idle for over a minute */
       $now = time();
       $query2 = db_select('game_instance_participant', 'p');
       $query2->fields('p', array('instance_id', 'participant_session', 'participant_name', 'status'))

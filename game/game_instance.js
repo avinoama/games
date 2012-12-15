@@ -18,30 +18,6 @@
           m = new Array('trying to join game...');
           Drupal.behaviors.gameInstance.message(m);    
           joinGame("");
-          /*
-          
-          div = $("<div>");
-          input = $("<input>").attr("id","instance_player_name");
-          input2 = $("<input>").attr("type","submit").val(Drupal.t("Join"));
-          input2.bind("click",function(){
-            player_name = $("#instance_player_name").val();
-            if(player_name.length>2) {
-              //  send join game
-              
-              //  wait for replay
-              setTimeout(getCommands,1000);
-            } else {
-              alert("name need to ne longer then 2 chars"); 
-            }
-          });
-          div.append(input);
-          div.append(input2);
-          
-          m = new Array();
-          m[0]= div;
-          Drupal.behaviors.gameInstance.message(m);          
-         */
-        //$(".messages.status").append(div);
         } else {
           if(Drupal.settings.gameInstance.num_players  >= Drupal.settings.gameInstance.game.field_min_num_players['und'][0].value) {
             div = $("<div>");
@@ -93,15 +69,15 @@
       Drupal.behaviors.gameInstance.instance.status=2;
     },
     show_start_game_button: function() {
-            div = $("<div>");
-            div.addClass("messages").addClass("status");
-            input2 = $("<input>").attr("type","submit").val(Drupal.t("Start Game"));
-            input2.bind("click",function(){
-              start_game();
-            });
-            div.append(input2);
-            $("#messages .section").append(div);
-            setTimeout(getCommands,1000);
+      div = $("<div>");
+      div.addClass("messages").addClass("status");
+      input2 = $("<input>").attr("type","submit").val(Drupal.t("Start Game"));
+      input2.bind("click",function(){
+        start_game();
+      });
+      div.append(input2);
+      $("#messages .section").append(div);
+      setTimeout(getCommands,1000);
     }
   }
   
@@ -131,8 +107,18 @@
             json_data = jQuery.parseJSON( data[command].command_data );
             //console.log(json_data);
             if(json_data.callback) {
+              console.log(json_data.callback);
               c= json_data.callback;
-              Drupal.behaviors[c.module][c.fn](c.params);
+              if(Drupal.behaviors[c.module]!=null) {
+                if(Drupal.behaviors[c.module][c.fn]!=null) {
+                  Drupal.behaviors[c.module][c.fn](c.params);
+                } else {
+                console.log("function name undefine "+c.fn );  
+                }
+              } else {
+                console.log("module name undefine "+c.module );
+                
+              }
             }
             m = new Array();
             m[0]= json_data.message;
@@ -154,7 +140,7 @@
     });    
   }
   
-   function joinGame(player_name) {
+  function joinGame(player_name) {
     
     $.ajax({
       url: location.pathname+"/ajax",
@@ -189,11 +175,11 @@
   }
   function start_game() {
     data = {
-        action: {
-          command: 'trigger',
-          hook:"game_start"
-        }
-      };
+      action: {
+        command: 'trigger',
+        hook:"game_start"
+      }
+    };
     $.ajax({
       url: location.pathname+"/ajax",
       data: data, 
@@ -202,7 +188,7 @@
       success: function(data) {
         console.log(data);
         
-      //  no data sholud be returned maybe just an ok for validational resons
+        //  no data sholud be returned maybe just an ok for validational resons
         //$(".messages.status").text(data.message);
         Drupal.behaviors.gameInstance.serverTime = data.time;        
       },

@@ -56,30 +56,68 @@ function game_board_rules_action_info() {
   );
 }
 
-function rules_tile_set_owner($game_instance, $tile_position = 0) {
+function rules_tile_set_owner($game_instance_session, $tile_position = 0) {
+  global $user;
   //$game_instance, $tile_position
   dpm("tile_set_owner");
-  dpm("Data:   " . print_r($tile_position, 1) . " ");
-  dpm($game_instance);
-  if (!empty($game_instance)) {
+  //dpm("Data:   " . print_r($tile_position, 1) . " ");
+  //dpm($game_instance_session);
+  if (!empty($game_instance_session)) {
+
+    $query = new EntityFieldQuery;
+    $result = $query
+            ->entityCondition('entity_type', 'game_instance')
+            ->propertyCondition('session', $game_instance_session)
+            ->execute();
+    $key = key($result['game_instance']);
+    $game_instance = game_instance_load($key);
     //dpm($game_instance);
   }
-  /*
-    $session = $account->sid;
-    if (empty($session)) {
+
+  $session = $user->sid;
+  if (empty($session)) {
+    //  user is not a registered user in this site
     $session = session_id();
     //dpm("rules_tile_set_owner by session  " . $session);
-    } else {
-    // dpm("rules_tile_set_owner by account " . $session);
+  } else {
+    //  user is registered user in this site
+    //dpm("rules_tile_set_owner by account " . $session);
+  }
+
+
+
+  //dpm(print_r($action, 1) . print_r($game_instance, 1));
+  $conditions = array("instance_id" => $game_instance->id, 'participant_session' => $session);
+  $entity = entity_load("game_instance_participant", FALSE, $conditions);
+  $player = $entity[key($entity)];
+  for($j=0;$j<$tile_position;$j++) {
+    if(!isset($game_instance->field_matrix['und'][$j])) {
+      $game_instance->field_matrix['und'][$j]['value'] = 0;
     }
+  }
+  if ($game_instance->field_matrix['und'][$tile_position]['value'] == 0 || empty($game_instance->field_matrix['und'][$tile_position]['value'])) {
+    $game_instance->field_matrix['und'][$tile_position]['value'] = $player->participant_turn;
+
+    if ($game_instance->save()) {
+      $params = array("tile_id" => $tile_position, "participant_turn" => $player->participant_turn);
+      $game_instance_command = array();
+      $game_instance_command['instance_id'] = $game_instance->id;
+      $game_instance_command['command_id'] = 2;
+      $game_instance_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "callback" => array("module" => "boardGame", "fn" => "game_board_tile_set_owner_action", "params" => $params), "time" => time()));
+      $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
+      $game_instance_command_entity->save();
+    } else {
+
+      dpm("cant save game instance");
+    }
+  } else {
+    // the tile is already owned by user cannot
+    return array("callback" => array("module" => "gameInstance", "fn" => "message", "params" => array("The tile is already owned")));
+    //dpm("the tile is already owned by user cannot");
+  }
 
 
 
-    //dpm(print_r($action, 1) . print_r($game_instance, 1));
-    $conditions = array("instance_id" => $game_instance->id, 'participant_session' => $session);
-    $entity = entity_load("game_instance_participant", FALSE, $conditions);
-    $player = $entity[key($entity)];
-   */
   //array("callback" => array("module" => "gameInstance", "fn" => "message", "params" => array("The tile is already owned")));
 
   return;
