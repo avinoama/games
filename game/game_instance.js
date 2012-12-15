@@ -12,8 +12,14 @@
         
         // please check if user can join game befor shwing him the join game
         // + check if user already logged in
+        
         if(!Drupal.settings.gameInstance.player_joined_game) {
-          //$(".messages.status").text("Game didont started yet. you can join game if you like to ? ");
+          //$(".messages.status").text('trying to join game...');
+          m = new Array('trying to join game...');
+          Drupal.behaviors.gameInstance.message(m);    
+          joinGame("");
+          /*
+          
           div = $("<div>");
           input = $("<input>").attr("id","instance_player_name");
           input2 = $("<input>").attr("type","submit").val(Drupal.t("Join"));
@@ -21,7 +27,7 @@
             player_name = $("#instance_player_name").val();
             if(player_name.length>2) {
               //  send join game
-              joinGame(player_name);
+              
               //  wait for replay
               setTimeout(getCommands,1000);
             } else {
@@ -34,7 +40,7 @@
           m = new Array();
           m[0]= div;
           Drupal.behaviors.gameInstance.message(m);          
-         
+         */
         //$(".messages.status").append(div);
         } else {
           if(Drupal.settings.gameInstance.num_players  >= Drupal.settings.gameInstance.game.field_min_num_players['und'][0].value) {
@@ -148,7 +154,7 @@
     });    
   }
   
-  function joinGame(player_name) {
+   function joinGame(player_name) {
     
     $.ajax({
       url: location.pathname+"/ajax",

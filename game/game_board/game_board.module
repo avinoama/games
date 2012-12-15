@@ -85,7 +85,6 @@ function game_board_game_instance_presave($game_instance) {
        * 
        */
     } else {
-      //dpm("else");
 
       if (isset($game_instance->is_new)) {
         //dpm($game_instance);
@@ -95,33 +94,35 @@ function game_board_game_instance_presave($game_instance) {
     }
   }
 }
-/*
-function game_board_trigger_info() {
-  return array(
-      'game' => array(
-          'game_board_tile_on_click' => array(
-              'label' => t('When tile click event is called'),
-              'type' => 'game',
-          ),
-          'game_board_tile_on_hover' => array(
-              'label' => t('When tile hover event is called'),
-              'type' => 'game',
-          ),
-      ),
-  );
-}
 
-function game_board_action_info() {
+/*
+  function game_board_trigger_info() {
   return array(
-      'game_board_tile_set_owner_action' => array(
-          'label' => t('Tile set owner'),
-          'type' => 'game',
-          'configurable' => TRUE,
-          'triggers' => array('any', 'game'),
-      ),
+  'game' => array(
+  'game_board_tile_on_click' => array(
+  'label' => t('When tile click event is called'),
+  'type' => 'game',
+  ),
+  'game_board_tile_on_hover' => array(
+  'label' => t('When tile hover event is called'),
+  'type' => 'game',
+  ),
+  ),
   );
-}
-*/
+  }
+
+  function game_board_action_info() {
+  return array(
+  'game_board_tile_set_owner_action' => array(
+  'label' => t('Tile set owner'),
+  'type' => 'game',
+  'configurable' => TRUE,
+  'triggers' => array('any', 'game'),
+  ),
+  );
+  }
+ */
+
 function game_board_tile_set_owner_action(&$game_instance, $context = array()) {
   if ($context['game_id'] == $game_instance->gid) {
 
@@ -247,6 +248,24 @@ function game_board_tile_set_action_validate($form, $form_state) {
   //if (! $account = user_load_by_name($form_state['values']['author']) ) {
   //  form_set_error('author', t('Please, provide a valid username'));
   //}
+}
+
+function game_board_entity_property_info_alter(&$info) {
+  $info['site']['properties']['current_tile_clicked'] = array(
+      'label' => t('Current Tile clicked'),
+      'type' => 'integer',
+      'getter callback' => 'game_board_get_tile',
+  );
+}
+/**
+ * game_board_get_tile
+ * gets tile from ajax loading 
+ * @return type 
+ */
+function game_board_get_tile() {
+  $tile_position = intval(check_plain($_POST['action']['params']['tile_position']));
+  // chack valid tail position for current game
+  return $tile_position;
 }
 
 function game_board_tile_set_action_submit($form, $form_state) {

@@ -167,123 +167,65 @@ function game_entity_info_alter(&$entity_info) {
   }
 }
 
-/**
- * Implements hook_menu().
- */
-function game_menu() {
-  $items = array();
-  //  this will add a url in the main Trigger module to show all triggers that can be made
-  /*
-  $items['admin/structure/trigger/game'] = array(
-      'title' => 'Game',
-  );
-   * 
-   */
-  // form to add game
-  /*
-  $items['game/add'] = array(
-      'title' => 'Add game',
-      'page callback' => 'game_admin_add_page',
-      'access arguments' => array('administer game entities'),
-      'file' => 'game.admin.inc',
-      'type' => MENU_LOCAL_ACTION,
-      'tab_parent' => 'game',
-      'tab_root' => 'game',
-  );
+function game_rules_action_info() {
 
-  $game_uri = 'game/%game';
-  $play_uri = 'play/%game_instance';
-  $game_uri_argument_position = 1;
+  return array(
+      'rules_game_over' => array(
+          'label' => t('Game Over'),
+          'parameter' => array(
+              'game_instance' => array(
+                  //'type' => 'entity',
+                  'type' => 'text',
+                  'label' => 'game_instance',
+                  'optional' => TRUE,
+              // If we were to make changes to the parameter object, whe should set
+              // the 'save' property to TRUE. This makes Rules handle the saving in
+              // a more optimized way than if each action saved the objects.
+              // 'save' => TRUE,
+              ),
+          ),
+          'group' => t('Game'),
+          'base' => 'rules_game_over',
+          'callbacks' => array(
+              'validate' => 'rules_game_over_validation',
+          ),
+      ),
+      'rules_game_set_winners' => array(
+          'label' => t('Game set winner'),
+          'parameter' => array(
+              'player_id' => array(
+                  //'type' => 'entity',
+                  'type' => 'integer',
+                  'label' => 'player_id',
+              //'optional' => TRUE,
+              // If we were to make changes to the parameter object, whe should set
+              // the 'save' property to TRUE. This makes Rules handle the saving in
+              // a more optimized way than if each action saved the objects.
+              // 'save' => TRUE,
+              ),
+          ),
+          'group' => t('Game'),
+          'base' => 'rules_game_set_winners',
+          'callbacks' => array(
+              'validate' => 'rules_game_set_winners_validation',
+          ),
+      ),
+  );
+}
 
-  // will show game page
-  $items[$play_uri] = array(
-      'title' => 'Play',
-      //'title arguments' => array('game_instance', $game_uri_argument_position),
-      'page callback' => 'game_play',
-      'page arguments' => array($game_uri_argument_position),
-      'access arguments' => array('play game entities'),
-      'file' => 'game.pages.inc',
-  );
-  $items[$play_uri . "/ajax"] = array(
-      'page callback' => 'game_instance_ajax_callback',
-      'page arguments' => array($game_uri_argument_position),
-      'access arguments' => array('play game entities'),
-      'type' => MENU_CALLBACK,
-      'file' => 'game.actions.inc',
-  );
+function rules_game_over_validation($game_instance) {
+  return true;
+}
 
-  // will show game page
-  $items[$game_uri] = array(
-      'title callback' => 'entity_label',
-      'title arguments' => array('game', $game_uri_argument_position),
-      'page callback' => 'game_view',
-      'page arguments' => array($game_uri_argument_position),
-      'access callback' => 'entity_access',
-      'access arguments' => array('view', 'game', $game_uri_argument_position),
-      'file' => 'game.pages.inc',
-  );
-  // will show the view page
-  $items[$game_uri . '/view'] = array(
-      'title' => 'View',
-      'type' => MENU_DEFAULT_LOCAL_TASK,
-      'weight' => -10,
-  );
-
-  $items[$game_uri . '/delete'] = array(
-      'title' => 'Delete game',
-      'title callback' => 'game_label',
-      'title arguments' => array($game_uri_argument_position),
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('game_delete_form', $game_uri_argument_position),
-      'access callback' => 'entity_access',
-      'access arguments' => array('edit', 'game', $game_uri_argument_position),
-      'file' => 'game.admin.inc',
-  );
-
-  $items[$game_uri . '/edit'] = array(
-      'title' => 'Edit',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('game_form', $game_uri_argument_position),
-      'access callback' => 'entity_access',
-      'access arguments' => array('edit', 'game', $game_uri_argument_position),
-      'file' => 'game.admin.inc',
-      'type' => MENU_LOCAL_TASK,
-      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-  );
-  $items[$game_uri . '/play'] = array(
-      'title' => 'Play',
-      'page callback' => 'game_create_instance',
-      'page arguments' => array($game_uri_argument_position),
-      'access arguments' => array('administer game types'),
-      'file' => 'game.admin.inc',
-      'type' => MENU_LOCAL_TASK,
-      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-  );
-
-  foreach (game_types() as $type => $info) {
-    $items['game/add/' . $type] = array(
-        'title' => 'Add game',
-        'page callback' => 'game_add',
-        'page arguments' => array(2),
-        'access callback' => 'entity_access',
-        'access arguments' => array('create', 'game', $type),
-        'file' => 'game.admin.inc',
-    );
-  }
-
-  $items['admin/structure/game-types/%game_type/delete'] = array(
-      'title' => 'Delete',
-      'page callback' => 'drupal_get_form',
-      'page arguments' => array('game_type_form_delete_confirm', 4),
-      'access arguments' => array('administer game types'),
-      'weight' => 1,
-      'type' => MENU_NORMAL_ITEM,
-      'file' => 'game.admin.inc',
-  );
-*
- * 
- */
-  return $items;
+function rules_game_over($game_instance) {
+  dpm(game_over);
+  dpm($game_instance);
+}
+function rules_game_set_winners($player_id) {
+  dpm(rules_game_set_winners);
+}
+function rules_game_set_winners_validation() {
+  return true;
 }
 
 /**
@@ -326,34 +268,89 @@ function game_permission() {
   return $permissions;
 }
 
+function game_current_instance() {
+  $session = check_plain($_POST['action']['params']['session']);
+  //dpm($session);
+  //$game_instance = game_instance_load('32');
+  //dpm($game_instance);
+  return $session;
+}
+/*
+function game_entity_property_info() {
+  $info = array();
+
+  // Add meta-data about the basic commerce_line_item properties.
+  $properties = &$info['game_instance']['properties'];
+
+  $properties['id'] = array(
+      'label' => t('GameInstance ID'),
+      'description' => t('The internal numeric ID of the instance.'),
+      'type' => 'integer',
+      'schema field' => 'id',
+  );
+  $properties['type'] = array(
+      'label' => t('Bundle type'),
+      'type' => 'text',
+      'description' => t('the bundle type of the game'),
+      'schema field' => 'type',
+  );
+  $properties['gid'] = array(
+      'label' => t('Gmae ID'),
+      'type' => 'integer',
+      'description' => t('The order the line item belongs to.'),
+      'getter callback' => 'commerce_line_item_get_properties',
+      'setter callback' => 'commerce_line_item_set_properties',
+      'setter permission' => 'administer line items',
+      'required' => TRUE,
+      'computed' => TRUE,
+      'clear' => array('order_id'),
+  );
+  $properties['session'] = array(
+      'label' => t('Session'),
+      'description' => t('The unique identifer that will make hard time for hackers.'),
+      'type' => 'token',
+      'required' => TRUE,
+      'schema field' => 'session',
+  );
+  $properties['title'] = array(
+      'label' => t('Title'),
+      'description' => t('The unique identifer that will make hard time for hackers.'),
+      'type' => 'text',
+      'required' => TRUE,
+      'schema field' => 'title',
+  );
+  return $info;
+}
+*/
 /**
- * Implements hook_entity_property_info_alter().
+ *  implements hook_entity_property_info_alter(&$info)
+ * @param type $info 
  */
 function game_entity_property_info_alter(&$info) {
-  $properties = &$info['game']['properties'];
-  $properties['created'] = array(
-      'label' => t("Date created"),
-      'type' => 'date',
-      'description' => t("The date the node was posted."),
-      'setter callback' => 'entity_property_verbatim_set',
-      'setter permission' => 'administer nodes',
-      'schema field' => 'created',
+
+  $info['site']['properties']['current_game_instance'] = array(
+      'label' => t('Current game played at the moment'),
+      'description' => t('the current game instance.'),
+      'type' => 'text',
+      'getter callback' => 'game_current_instance',
   );
-  $properties['changed'] = array(
-      'label' => t("Date changed"),
-      'type' => 'date',
-      'schema field' => 'changed',
-      'description' => t("The date the node was most recently updated."),
+
+/*
+  $properties = &$info['game_instance']['properties'];
+  $properties['id'] = array(
+      'label' => t("instance id"),
+      'type' => 'integer',
+      'schema field' => 'id',
+      'description' => t("The unique field that we can create."),
   );
-  $properties['uid'] = array(
-      'label' => t("Author"),
+  $properties['gid'] = array(
+      'label' => t("Game id"),
       'type' => 'user',
       'description' => t("The author of the game."),
-      'setter callback' => 'entity_property_verbatim_set',
-      'setter permission' => 'administer game entities',
-      'required' => TRUE,
-      'schema field' => 'uid',
+      'schema field' => 'gid',
   );
+*/
+  return $info;
 }
 
 /* * *****************************************************************************
@@ -522,12 +519,12 @@ function game_instance_delete_multiple($game_instance_ids) {
  * Implements hook_views_api().
  */
 /*
-function game_views_api() {
+  function game_views_api() {
   return array(
-      'api' => 3,
-      'path' => drupal_get_path('module', 'game'),
+  'api' => 3,
+  'path' => drupal_get_path('module', 'game'),
   );
-}
+  }
  * 
  */
 
@@ -572,14 +569,14 @@ function game_action_info() {
 function game_message_action(&$game_instance, $context = array()) {
   //dpm($game_instance);
   //dpm($context);
-  if ($context['game_id'] == $entity->gid || $context['game_id']==-1) {
-    
-        $game_instance_command = array();
-        $game_instance_command['instance_id'] = $game_instance->id;
-        $game_instance_command['command_id'] = 1;
-        $game_instance_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "time" => time()));
-        $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);    
-        $game_instance_command_entity->save();
+  if ($context['game_id'] == $entity->gid || $context['game_id'] == -1) {
+
+    $game_instance_command = array();
+    $game_instance_command['instance_id'] = $game_instance->id;
+    $game_instance_command['command_id'] = 1;
+    $game_instance_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "time" => time()));
+    $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
+    $game_instance_command_entity->save();
   }
 }
 
@@ -630,6 +627,6 @@ function game_message_action_validate($form, $form_state) {
  * @return type 
  */
 function game_message_action_submit($form, $form_state) {
-dpm($form_state['values']);
+  dpm($form_state['values']);
   return array('game_id' => $form_state['values']['game_id'], 'message' => $form_state['values']['message']);
 }

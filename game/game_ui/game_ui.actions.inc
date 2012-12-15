@@ -20,7 +20,7 @@ define("PLAYER_MAX_IDLE_TIME", 120); // in seconds
  */
 function game_ui_instance_ajax_callback($game_instance) {
   drupal_session_start();
-
+  global $user;
   //ajax_get_form() function will be the drupal way of doing it
   $_SESSION["anonymous-tracker"] = time();
 
@@ -59,25 +59,29 @@ function game_ui_instance_ajax_callback($game_instance) {
         return null;
       }
       $can_start_game = false;
-      if ((count($result['game_instance_participant']) + 1) >= $game->field_min_num_players['und'][0]['value']) {
+      $num_of_players =count($result['game_instance_participant']);
+      if (( $num_of_players + 1) >= $game->field_min_num_players['und'][0]['value']) {
         $can_start_game = true;
       }
-
+      $player_name = trim($action['player_name']);
+      if(empty($player_name)) {
+        $player_name="Player".($num_of_players+1);
+      }
       //  Create an instance of current user to play this game
       $game_instance_participant = array();
       $game_instance_participant['instance_id'] = $game_instance->id;
       $game_instance_participant['bundle'] = 'game_instance_participant';
-      $game_instance_participant['participant_name'] = $action['player_name'];
+      $game_instance_participant['participant_name'] = $player_name;
 
       $game_instance_participant_entity = entity_create("game_instance_participant", $game_instance_participant);
 
       if ($game_instance_participant_entity->save()) {
-
+        
         //  Write to other user that a new user has just joined in
         $game_instance_command = array();
         $game_instance_command['instance_id'] = $game_instance->id;
         $game_instance_command['command_id'] = 1;
-        $game_instance_command['command_data'] = drupal_json_encode(array("message" => "user " . $action['player_name'] . " has joined the game", "time" => time()));
+        $game_instance_command['command_data'] = drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "time" => time()));
         $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
 
 
@@ -129,10 +133,21 @@ function game_ui_instance_ajax_callback($game_instance) {
       // use rules_invoke_event_by_args() to call the event with all the variables
       // collected in an associative array – which is particularly useful if there
       // are a shifting number of variables.
-      //dpm($action['params']);
-      //rules_invoke_event($action['hook'], $action['params']);
-      $action_return = rules_invoke_event_by_args($action['hook'], array($action,$game_instance));
-      dpm ($action_return);
+      //dpm($action['params'] . " " . $action['hook']);
+      //dpm($game_instance);
+      //$game_instance->id
+      rules_invoke_event($action['hook'], $game_instance, $action['params']);
+      //rules_invoke_event($action['hook'], $action['params'], $game_instance);
+      //rules_invoke_event($action['hook'], $game_instance, $action['params']);
+      //rules_invoke_event($action['hook'], array("tile_position"=>$action['params'],"game_instance"=> $game_instance));
+      //rules_invoke_component("this_tile_set_owner",array("game_instance"=>$game_instance, "tile_position"=>$action['params']));
+      
+      //$action_return = rules_invoke_event_by_args("ss" , array("game_instance"=>$game_instance,"tile_num"=>$action['params']));
+      //$action_return = rules_invoke_event_by_args($action['hook'] , array("game_instance"=>$game_instance,"tile_position"=>$action['params']));
+      
+      //array("account"=>$user)
+      
+      //dpm ($action_return);
       //$action_return = actions_do(array_keys($aids), $game_instance, $context);
 
       echo drupal_json_encode(array("Return" => $action_return, "time" => time(), "action" => $action));

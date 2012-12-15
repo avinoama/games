@@ -2,7 +2,7 @@
  
   Drupal.behaviors.boardGame = {
     attach: function (context, settings) {
-      
+    
     
       field_matrix = Drupal.settings.gameInstance.instance.field_matrix;
       height = Drupal.settings.gameInstance.game.field_board_height['und'][0].value;
@@ -70,7 +70,10 @@
         action: {
           command: 'trigger',
           hook:"tile_click",
-          params: id
+          params: {
+            tile_position: id,
+            session: Drupal.settings.gameInstance.instance.session
+          }
         }
       }, 
       dataType :"json",

@@ -31,7 +31,7 @@ function game_ui_views_default_views() {
   $handler->display->display_options['header']['area']['table'] = 'views';
   $handler->display->display_options['header']['area']['field'] = 'area';
   $handler->display->display_options['header']['area']['empty'] = FALSE;
-  $handler->display->display_options['header']['area']['content'] = '<a href="<?php print url(\'game/add\'); ?>>Add Game</a>';
+  $handler->display->display_options['header']['area']['content'] = '<a href="<?php print url(\'games/add\'); ?>">Create New Game</a>';
   $handler->display->display_options['header']['area']['format'] = 'full_html';
   $handler->display->display_options['header']['area']['tokenize'] = 0;
   // Relationship: Task: Author 

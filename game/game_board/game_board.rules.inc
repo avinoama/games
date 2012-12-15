@@ -1,23 +1,51 @@
 <?php
 
+//hook_rules_data_info();
+//hook_rules_data_info
+function game_board_rules_data_info() {
+  $data = array();
+  $data['game_instance'] = array(
+      'label' => t('Game Instance'),
+      'ui class' => 'GameInstanceController',
+  );
+  return $data;
+}
+
 function game_board_rules_action_info() {
 
   return array(
       'rules_tile_set_owner' => array(
           'label' => t('Tile Set owner'),
           'parameter' => array(
-              'account' => array(
-                  'type' => 'user',
-                  'label' => t('User to say hello to'),
+              'game_instance' => array(
+                  //'type' => 'entity',
+                  'type' => 'text',
+                  'label' => 'game_instance',
+                  'optional' => TRUE,
               // If we were to make changes to the parameter object, whe should set
               // the 'save' property to TRUE. This makes Rules handle the saving in
               // a more optimized way than if each action saved the objects.
               // 'save' => TRUE,
               ),
-              'game_instance' => array(
-                'type' => 'entity',
-                'label'=> 'game instance to react',
-              ),
+              /*  'account' => array(
+                'type' => 'user',
+                'label' => t('User to say hello to'),
+                // If we were to make changes to the parameter object, whe should set
+                // the 'save' property to TRUE. This makes Rules handle the saving in
+                // a more optimized way than if each action saved the objects.
+                // 'save' => TRUE,
+                ),
+               * 
+               */
+              'tile_position' => array(
+                  'type' => 'integer',
+                  'label' => 'tile_position',
+                  'optional' => TRUE,
+              // If we were to make changes to the parameter object, whe should set
+              // the 'save' property to TRUE. This makes Rules handle the saving in
+              // a more optimized way than if each action saved the objects.
+              // 'save' => TRUE,
+              )
           ),
           'group' => t('Game Board'),
           'base' => 'rules_tile_set_owner',
@@ -28,13 +56,30 @@ function game_board_rules_action_info() {
   );
 }
 
-function rules_tile_set_owner($action, $game_instance) {
-  global $user;
-  dpm("rules_tile_set_owner " . session_id());
-  dpm(print_r($action, 1) . print_r($game_instance, 1));
-  $conditions = array("instance_id" => $game_instance->id, 'participant_session' => session_id());
-  $entity = entity_load("game_instance_participant", FALSE, $conditions);
+function rules_tile_set_owner($game_instance, $tile_position = 0) {
+  //$game_instance, $tile_position
+  dpm("tile_set_owner");
+  dpm("Data:   " . print_r($tile_position, 1) . " ");
+  dpm($game_instance);
+  if (!empty($game_instance)) {
+    //dpm($game_instance);
+  }
+  /*
+    $session = $account->sid;
+    if (empty($session)) {
+    $session = session_id();
+    //dpm("rules_tile_set_owner by session  " . $session);
+    } else {
+    // dpm("rules_tile_set_owner by account " . $session);
+    }
 
+
+
+    //dpm(print_r($action, 1) . print_r($game_instance, 1));
+    $conditions = array("instance_id" => $game_instance->id, 'participant_session' => $session);
+    $entity = entity_load("game_instance_participant", FALSE, $conditions);
+    $player = $entity[key($entity)];
+   */
   //array("callback" => array("module" => "gameInstance", "fn" => "message", "params" => array("The tile is already owned")));
 
   return;
@@ -91,20 +136,26 @@ function game_board_rules_event_info() {
       'tile_click' => array(
           'label' => t('After tile was clicked'),
           'group' => t('Game Rules'),
-      // If the event provides any parameters to Rules, these are described with
-      // the 'variables' property.
-      /*
-        'variables' => array(
-        // Each provided variable is keyed by a given machine name, and work
-        // very similar to how parameters and provided variables are desribed in
-        // conditions and actions.
-        'tile_num' => array(
-        'type' => 'int',
-        'label' => t('Tile num'),
-        ),
-        ),
-       * 
-       */
+          // If the event provides any parameters to Rules, these are described with
+          // the 'variables' property.
+          // 'variables' => entity_rules_events_variables('game_board', t('tile_position', array(), array('context' => 'current tile position'))),
+          'variables' => array(
+              // Each provided variable is keyed by a given machine name, and work
+              // very similar to how parameters and provided variables are desribed in
+              // conditions and actions.
+
+              'tile_position' => array(
+                  'type' => 'int',
+                  'label' => t('Tile num'),
+              ),
+          /*
+            'game_instance' => array(
+            'type' => 'entity',
+            'label' => t('Game Instance'),
+            ),
+           * 
+           */
+          ),
       ),
       'tile_hover' => array(
           'label' => t('After tile was hoverd'),
