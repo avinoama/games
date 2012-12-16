@@ -58,10 +58,7 @@ function game_board_rules_action_info() {
 
 function rules_tile_set_owner($game_instance_session, $tile_position = 0) {
   global $user;
-  //$game_instance, $tile_position
-  dpm("tile_set_owner");
-  //dpm("Data:   " . print_r($tile_position, 1) . " ");
-  //dpm($game_instance_session);
+  //  load game instance by session
   if (!empty($game_instance_session)) {
 
     $query = new EntityFieldQuery;
@@ -71,9 +68,8 @@ function rules_tile_set_owner($game_instance_session, $tile_position = 0) {
             ->execute();
     $key = key($result['game_instance']);
     $game_instance = game_instance_load($key);
-    //dpm($game_instance);
   }
-
+  //  load user credential
   $session = $user->sid;
   if (empty($session)) {
     //  user is not a registered user in this site
@@ -86,19 +82,24 @@ function rules_tile_set_owner($game_instance_session, $tile_position = 0) {
 
 
 
-  //dpm(print_r($action, 1) . print_r($game_instance, 1));
+  //  load current user session data
   $conditions = array("instance_id" => $game_instance->id, 'participant_session' => $session);
   $entity = entity_load("game_instance_participant", FALSE, $conditions);
   $player = $entity[key($entity)];
+  
+  //  reset tiles if not set
   for($j=0;$j<$tile_position;$j++) {
     if(!isset($game_instance->field_matrix['und'][$j])) {
       $game_instance->field_matrix['und'][$j]['value'] = 0;
     }
   }
+  //  check if i can set owner or tile already owned by another player
   if ($game_instance->field_matrix['und'][$tile_position]['value'] == 0 || empty($game_instance->field_matrix['und'][$tile_position]['value'])) {
+    //  changed the tile owner ship to current player
     $game_instance->field_matrix['und'][$tile_position]['value'] = $player->participant_turn;
-
+    //  save game instance
     if ($game_instance->save()) {
+      //  send js action to all players
       $params = array("tile_id" => $tile_position, "participant_turn" => $player->participant_turn);
       $game_instance_command = array();
       $game_instance_command['instance_id'] = $game_instance->id;
@@ -111,7 +112,7 @@ function rules_tile_set_owner($game_instance_session, $tile_position = 0) {
       dpm("cant save game instance");
     }
   } else {
-    // the tile is already owned by user cannot
+    // the tile is already owned by player cannot
     return array("callback" => array("module" => "gameInstance", "fn" => "message", "params" => array("The tile is already owned")));
     //dpm("the tile is already owned by user cannot");
   }

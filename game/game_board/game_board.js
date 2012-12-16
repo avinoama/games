@@ -80,6 +80,7 @@
       type:"post",
       success: function(data) {
         console.log(data);
+        /*
         for(r in data) {
           //console.log(data[r])
           for(i in data[r])
@@ -90,6 +91,7 @@
               }
             }
         }
+        */
       },
       error: function(jqXHR, textStatus, errorThrow) {
         console.log(jqXHR+ " " + textStatus + " " +errorThrow );

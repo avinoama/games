@@ -59,13 +59,13 @@ function game_ui_instance_ajax_callback($game_instance) {
         return null;
       }
       $can_start_game = false;
-      $num_of_players =count($result['game_instance_participant']);
+      $num_of_players = count($result['game_instance_participant']);
       if (( $num_of_players + 1) >= $game->field_min_num_players['und'][0]['value']) {
         $can_start_game = true;
       }
       $player_name = trim($action['player_name']);
-      if(empty($player_name)) {
-        $player_name="Player".($num_of_players+1);
+      if (empty($player_name)) {
+        $player_name = "Player" . ($num_of_players + 1);
       }
       //  Create an instance of current user to play this game
       $game_instance_participant = array();
@@ -76,7 +76,7 @@ function game_ui_instance_ajax_callback($game_instance) {
       $game_instance_participant_entity = entity_create("game_instance_participant", $game_instance_participant);
 
       if ($game_instance_participant_entity->save()) {
-        
+
         //  Write to other user that a new user has just joined in
         $game_instance_command = array();
         $game_instance_command['instance_id'] = $game_instance->id;
@@ -87,7 +87,7 @@ function game_ui_instance_ajax_callback($game_instance) {
 
         //  check if command can occure
         if ($game_instance_command_entity->save()) {
-          if (count($result['game_instance_participant']) >= $game->field_max_nim_players['und'][0]['value']) {
+          if (count($result['game_instance_participant']) >= $game->field_max_min_players['und'][0]['value']) {
             //  allow game to start
             $game_instance_command2 = array();
             $game_instance_command2['instance_id'] = $game_instance->id;
@@ -96,9 +96,9 @@ function game_ui_instance_ajax_callback($game_instance) {
             $game_instance_command_entity2 = entity_create("game_instance_command", $game_instance_command2);
             $game_instance_command_entity2->save();
 
-            echo drupal_json_encode(array("message" => "user ". $player_name . " has joined the game, to start game press the start button", "time" => time()));
+            echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game, to start game press the start button", "time" => time()));
           } else {
-            echo drupal_json_encode(array("message" => "user ". $player_name . " has joined the game", "time" => time()));
+            echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "time" => time()));
           }
           return null;
         } else {
@@ -127,30 +127,16 @@ function game_ui_instance_ajax_callback($game_instance) {
           'hook' => $action['hook'],
           'params' => $action['params'],
       );
-      
+
       // Events are invoked by the event name, followed by the event variables in
       // the same order as they are listed in the event declaration. You can also
       // use rules_invoke_event_by_args() to call the event with all the variables
       // collected in an associative array – which is particularly useful if there
       // are a shifting number of variables.
-      //dpm($action['params'] . " " . $action['hook']);
-      //dpm($game_instance);
-      //$game_instance->id
       rules_invoke_event($action['hook'], $game_instance, $action['params']);
-      //rules_invoke_event($action['hook'], $action['params'], $game_instance);
-      //rules_invoke_event($action['hook'], $game_instance, $action['params']);
-      //rules_invoke_event($action['hook'], array("tile_position"=>$action['params'],"game_instance"=> $game_instance));
-      //rules_invoke_component("this_tile_set_owner",array("game_instance"=>$game_instance, "tile_position"=>$action['params']));
-      
-      //$action_return = rules_invoke_event_by_args("ss" , array("game_instance"=>$game_instance,"tile_num"=>$action['params']));
-      //$action_return = rules_invoke_event_by_args($action['hook'] , array("game_instance"=>$game_instance,"tile_position"=>$action['params']));
-      
-      //array("account"=>$user)
-      
-      //dpm ($action_return);
-      //$action_return = actions_do(array_keys($aids), $game_instance, $context);
 
       echo drupal_json_encode(array("Return" => $action_return, "time" => time(), "action" => $action));
+
 
       //  change game status
       if ($action['hook'] == "game_start") {
@@ -178,20 +164,20 @@ function game_ui_instance_ajax_callback($game_instance) {
           'command_id' => 3,
           'command_data' => drupal_json_encode(array(
           "message" => "Game Started its ".$first_player. " turn" ,
-          //  "callback" => array("fn"=>"start_game","module"=>"gameInstance","params"=>"1"),
+          "callback" => array("fn"=>"start_game","module"=>"gameInstance","params"=>"1"),
           "time" => time()))
-          ); */
-
+          );
+         */
 
         $game_instance_command = array();
-        $game_instance_command['instance_id'] = 4;
+        $game_instance_command['instance_id'] = $game_instance->id;
         $game_instance_command['command_id'] = 1;
         $game_instance_command['command_data'] = drupal_json_encode(array("message" => "Game Started its " . $first_player . " turn", "time" => time()));
+        //$game_instance_command['command_data'] = drupal_json_encode(array("callback" => array("fn" => "message", "module" => "gameInstance", "params" => array("Game Started its " . $first_player . " turn")), "time" => time()));
         $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
         $game_instance_command_entity->save();
-
-
-
+        //{"message":"Game Started its Player1 turn","time":1355586007}
+//{"callback":{"fn":"show_start_game_button","module":"gameInstance","params":"1"},"time":1355585344}
         //  Start game
         $game_instance->started = REQUEST_TIME;
         $game_instance->status = GAME_STATUS_STARTED;
@@ -199,7 +185,7 @@ function game_ui_instance_ajax_callback($game_instance) {
 
 
           //  game saved
-          dpm("game saved");
+          // dpm("game saved");
         } else {
           //  problom saving game
         }
@@ -259,9 +245,10 @@ function game_ui_instance_ajax_callback($game_instance) {
 
 
       $query = db_select('game_instance_command', 'c');
-      $query->fields('c', array('command_id', 'command_data', 'command_time'))
+      $query->fields('c', array('id', 'command_id', 'command_data', 'command_time'))
               ->condition('c.instance_id', $game_instance->id, '=')
-              ->condition('c.command_time', $action['time'], '>')
+              ->condition('c.command_time', $action['time'], '>=')
+              ->condition('c.id', $action['id'], '>')
               ->orderBy('c.command_time', 'ASC');
 
       $commands = $query->execute();
@@ -287,6 +274,7 @@ function game_ui_instance_ajax_callback($game_instance) {
         $array[$i]['command_id'] = $command->command_id;
         $array[$i]['command_time'] = $command->command_time;
         $array[$i]['command_data'] = $command->command_data;
+        $array[$i]['id'] = $command->id;
         $i++;
       }
 

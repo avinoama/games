@@ -167,66 +167,6 @@ function game_entity_info_alter(&$entity_info) {
   }
 }
 
-function game_rules_action_info() {
-
-  return array(
-      'rules_game_over' => array(
-          'label' => t('Game Over'),
-          'parameter' => array(
-              'game_instance' => array(
-                  //'type' => 'entity',
-                  'type' => 'text',
-                  'label' => 'game_instance',
-                  'optional' => TRUE,
-              // If we were to make changes to the parameter object, whe should set
-              // the 'save' property to TRUE. This makes Rules handle the saving in
-              // a more optimized way than if each action saved the objects.
-              // 'save' => TRUE,
-              ),
-          ),
-          'group' => t('Game'),
-          'base' => 'rules_game_over',
-          'callbacks' => array(
-              'validate' => 'rules_game_over_validation',
-          ),
-      ),
-      'rules_game_set_winners' => array(
-          'label' => t('Game set winner'),
-          'parameter' => array(
-              'player_id' => array(
-                  //'type' => 'entity',
-                  'type' => 'integer',
-                  'label' => 'player_id',
-              //'optional' => TRUE,
-              // If we were to make changes to the parameter object, whe should set
-              // the 'save' property to TRUE. This makes Rules handle the saving in
-              // a more optimized way than if each action saved the objects.
-              // 'save' => TRUE,
-              ),
-          ),
-          'group' => t('Game'),
-          'base' => 'rules_game_set_winners',
-          'callbacks' => array(
-              'validate' => 'rules_game_set_winners_validation',
-          ),
-      ),
-  );
-}
-
-function rules_game_over_validation($game_instance) {
-  return true;
-}
-
-function rules_game_over($game_instance) {
-  dpm(game_over);
-  dpm($game_instance);
-}
-function rules_game_set_winners($player_id) {
-  dpm(rules_game_set_winners);
-}
-function rules_game_set_winners_validation() {
-  return true;
-}
 
 /**
  * Implements hook_permission().
