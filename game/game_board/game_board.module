@@ -12,78 +12,73 @@ function game_board_uninstall() {
 }
 
 function game_board_game_instance_presave($game_instance) {
-  //foreach($entities as $key=>$entity) {
+  //dpm($game_instance);
   if ($game_instance->type == "board_game") {
 
 
     if (isset($game_instance->field_board_width) && isset($game_instance->field_board_height)) {
       $bundle = $game_instance->type;
       $entity_type = 'game_instance';
-      //$is_new ==
-      //dpm($game_instance);
-      //add default fields to bundle
-      // phone_user_type_add_default_fields_to_bundle($phone_user_type);
 
-      $field_name = 'field_matrix';
-      $field_type = 'text';
-      $field_label = 'matrix';
+      // phone_user_type_add_default_fields_to_bundle($phone_user_type);
+      $i = 0;
+      $fileds[$i]["field_name"] = 'field_matrix';
+      $fileds[$i]["field_type"] = 'text';
+      $fileds[$i]["field_label"] = 'matrix';
+      $fileds[$i]["default_value"] = '0';
+      $fileds[$i]["cardinality"] = FIELD_CARDINALITY_UNLIMITED;
+      $fileds[$i]["settings"]["target_type"] = "text";
+      $fileds[$i]["settings"]["target_bundles"] = array($bundle);
+      $i++;
+      $fileds[$i]["field_name"] = 'field_players';
+      $fileds[$i]["field_type"] = 'entityreference';
+      $fileds[$i]["field_label"] = 'Players';
+      $fileds[$i]["cardinality"] = FIELD_CARDINALITY_UNLIMITED;
+      $fileds[$i]["settings"]["target_type"] = "entity";
+      $fileds[$i]["settings"]["target_bundles"] = array($bundle);
+
+
       $count_tiles = $game_instance->field_board_width + $game_instance->field_board_height;
 
-
-      if (isset($game_instance->is_new)) {
-        //dpm("Game is new");
-        /**
-         *  for each filed i whant to add to game instance of type game board
-         */
-        if (!field_info_field($field_name)) {
-          //dpm("No field create new");
-          $field = array(
-              'field_name' => $field_name,
-              'type' => $field_type,
-              'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-              'settings' => array(
-                  'target_type' => $entity_type,
-                  'target_bundles' => array($bundle),
-              ),
-          );
-          for ($i = 0; i < $count_tiles; $i++) {
-            $field['default_value'] = 0;
+      // foreach filed
+      foreach($fileds as $field) {
+        if (isset($game_instance->is_new)) {
+          if (!field_info_field($field["field_name"])) {
+            field_create_field($field);
           }
-          field_create_field($field);
-        }
-        $instance = array(
-            'field_name' => $field_name,
-            'label' => $field_label,
-            'entity_type' => $entity_type,
-            'bundle' => $bundle,
-        );
-        //$game_instance
-        $instances = field_info_instances(null, $field_name);
-        if (!isset($instances['game_instance']['board_game'])) {
-          //dpm("Create Instance");
-          field_create_instance($instance);
 
-          $game_instance->new_field = array(
-              'field_name' => $instance['field_name'],
-              'label' => $instance['label'],
-              'entity_type' => $instance['entity_type'],
-              'bundle' => $instance['bundle'],
+          $instance = array(
+              'field_name' => $field["field_name"],
+              'label' => $field["field_label"],
+              'entity_type' => $entity_type,
+              'bundle' => $bundle,
           );
+
+          //$game_instance
+          $instances = field_info_instances(null, $field["field_name"]);
+
+          if (!isset($instances['game_instance']['board_game'])) {
+            //dpm("Create Instance");
+            field_create_instance($instance);
+
+            $game_instance->new_field = array(
+                'field_name' => $instance['field_name'],
+                'label' => $instance['label'],
+                'entity_type' => $instance['entity_type'],
+                'bundle' => $instance['bundle'],
+            );
+          } else {
+            //dpm("instances already exsit");
+            $game_instance->new_field = $instances['game_instance']['board_game']['field_matrix'];
+          }
+
+          field_attach_insert('game_instance', $game_instance);
         } else {
-          //dpm("instances already exsit");
-          $game_instance->new_field = $instances['game_instance']['board_game']['field_matrix'];
+          //dpm("field_attach_update");
+          field_attach_update('game_instance', $game_instance);
         }
-
-        field_attach_insert('game_instance', $game_instance);
-      } else {
-        //dpm("field_attach_update");
-        field_attach_update('game_instance', $game_instance);
       }
-
-      /**
-       * end for
-       * 
-       */
+      // end for each filed
     } else {
 
       if (isset($game_instance->is_new)) {
@@ -257,6 +252,7 @@ function game_board_entity_property_info_alter(&$info) {
       'getter callback' => 'game_board_get_tile',
   );
 }
+
 /**
  * game_board_get_tile
  * gets tile from ajax loading 

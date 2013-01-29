@@ -196,7 +196,7 @@ function game_schema() {
         'type' => 'varchar',
         'length' => 32,
         'not null' => TRUE,
-      ),
+      ),   
       'created' => array(
         'description' => 'The Unix timestamp when the game created.',
         'type' => 'int',
@@ -215,6 +215,7 @@ function game_schema() {
         'not null' => TRUE,
         'default' => '0',
       ),
+      
     ) + entity_exportable_schema_fields(),
     'primary key' => array('id'),
     'unique keys' => array(

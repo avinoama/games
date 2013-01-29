@@ -4,11 +4,11 @@
     attach: function (context, settings) {
       // set default id to 0 
       Drupal.settings.gameInstance.clientId = 0;
-      
+      $("#messages").css("overflow","auto");
+      $("#messages").css("height","100px");
       //  game didnot start yet
       if(Drupal.settings.gameInstance.instance.status==1) {        
         if(!Drupal.settings.gameInstance.player_joined_game) {
-          //$(".messages.status").text('trying to join game...');
           m = new Array('trying to join game...');
           Drupal.behaviors.gameInstance.message(m);    
           joinGame("");
@@ -19,12 +19,22 @@
         }
       //  game started
       } else if ( Drupal.settings.gameInstance.instance.status==2 ) {
-      //alert("game already started");
-      //console.log(Drupal.settings.gameInstance);
+            
+        if(Drupal.settings.gameInstance.player_joined_game) {
+              
+        } else {
+          m = new Array();
+          m[0]= "game already started, and your not in it.";
+          Drupal.behaviors.gameInstance.message(m);
+        }
+      // game ended
+      } else if ( Drupal.settings.gameInstance.instance.status==2 ) {
+        m = new Array();
+        m[0]= "game already ended";
+        Drupal.behaviors.gameInstance.message(m);
       }
-      
+      //alert();
       setTimeout(getCommands,1000);
-      
 
     /**
      * show number of players in game
@@ -45,7 +55,11 @@
       div.append(params[0]);
       if(params[0]!=undefined && params[0]!="") {
         $("#messages .section").append(div);
+        $("#messages").animate({
+          scrollTop: div.offset().top
+        });
       }
+      
     },
     start_game: function() {
       //alert("start_game");
@@ -164,8 +178,8 @@
       success: function(data) {
         console.log(data);
       //alert("start gae has been pressed");
-        //  no data sholud be returned maybe just an ok for validational resons
-        //  somthing like game will start shortly
+      //  no data sholud be returned maybe just an ok for validational resons
+      //  somthing like game will start shortly
       },
       error: function(jqXHR, textStatus, errorThrow) {
         console.log(jqXHR+ " " + textStatus + " " +errorThrow );

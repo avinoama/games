@@ -117,8 +117,22 @@ function game_ui_views_api() {
       'path' => drupal_get_path('module', 'game_ui'),
   );
 }
+function startsWith($haystack, $needle)
+{
+    return !strncmp($haystack, $needle, strlen($needle));
+}
 function game_ui_view() {
-  return "11";
+  $gid = arg(1);
+  $game = game_load($gid);
+  //dpm($game);
+  $string="";
+  foreach($game as $key => $field) {
+    if(startsWith($key,"field")) {
+      $string .= $key. " ". $field["und"][0]["value"]."<br>";
+    }
+    
+  }
+  return "title : ".$game->title."<br>description:".$game->description."<br>".$string ;
   
 }
 function debug_game() {

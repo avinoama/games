@@ -210,9 +210,6 @@ function game_permission() {
 
 function game_current_instance() {
   $session = check_plain($_POST['action']['params']['session']);
-  //dpm($session);
-  //$game_instance = game_instance_load('32');
-  //dpm($game_instance);
   return $session;
 }
 /*

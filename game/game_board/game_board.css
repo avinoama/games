@@ -20,6 +20,11 @@ height:100px;
   
 }
 .owned_2 {
-   background:#292929;
-  
+   background:#292929; 
+}
+.owned_3 {
+   background:#red; 
+}
+.owned_4 {
+   background:darkblue; 
 }

@@ -55,6 +55,11 @@ function game_rules_data_info() {
               ),
           ),
       ),
+      'game_instance_entity' => array(
+          'label' => t('game instance entity'),
+          'parent' => 'entity',
+          'group' => t('entity'),
+      ),
   );
 }
 
@@ -84,6 +89,16 @@ function game_rules_action_info() {
       'rules_game_set_winners' => array(
           'label' => t('Game set winner'),
           'parameter' => array(
+              'game_instance_session' => array(
+                  //'type' => 'entity',
+                  'type' => 'text',
+                  'label' => 'game_instance_session',
+                  'optional' => TRUE,
+              // If we were to make changes to the parameter object, whe should set
+              // the 'save' property to TRUE. This makes Rules handle the saving in
+              // a more optimized way than if each action saved the objects.
+              // 'save' => TRUE,
+              ),
               'player_id' => array(
                   //'type' => 'entity',
                   'type' => 'integer',
@@ -158,8 +173,22 @@ function rules_game_over($game_instance_session) {
   }
 }
 
-function rules_game_set_winners($player_id) {
-  dpm("rules_game_set_winners");
+function rules_game_set_winners($game_instance_session, $player_id) {
+  dpm("rules_game_set_winners player_id:" . $player_id);
+  // the game can only define a winner once whan game is beaing played
+  if (!empty($game_instance_session)) {
+
+    $query = new EntityFieldQuery;
+    $result = $query
+            ->entityCondition('entity_type', 'game_instance')
+            ->propertyCondition('session', $game_instance_session)
+            ->execute();
+    $key = key($result['game_instance']);
+    $game_instance = game_instance_load($key);
+    dpm($game_instance);
+  }
+
+  // change game mod to ended inform all other player game ended
 }
 
 function rules_game_set_winners_validation() {

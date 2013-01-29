@@ -60,6 +60,6 @@ $game_instance->save();
     $function = $module . '_game_init_load';
     $function($game);
   }
-  drupal_set_message(" 1");
+  drupal_set_message("&nbsp;");
   return "Loading game...";
 }

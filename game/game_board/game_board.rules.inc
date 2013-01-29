@@ -11,6 +11,28 @@ function game_board_rules_data_info() {
   return $data;
 }
 
+function game_board_rules_condition_info() {
+  return array(
+      'game_board_rules_condition_check_pattren' => array(
+          'group' => 'game',
+          'label' => t('Board Check Pattren'),
+          'arguments' => array(
+              'board' => array(
+                  'type' => 'list',
+                  'label' => 'Board',
+                  'optional' => TRUE,
+              ),
+          ),
+          'module' => 'game_board',
+      ),
+  );
+}
+
+function game_board_rules_condition_check_pattren($game) {
+  dpm("game_board_rules_condition_check_pattren " .$game);
+  return true;
+}
+
 function game_board_rules_action_info() {
 
   return array(
@@ -22,29 +44,11 @@ function game_board_rules_action_info() {
                   'type' => 'text',
                   'label' => 'game_instance',
                   'optional' => TRUE,
-              // If we were to make changes to the parameter object, whe should set
-              // the 'save' property to TRUE. This makes Rules handle the saving in
-              // a more optimized way than if each action saved the objects.
-              // 'save' => TRUE,
               ),
-              /*  'account' => array(
-                'type' => 'user',
-                'label' => t('User to say hello to'),
-                // If we were to make changes to the parameter object, whe should set
-                // the 'save' property to TRUE. This makes Rules handle the saving in
-                // a more optimized way than if each action saved the objects.
-                // 'save' => TRUE,
-                ),
-               * 
-               */
               'tile_position' => array(
                   'type' => 'integer',
                   'label' => 'tile_position',
                   'optional' => TRUE,
-              // If we were to make changes to the parameter object, whe should set
-              // the 'save' property to TRUE. This makes Rules handle the saving in
-              // a more optimized way than if each action saved the objects.
-              // 'save' => TRUE,
               )
           ),
           'group' => t('Game Board'),
@@ -86,10 +90,10 @@ function rules_tile_set_owner($game_instance_session, $tile_position = 0) {
   $conditions = array("instance_id" => $game_instance->id, 'participant_session' => $session);
   $entity = entity_load("game_instance_participant", FALSE, $conditions);
   $player = $entity[key($entity)];
-  
+
   //  reset tiles if not set
-  for($j=0;$j<$tile_position;$j++) {
-    if(!isset($game_instance->field_matrix['und'][$j])) {
+  for ($j = 0; $j < $tile_position; $j++) {
+    if (!isset($game_instance->field_matrix['und'][$j])) {
       $game_instance->field_matrix['und'][$j]['value'] = 0;
     }
   }
