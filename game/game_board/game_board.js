@@ -50,8 +50,13 @@
     game_board_tile_set_owner_action: function(params){
       $("#tile_"+params.tile_id).addClass("owned_"+params.participant_turn).addClass("owned");
       $("#tile_"+params.tile_id).text(params.participant_turn);
-    }
-	
+    },
+    game_board_tile_increment_action: function(params){
+      $("#tile_"+params.tile_id).text(params.value);
+    },
+    game_board_tile_decrement_action: function(params){
+      $("#tile_"+params.tile_id).text(params.value);
+    }	
   }
   
   function init(game) {

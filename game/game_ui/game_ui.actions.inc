@@ -132,7 +132,8 @@ function game_ui_instance_ajax_callback($game_instance) {
       // the same order as they are listed in the event declaration. You can also
       // use rules_invoke_event_by_args() to call the event with all the variables
       // collected in an associative array – which is particularly useful if there
-      // are a shifting number of variables.
+      // are a shifting number of variables
+     
       rules_invoke_event($action['hook'], $game_instance, $action['params']);
 
       echo drupal_json_encode(array("Return" => $action_return, "time" => time(), "action" => $action));

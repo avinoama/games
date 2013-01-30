@@ -39,27 +39,74 @@ function game_board_form_alter($form, $form_state, $form_id) {
       $form_state['step'] = 1;
       $form_state['step_information'] = _form_game_board_steps();
     }
-    dpm($form);
-    dpm($form['actions']['submit']);
-    $form['actions']['submit']["#value"]="next step";
-    $form['actions']['submit']["#submit"][0]="game_board_set_default_board";
-    
+    //dpm($form);
+    //dpm($form['actions']['submit']);
+    $form['actions']['submit']["#value"] = "next step";
+    $form['actions']['submit']["#submit"][0] = "game_board_set_default_board";
+
     /*
-    $form['#next'] = array(
-        '#type' => 'submit',
-        '#value' => t('Next'),
-        '#name' => 'next',
-        '#submit' => array('game_board_set_default_board'),
+      $form['#next'] = array(
+      '#type' => 'submit',
+      '#value' => t('Next'),
+      '#name' => 'next',
+      '#submit' => array('game_board_set_default_board'),
+      );
+     */
+    //$form['actions']['submit'] //$submit + array('game_ui_form_submit'),
+    // dpm($form);
+  }
+}
+
+function game_board_game_presave($game) {
+  $entity = $game;
+  if ($game->type == "board_game") {
+    //
+    // dpm($game);
+    $bundle = $game->type;
+    $entity_type = 'game';
+
+    // phone_user_type_add_default_fields_to_bundle($phone_user_type);
+    $fields = array();
+    $fields[] = array(
+        'field_name' => 'field_result_pattren',
+        'label' => t('end pattrens'),
+        'type' => 'entityreference',
+        'cardinality' => FIELD_CARDINALITY_UNLIMITED,
     );
-    */
-     //$form['actions']['submit'] //$submit + array('game_ui_form_submit'),
-         
-   // dpm($form);
+
+    foreach ($fields as $field) {
+      
+      $field["entity_type"] = $entity_type;
+      $field["bundle"] = $bundle;
+      $filed_info = field_info_field($field["field_name"]);
+
+      if (!$filed_info) {
+        field_create_field($field);
+      }
+      
+      $instances = field_info_instances(null, $field["field_name"]);
+      //dpm($instances);
+      
+      if (!isset($instances[$entity_type][$bundle])) {
+        field_create_instance($field);
+      } else {
+        //field_delete_instance($instances[$entity_type][$bundle][$field["field_name"]], TRUE);
+        if (isset($instances[$entity_type][$bundle][$field["field_name"]])) {
+          field_attach_update($entity_type, $entity);
+        } else {
+          field_create_instance($field);
+          field_attach_insert($entity_type, $entity);
+        }
+      }
+    }
+    if (isset($entity)) {
+      $entity->new_field = $field;
+    }
   }
 }
 
 function game_board_game_instance_presave($game_instance) {
-  //dpm($game_instance);
+
   if ($game_instance->type == "board_game") {
 
 

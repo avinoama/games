@@ -29,7 +29,7 @@ function game_board_rules_condition_info() {
 }
 
 function game_board_rules_condition_check_pattren($game) {
-  dpm("game_board_rules_condition_check_pattren " .$game);
+  dpm("game_board_rules_condition_check_pattren " . $game);
   return true;
 }
 
@@ -57,9 +57,149 @@ function game_board_rules_action_info() {
               'validate' => 'rules_tile_set_owner_validation',
           ),
       ),
+      'rules_tile_increment' => array(
+          'label' => t('Tile Increment'),
+          'parameter' => array(
+              'game_instance' => array(
+                  //'type' => 'entity',
+                  'type' => 'text',
+                  'label' => 'game_instance',
+                  'optional' => TRUE,
+              ),
+              'tile_position' => array(
+                  'type' => 'integer',
+                  'label' => 'tile_position',
+                  'optional' => TRUE,
+              ),
+              'modulo' => array(
+                  'type' => 'integer',
+                  'label' => 'modulo',
+                  'optional' => TRUE,
+              )
+          ),
+          'group' => t('Game Board'),
+          'base' => 'rules_tile_increment',
+          'callbacks' => array(
+              'validate' => 'rules_tile_increment_validation',
+          ),
+      ),
+      'rules_tile_decrement' => array(
+          'label' => t('Tile Decrement'),
+          'parameter' => array(
+              'game_instance' => array(
+                  //'type' => 'entity',
+                  'type' => 'text',
+                  'label' => 'game_instance',
+                  'optional' => TRUE,
+              ),
+              'tile_position' => array(
+                  'type' => 'integer',
+                  'label' => 'tile_position',
+                  'optional' => TRUE,
+              ),
+              'modulo' => array(
+                  'type' => 'integer',
+                  'label' => 'modulo',
+                  'optional' => TRUE,
+              )
+          ),
+          'group' => t('Game Board'),
+          'base' => 'rules_tile_decrement',
+          'callbacks' => array(
+              'validate' => 'rules_tile_decrement_validation',
+          ),
+      ),
   );
 }
 
+function rules_tile_increment($game_instance_session, $tile_position = 0, $modulo = 0) {
+  global $user;
+  //  load game instance by session
+  if (!empty($game_instance_session)) {
+
+    $query = new EntityFieldQuery;
+    $result = $query
+            ->entityCondition('entity_type', 'game_instance')
+            ->propertyCondition('session', $game_instance_session)
+            ->execute();
+    $key = key($result['game_instance']);
+    $game_instance = game_instance_load($key);
+  }
+
+  //  reset tiles if not set
+  for ($j = 0; $j < $tile_position; $j++) {
+    if (!isset($game_instance->field_matrix['und'][$j])) {
+      $game_instance->field_matrix['und'][$j]['value'] = 0;
+    }
+  }
+  if (empty($modulo)) {
+    $game_instance->field_matrix['und'][$tile_position]['value']++;
+  } else {
+    $game_instance->field_matrix['und'][$tile_position]['value'] = ($game_instance->field_matrix['und'][$tile_position]['value'] + 1) % $modulo;
+  }
+  //  save game instance
+  if ($game_instance->save()) {
+    //  send js action to all players
+    $params = array("tile_id" => $tile_position, "participant_turn" => $player->participant_turn, "value" => $game_instance->field_matrix['und'][$tile_position]['value']);
+    $game_instance_command = array();
+    $game_instance_command['instance_id'] = $game_instance->id;
+    $game_instance_command['command_id'] = 2;
+    $game_instance_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "callback" => array("module" => "boardGame", "fn" => "game_board_tile_increment_action", "params" => $params), "time" => time()));
+    $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
+    $game_instance_command_entity->save();
+  } else {
+
+    dpm("cant save game instance");
+  }
+}
+function rules_tile_increment_validation() {
+  // dpm("rules_tile_set_owner_validation");
+  return true;
+}
+
+function rules_tile_decrement($game_instance_session, $tile_position = 0, $modulo = 0) {
+  global $user;
+  //  load game instance by session
+  if (!empty($game_instance_session)) {
+
+    $query = new EntityFieldQuery;
+    $result = $query
+            ->entityCondition('entity_type', 'game_instance')
+            ->propertyCondition('session', $game_instance_session)
+            ->execute();
+    $key = key($result['game_instance']);
+    $game_instance = game_instance_load($key);
+  }
+
+  //  reset tiles if not set
+  for ($j = 0; $j < $tile_position; $j++) {
+    if (!isset($game_instance->field_matrix['und'][$j])) {
+      $game_instance->field_matrix['und'][$j]['value'] = 0;
+    }
+  }
+  $game_instance->field_matrix['und'][$tile_position]['value']--;
+  if (!empty($modulo) && $game_instance->field_matrix['und'][$tile_position]['value']<0) {
+    $game_instance->field_matrix['und'][$tile_position]['value'] = $modulo;
+  }
+  //  save game instance
+  if ($game_instance->save()) {
+    //  send js action to all players
+    $params = array("tile_id" => $tile_position, "participant_turn" => $player->participant_turn, "value" => $game_instance->field_matrix['und'][$tile_position]['value']);
+    $game_instance_command = array();
+    $game_instance_command['instance_id'] = $game_instance->id;
+    $game_instance_command['command_id'] = 2;
+    $game_instance_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "callback" => array("module" => "boardGame", "fn" => "game_board_tile_decrement_action", "params" => $params), "time" => time()));
+    $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
+    $game_instance_command_entity->save();
+  } else {
+
+    dpm("cant save game instance");
+  }
+}
+function rules_tile_decrement_validation() {
+  // dpm("rules_tile_set_owner_validation");
+  return true;
+}
 function rules_tile_set_owner($game_instance_session, $tile_position = 0) {
   global $user;
   //  load game instance by session
@@ -235,5 +375,3 @@ function game_board_default_rules_configuration() {
   return $configs;
 }
 
-//rules_invoke_event('tile_hover', $game_instance);
-//rules_invoke_event('tile_click', $game_instance);

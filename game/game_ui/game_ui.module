@@ -135,7 +135,9 @@ function game_ui_view() {
   $string="";
   foreach($game as $key => $field) {
     if(startsWith($key,"field")) {
+      if(isset($field["und"][0]["value"])) {
       $string .= $key. " ". $field["und"][0]["value"]."<br>";
+      }
     }
     
   }

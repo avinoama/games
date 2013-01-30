@@ -132,6 +132,7 @@ function game_entity_info() {
       'access callback' => 'game_instance_command_access',
   );
 
+    
   return $return;
 }
 
@@ -269,7 +270,13 @@ function game_entity_property_info_alter(&$info) {
   );
 
 
-
+  $info['site']['properties']['current_game_id'] = array(
+      'label' => t('Current game played at the moment'),
+      'description' => t('the current game.'),
+      'type' => 'text',
+      'getter callback' => 'game_current_id',
+  );
+  
   /*
     $properties = &$info['game_instance']['properties'];
     $properties['id'] = array(
@@ -292,7 +299,15 @@ function game_current_instance() {
   $session = check_plain($_POST['action']['params']['session']);
   return $session;
 }
-
+function game_current_id() {
+  $session = check_plain($_POST['action']['params']['session']);
+  //dpm($session);
+  $conditions = array("session"=>$session);
+  $e = entity_load('game_instance', array(), $conditions, FALSE);
+  $k  = array_keys($e);
+  $entity = $e[$k[0]];
+  return $entity->gid;
+}
 /* * *****************************************************************************
  * ******************************** Game API's **********************************
  * **************************************************************************** */
