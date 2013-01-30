@@ -117,6 +117,13 @@ function game_ui_views_api() {
       'path' => drupal_get_path('module', 'game_ui'),
   );
 }
+function game_ui_preprocess_page(&$vars) {
+  if (arg(0) == 'play') {
+    //drupal_add_library('system', 'ui.resizable');
+    $path = drupal_get_path('module', 'game_ui');
+    drupal_add_js($path . "/game_instance.js", 'file');
+  }
+}
 function startsWith($haystack, $needle)
 {
     return !strncmp($haystack, $needle, strlen($needle));
@@ -136,6 +143,7 @@ function game_ui_view() {
   
 }
 function debug_game() {
+  
   $action= array("hook"=>"tile_click" , "params"=>'3');
    $game_instance = game_instance_load("22");
         // Events are invoked by the event name, followed by the event variables in
@@ -156,5 +164,8 @@ function debug_game() {
       //$action_return = rules_invoke_event_by_args($action['hook'] , array("game_instance"=>$game_instance,"tile_position"=>$action['params']));
       
       //array("account"=>$user)
-      return "11";
+     
+   
+   
+   return "11";
 }

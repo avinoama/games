@@ -11,6 +11,53 @@ function game_board_uninstall() {
   game_type_delete('game_type', array($game_type->id));
 }
 
+function _form_game_board_steps() {
+  return array(
+      1 => array(
+          'title' => 'Step One',
+          'form' => 'game_board_set_default_board',
+      ),
+      2 => array(
+          'title' => 'Step Two',
+          'form' => 'game_board_submit_this_board',
+      )
+  );
+}
+
+function game_board_set_default_board($form, $form_state, $form_id) {
+  
+}
+
+function game_board_submit_this_board() {
+  
+}
+
+function game_board_form_alter($form, $form_state, $form_id) {
+
+  if ($form["#id"] == "game-ui-form" && $form['#bundle'] == "board_game") {
+    if (empty($form_state['step'])) {
+      $form_state['step'] = 1;
+      $form_state['step_information'] = _form_game_board_steps();
+    }
+    dpm($form);
+    dpm($form['actions']['submit']);
+    $form['actions']['submit']["#value"]="next step";
+    $form['actions']['submit']["#submit"][0]="game_board_set_default_board";
+    
+    /*
+    $form['#next'] = array(
+        '#type' => 'submit',
+        '#value' => t('Next'),
+        '#name' => 'next',
+        '#submit' => array('game_board_set_default_board'),
+    );
+    */
+     //$form['actions']['submit'] //$submit + array('game_ui_form_submit'),
+         
+   // dpm($form);
+  }
+}
+
 function game_board_game_instance_presave($game_instance) {
   //dpm($game_instance);
   if ($game_instance->type == "board_game") {
@@ -41,7 +88,7 @@ function game_board_game_instance_presave($game_instance) {
       $count_tiles = $game_instance->field_board_width + $game_instance->field_board_height;
 
       // foreach filed
-      foreach($fileds as $field) {
+      foreach ($fileds as $field) {
         if (isset($game_instance->is_new)) {
           if (!field_info_field($field["field_name"])) {
             field_create_field($field);
@@ -74,7 +121,6 @@ function game_board_game_instance_presave($game_instance) {
 
           field_attach_insert('game_instance', $game_instance);
         } else {
-          //dpm("field_attach_update");
           field_attach_update('game_instance', $game_instance);
         }
       }
@@ -186,7 +232,6 @@ function game_board_tile_set_owner_action_submit($form, $form_state) {
 }
 
 function game_board_game_init_load($game) {
-  //dpm($game);
   if ($game->type == "board_game") {
 
     $path = drupal_get_path('module', 'game_board');

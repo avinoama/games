@@ -10,7 +10,7 @@
     
       var board,row,column;
     
-      board = $("<div/>").addClass("boardInstance");
+      board = $("<div/>").addClass("boardInstance").attr("id","game"+Drupal.settings.gameInstance.game.gid);
       if($.isArray(field_matrix['und'])) {
         field_matrix = field_matrix['und'];
       }
@@ -26,15 +26,12 @@
           field_matrix[i]=new Array();
         }
         for(j=0;j<width;j++) {
-          //console.log(field_matrix[i]);
-          //alert(field_matrix[count].safe_value);
-          //alert(count);
-          //field_matrix[i+j]=;
           
           column = $("<div/>").addClass("column").attr("id","tile_"+count);
           if(field_matrix[count]!=undefined) {
             if(field_matrix[count].safe_value>0) {
-              column.addClass("owned_"+field_matrix[count].safe_value);
+              column.addClass("owned_"+field_matrix[count].safe_value).addClass("owned");
+              column.text(field_matrix[count].safe_value);
             }
           }
           
@@ -42,7 +39,7 @@
           column.bind("click",function(){
             game_board_tile_on_click(this)
           });
-          column.html("&nbsp;");
+          //column.html("&nbsp;");
           row.append(column);
         }
         board.append(row);
@@ -51,7 +48,8 @@
       $("#content").append(board);			
     },
     game_board_tile_set_owner_action: function(params){
-      $("#tile_"+params.tile_id).addClass("owned_"+params.participant_turn);
+      $("#tile_"+params.tile_id).addClass("owned_"+params.participant_turn).addClass("owned");
+      $("#tile_"+params.tile_id).text(params.participant_turn);
     }
 	
   }
@@ -61,9 +59,11 @@
   }	
   
   function game_board_tile_on_click(tile) {
-    
+    $(tile).addClass("clicked");
     id=$(tile).attr("id").replace("tile_","");
-    
+    setTimeout(function () {
+      $(tile).removeClass("clicked");
+    },1000);
     $.ajax({
       url: location.pathname+"/ajax",
       data: {
