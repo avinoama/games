@@ -5,8 +5,8 @@ Game entity has a bundle that describ its base logic like "Board Game", "Card Ga
 Each game can be "played", whan you play the game you create a server side instance that will save all changes to the game.
 
 
-For now we use Trigger and Action to implement logic
-whan you can trigger a logic event for base triggers:
+We are using Rules module for logical implementation
+When you can trigger a logic event for base triggers:
 on CREATING A NEW GAME
 on GAME START
 on GAME END
@@ -19,17 +19,17 @@ For Board Game there are 2 more triggers
 on CLICK EVENT IS CALLED
 on HOVER EVENT IS CALLED
 
-Whan action can be costumize per game or for all games
+When action can be customize per game or for all games
 for now i have 2 actions custom
-message => a dynamic message that can be set to a certine game or all games
-TileSetOwner => that will take a certine tile and make player own it
+message => a dynamic message that can be set to a certain game or all games
+TileSetOwner => that will take a certain tile and make player own it
 
 This module is build to be expended and not to use as is.
 
 
 TODO:
-1. Seperate UI from code and build 2 different modules for that
+1. Separate UI from code and build 2 different modules for that
 2. Change The player Join/leave in to the trigger circle
 3. Add a module that will connect to services module
 4. Think about moving to rules module api
-5. Make Turn base game a bolean option
+5. Make Turn base game a boolean option
