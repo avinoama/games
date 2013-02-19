@@ -36,22 +36,7 @@ function game_ui_play($game_instance) {
       $player_joined_game = true;
     }
   }
-  /*
-  //  reset matrix
-  
-for($i=0;$i<9;$i++) {
-  $game_instance->field_matrix['und'][$i]['value'] = 0;
-}
-$game_instance->save();
-   * 
-   */
-//check turn bas game whis turn is it 
-  /*
-    if(!isset($result['game_instance_participant'])) {
-    $result['game_instance_participant'] = 0;
-    }
-   * 
-   */
+
   drupal_add_js(array('gameInstance' => array('session' => session_id(), "instance" => $game_instance, 'player_joined_game' => $player_joined_game, "num_players" => count($players), "game" => $game, 'serverTime' => time())), 'setting');
 
   // hook_game_load

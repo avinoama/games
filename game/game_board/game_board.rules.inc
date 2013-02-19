@@ -22,14 +22,20 @@ function game_board_rules_condition_info() {
                   'label' => 'Board',
                   'optional' => TRUE,
               ),
+              'game-instance' => array(
+                  'type' => 'entity',
+                  'label' => 'Instance',
+                  'optional' => TRUE,
+              ),              
           ),
           'module' => 'game_board',
       ),
   );
 }
 
-function game_board_rules_condition_check_pattren($game) {
-  dpm("game_board_rules_condition_check_pattren " . $game);
+function game_board_rules_condition_check_pattren($board, $game_instance) {
+  //dpm(print_r($game_instance,1));
+  //dpm("game_board_rules_condition_check_pattren " . print_r($board,1));
   return true;
 }
 
