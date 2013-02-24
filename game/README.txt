@@ -31,5 +31,4 @@ TODO:
 1. Separate UI from code and build 2 different modules for that
 2. Change The player Join/leave in to the trigger circle
 3. Add a module that will connect to services module
-4. Think about moving to rules module api
-5. Make Turn base game a boolean option
+4. Make Turn base game a boolean option

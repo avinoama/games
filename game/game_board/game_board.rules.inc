@@ -26,7 +26,7 @@ function game_board_rules_condition_info() {
                   'type' => 'entity',
                   'label' => 'Instance',
                   'optional' => TRUE,
-              ),              
+              ),
           ),
           'module' => 'game_board',
       ),
@@ -158,6 +158,7 @@ function rules_tile_increment($game_instance_session, $tile_position = 0, $modul
     dpm("cant save game instance");
   }
 }
+
 function rules_tile_increment_validation() {
   // dpm("rules_tile_set_owner_validation");
   return true;
@@ -184,7 +185,7 @@ function rules_tile_decrement($game_instance_session, $tile_position = 0, $modul
     }
   }
   $game_instance->field_matrix['und'][$tile_position]['value']--;
-  if (!empty($modulo) && $game_instance->field_matrix['und'][$tile_position]['value']<0) {
+  if (!empty($modulo) && $game_instance->field_matrix['und'][$tile_position]['value'] < 0) {
     $game_instance->field_matrix['und'][$tile_position]['value'] = $modulo;
   }
   //  save game instance
@@ -202,10 +203,12 @@ function rules_tile_decrement($game_instance_session, $tile_position = 0, $modul
     dpm("cant save game instance");
   }
 }
+
 function rules_tile_decrement_validation() {
   // dpm("rules_tile_set_owner_validation");
   return true;
 }
+
 function rules_tile_set_owner($game_instance_session, $tile_position = 0) {
   global $user;
   //  load game instance by session
@@ -369,6 +372,7 @@ function game_board_rules_event_info() {
 /**
  * Implements hook_default_rules_configuration().
  */
+/*
 function game_board_default_rules_configuration() {
   $rule = rules_reaction_rule();
   $rule->label = 'example default rule';
@@ -380,4 +384,4 @@ function game_board_default_rules_configuration() {
   $configs['rules_test_default_1'] = $rule;
   return $configs;
 }
-
+*/

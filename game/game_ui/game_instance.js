@@ -13,9 +13,10 @@
           Drupal.behaviors.gameInstance.message(m);    
           joinGame("");
         } else {
-          if(Drupal.settings.gameInstance.num_players  >= Drupal.settings.gameInstance.game.field_min_num_players['und'][0].value) {
+          
+          //if(Drupal.settings.gameInstance.num_players  >= Drupal.settings.gameInstance.game.field_min_num_players['und'][0].value) {
             this.show_start_game_button();
-          }
+          //}
         }
       //  game started
       } else if ( Drupal.settings.gameInstance.instance.status==2 ) {
@@ -107,7 +108,7 @@
             json_data = jQuery.parseJSON( data[command].command_data );
             //console.log(json_data);
             if(json_data.callback) {
-              console.log(json_data.callback);
+              //console.log(json_data.callback);
               c= json_data.callback;
               if(Drupal.behaviors[c.module]!=null) {
                 if(Drupal.behaviors[c.module][c.fn]!=null) {
@@ -148,7 +149,7 @@
       type:"post",
       success: function(data) {
         
-        console.log(data);
+        //console.log(data);
         if(data!=null) {
           data.message;
           m = new Array();

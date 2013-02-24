@@ -3,10 +3,12 @@
 class GameController extends EntityAPIController {
 
   public function create(array $values = array()) {
+    //print_r(date("Y-m-d H:i:s",REQUEST_TIME));
     global $user;
     $values += array(
       'title' => '',
       'description' => '',
+      //'created' => date("Y-m-d H:i:s",REQUEST_TIME),
       'created' => REQUEST_TIME,
       'changed' => REQUEST_TIME,
       'uid' => $user->uid,
@@ -46,9 +48,10 @@ class GameInstanceController extends EntityAPIController {
     global $user;
     
     $values += array(
-      'session'=>md5(time()+""+$user->uid+session_id ()),
+      'session'=>md5(time()+""+$user->uid+session_id()),
       'created' => REQUEST_TIME,
       'participant_turn' =>1,
+      'started'=>REQUEST_TIME,
       'uid' => $user->uid,
     );
     return parent::create($values);

@@ -114,7 +114,7 @@ function game_ui_admin_add_page() {
  */
 function game_ui_add($type) {
   $game_type = game_types($type);
-
+  
   $game = entity_create('game', array('type' => $type));
   drupal_set_title(t('Create @name', array('@name' => entity_label('game_type', $game_type))));
 
@@ -190,14 +190,22 @@ function game_ui_form_validate($form, &$form_state) {
 function game_ui_form_submit($form, &$form_state) {
   $game = $form_state['game'];
 
-
+  
   entity_form_submit_build_entity('game', $game, $form, $form_state);
-
+  
+  //dpm($game);
+  if(!isset($game->entity_id)) {
+    $game->entity_id=1;
+    
+  }
+  //dpm($game);
+  //$game->addFieldMapping('is_new') -> defaultValue('1');
+ // entity_save("game",$game);
   game_save($game);
 
-  $game_uri = entity_uri('game', $game);
+//  $game_uri = entity_uri('game', $game);
 
-  $form_state['redirect'] = $game_uri['path'];
+  //$form_state['redirect'] = $game_uri['path'];
 
   drupal_set_message(t('Game %title saved.', array('%title' => entity_label('game', $game))));
 }

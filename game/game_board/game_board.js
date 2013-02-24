@@ -3,13 +3,17 @@
   Drupal.behaviors.boardGame = {
     attach: function (context, settings) {
     
-    
+      //console.log(Drupal.settings.gameInstance);
       field_matrix = Drupal.settings.gameInstance.instance.field_matrix;
+      
       height = Drupal.settings.gameInstance.game.field_board_height['und'][0].value;
       width = Drupal.settings.gameInstance.game.field_board_width['und'][0].value;
-    
+      /*
+      height = Drupal.settings.gameInstance.game.field_board_height['und'][0].value;
+      width = Drupal.settings.gameInstance.game.field_board_width['und'][0].value;
+      */
       var board,row,column;
-    
+      
       board = $("<div/>").addClass("boardInstance").attr("id","game"+Drupal.settings.gameInstance.game.gid);
       if($.isArray(field_matrix['und'])) {
         field_matrix = field_matrix['und'];
@@ -84,7 +88,7 @@
       dataType :"json",
       type:"post",
       success: function(data) {
-        console.log(data);
+        //console.log(data);
         /*
         for(r in data) {
           //console.log(data[r])

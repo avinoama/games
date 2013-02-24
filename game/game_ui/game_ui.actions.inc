@@ -51,18 +51,21 @@ function game_ui_instance_ajax_callback($game_instance) {
       }
 
       // check if user can join current game
+      //dpm($game);
       $game->field_max_num_players;
       $game->field_min_num_players;
-
+      
       if (count($result['game_instance_participant']) >= $game->field_max_num_players['und'][0]['value']) {
         echo drupal_json_encode(array("message" => "Game is already full", "time" => time()));
         return null;
       }
+      
       $can_start_game = false;
       $num_of_players = count($result['game_instance_participant']);
       if (( $num_of_players + 1) >= $game->field_min_num_players['und'][0]['value']) {
         $can_start_game = true;
       }
+        $can_start_game = true;
       $player_name = trim($action['player_name']);
       if (empty($player_name)) {
         $player_name = "Player" . ($num_of_players + 1);

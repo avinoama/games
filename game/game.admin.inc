@@ -244,6 +244,7 @@ function game_delete_form_submit($form, &$form_state) {
  * Generates the game instance editing form.
  */
 function game_instance_form($form, &$form_state, $game_instance, $op = 'edit') {
+  
   if (empty($game_instance) && isset($form_state['game_instance'])) {
 
     $game_instance = $form_state['game_instance'];
@@ -254,6 +255,8 @@ function game_instance_form($form, &$form_state, $game_instance, $op = 'edit') {
       $form_state['values']['gid'] = $game_instance->gid;
     }
   }
+  dpm($game_instance);
+  /*
   //dpm($game_instance);
 
   if ($op == 'clone') {
@@ -291,24 +294,16 @@ function game_instance_form($form, &$form_state, $game_instance, $op = 'edit') {
         '#options' => $string,
     );
   }
-
-  if ($step == 1 && $op == 'add') {
-    $form['next'] = array(
-        '#type' => 'submit',
-        '#value' => t('Next'),
-        '#name' => 'next',
-        '#submit' => array('game_instance_bundle_form'),
-    );
-  } else {
     if (!empty($game)) {
       //dpm($game);
       //$game_instance->type=$game[$form_state['values']['gid']]->type;
       $game_instance->type = $game->type;
-      $game_instance->gid = $form_state['values']['gid'];
+      $game_instance->gid = $game->gid;
+      //$game_instance->gid = $form_state['values']['gid'];
       //$form_state['game'] = $game[$game_instance->gid];
       $form_state['game'] = $game;
       //field_attach_form('game', $game[$game_instance->gid], $form, $form_state);
-      field_attach_form('game', $game, $form, $form_state);
+      //field_attach_form('game', $game, $form, $form_state);
     }
     
     field_attach_form('game_instance', $game_instance, $form, $form_state);
@@ -329,7 +324,8 @@ function game_instance_form($form, &$form_state, $game_instance, $op = 'edit') {
           '#submit' => array('game_instance_form_submit_delete')
       );
     }
-  }
+ */
+  
   return $form;
 }
 
