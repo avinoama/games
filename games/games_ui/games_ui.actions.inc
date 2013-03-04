@@ -1,3 +1,4 @@
+
 <?php
 
 define("GAME_STATUS_NOT_STARTED", 1);

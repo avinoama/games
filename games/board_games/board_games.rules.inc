@@ -239,17 +239,36 @@ function rules_game_change_turn($game_instance_session) {
     // load all players
     $conditions = array("instance_id" => $game_instance->id);
     $entity = entity_load("game_instance_participant", FALSE, $conditions);
-    //dpm($entity);
+
+    $keys = array_keys($entity);
     $player_count = count($entity);
-    dpm($game_instance);
+
     $current_turn = $game_instance->field_current_turn['und'][0]['value'];
-    dpm($player_count + " - " + $current_turn);
-    
+    if (empty($current_turn)) {
+      $current_turn = 1;
+    } else {
+      $current_turn = ($current_turn % $player_count) + 1;
+    }
+    $game_instance->field_current_turn['und'][0]['value'] = $current_turn;
+    dpm($keys);
+    dpm($current_turn);
+    $message=$entity[$keys[$current_turn-1]]->participant_name." turn";
+    $game_instance_command = array();
+    $game_instance_command['instance_id'] = $game_instance->id;
+    $game_instance_command['command_id'] = 2;
+    $game_instance_command['command_data'] = drupal_json_encode(array("message" => $message, "time" => time()));
+    $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
+    $game_instance_command_entity->save();
+
+
+    game_instance_save($game_instance);
   }
 }
+
 function rules_game_change_turn_validation() {
   return true;
 }
+
 function rules_tile_set_owner($game_instance_session, $tile_position = 0) {
   global $user;
   //  load game instance by session

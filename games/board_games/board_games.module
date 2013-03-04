@@ -64,6 +64,11 @@ function board_games_game_presave($game) {
 
 function board_games_game_instance_presave($game_instance) {
   
+  if($game_instance->is_new && $game_instance->type=="board_game") {
+    $game_instance->field_current_turn['und'][]["value"] = $game_instance->participant_turn;
+    //game_instance_save($game_instance);
+    //dpm($game_instance);
+  }
 }
 
 /*
@@ -221,6 +226,7 @@ function board_games_tile_set_action_validate($form, $form_state) {
 }
 
 function board_games_entity_property_info_alter(&$info) {
+  
   $info['site']['properties']['current_tile_clicked'] = array(
       'label' => t('Current Tile clicked'),
       'type' => 'integer',
@@ -243,9 +249,10 @@ function board_games_entity_property_info_alter(&$info) {
   );    
   $info['site']['properties']['current_game_matrix'] = array(
       'label' => t('Current Tile clicked'),
-      'type' => 'list',
+      'type' => 'list<integer>',//number_integer
       'getter callback' => 'board_games_current_matrix',
   );
+  
 }
 
 /**
@@ -345,7 +352,7 @@ function _board_games_default_fields() {
   $fields[] = array(
       'field_name' => 'field_matrix',
       'label' => t('Matrix'),
-      'type' => 'number_integer',
+      'type' => 'number_integer',//'number_integer',
       'default_value' => 0,
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
       'entity_type' => 'game_instance',

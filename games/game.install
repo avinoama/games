@@ -100,13 +100,6 @@ function game_schema() {
               'type' => 'int',
               'not null' => TRUE,
           ),
-          'turn_base' => array(
-              'description' => 'a boolean indicating that the game is base turn or not',
-              'type' => 'int',
-              'size' => 'tiny',
-              'not null' => TRUE,
-              'default' => 0,
-          ),
           /*      'created' => array(
             'description' => 'The Unix timestamp when the game was created.',
             'type' => 'date',
