@@ -1,0 +1,15 @@
+name = Board Games
+description = allow user to build board games ontop of games module.
+package = Games
+version = VERSION
+core = 7.x
+
+dependencies[] = rules
+dependencies[] = entityreference
+dependencies[] = number
+dependencies[] = entity
+dependencies[] = views
+dependencies[] = game
+
+
+files[] = board_games.actions.inc

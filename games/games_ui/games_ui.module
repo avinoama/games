@@ -1,0 +1,173 @@
+<?php
+
+function games_ui_menu() {
+  $items = array();
+
+  // form to add game
+  $items['game/add'] = array(
+      'title' => 'Add game',
+      'page callback' => 'game_ui_admin_add_page',
+      'access arguments' => array('administer game entities'),
+      'file' => 'games_ui.admin.inc',
+      'type' => MENU_LOCAL_ACTION,
+      'tab_parent' => 'game',
+      'tab_root' => 'game',
+  );
+$items['game_debug'] = array(
+      'title' => 'game_debug',
+      'page callback' => 'debug_game',
+      'access arguments' => array('administer game entities'),
+      'type' => MENU_LOCAL_ACTION,
+  );
+  $game_uri = 'game/%game';
+  $play_uri = 'play/%game_instance';
+  $game_uri_argument_position = 1;
+
+  // will show game page
+  $items[$play_uri] = array(
+      'title' => 'Play',
+      //'title arguments' => array('game_instance', $game_uri_argument_position),
+      'page callback' => 'game_ui_play',
+      'page arguments' => array($game_uri_argument_position),
+      'access arguments' => array('play game entities'),
+      'file' => 'games_ui.pages.inc',
+  );
+  $items[$play_uri . "/ajax"] = array(
+      'page callback' => 'game_ui_instance_ajax_callback',
+      'page arguments' => array($game_uri_argument_position),
+      'access arguments' => array('play game entities'),
+      'type' => MENU_CALLBACK,
+      'file' => 'games_ui.actions.inc',
+  );
+
+  // will show game page
+  $items[$game_uri] = array(
+      'title callback' => 'entity_label',
+      'title arguments' => array('game', $game_uri_argument_position),
+      'page callback' => 'game_ui_view',
+      'page arguments' => array($game_uri_argument_position),
+      'access callback' => 'entity_access',
+      'access arguments' => array('view', 'game', $game_uri_argument_position),
+      'file' => 'games_ui.pages.inc',
+  );
+  // will show the view page
+  $items[$game_uri . '/view'] = array(
+      'title' => 'View',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => -10,
+  );
+
+  $items[$game_uri . '/delete'] = array(
+      'title' => 'Delete game',
+      'title callback' => 'game_label',
+      'title arguments' => array($game_uri_argument_position),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('game_delete_form', $game_uri_argument_position),
+      'access callback' => 'entity_access',
+      'access arguments' => array('edit', 'game', $game_uri_argument_position),
+      'file' => 'games_ui.admin.inc',
+  );
+
+  $items[$game_uri . '/edit'] = array(
+      'title' => 'Edit',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('game_ui_form', $game_uri_argument_position),
+      'access callback' => 'entity_access',
+      'access arguments' => array('edit', 'game', $game_uri_argument_position),
+      'file' => 'games_ui.admin.inc',
+      'type' => MENU_LOCAL_TASK,
+      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+  $items[$game_uri . '/play'] = array(
+      'title' => 'Play',
+      'page callback' => 'game_ui_create_instance',
+      'page arguments' => array($game_uri_argument_position),
+      'access arguments' => array('administer game types'),
+      'file' => 'games_ui.admin.inc',
+      'type' => MENU_LOCAL_TASK,
+      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+
+  foreach (game_types() as $type => $info) {
+    $items['game/add/' . $type] = array(
+        'title' => 'Add game',
+        'page callback' => 'game_ui_add',
+        'page arguments' => array(2),
+        'access callback' => 'entity_access',
+        'access arguments' => array('create', 'game', $type),
+        'file' => 'games_ui.admin.inc',
+    );
+  }
+
+  $items['admin/structure/game-types/%game_type/delete'] = array(
+      'title' => 'Delete',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('game_type_form_delete_confirm', 4),
+      'access arguments' => array('administer game types'),
+      'weight' => 1,
+      'type' => MENU_NORMAL_ITEM,
+      'file' => 'games_ui.admin.inc',
+  );
+
+  return $items;
+}
+function games_ui_views_api() {
+  return array(
+      'api' => 3,
+      'path' => drupal_get_path('module', 'games_ui'),
+  );
+}
+function games_ui_preprocess_page(&$vars) {
+  if (arg(0) == 'play') {
+    //drupal_add_library('system', 'ui.resizable');
+    $path = drupal_get_path('module', 'games_ui');
+    drupal_add_js($path . "/games_instance.js", 'file');
+  }
+}
+function startsWith($haystack, $needle)
+{
+    return !strncmp($haystack, $needle, strlen($needle));
+}
+function games_ui_view() {
+  $gid = arg(1);
+  $game = game_load($gid);
+  //dpm($game);
+  $string="";
+  foreach($game as $key => $field) {
+    if(startsWith($key,"field")) {
+      if(isset($field["und"][0]["value"])) {
+      $string .= $key. " ". $field["und"][0]["value"]."<br>";
+      }
+    }
+    
+  }
+  return "title : ".$game->title."<br>description:".$game->description."<br>".$string ;
+  
+}
+function debug_game() {
+  
+  $action= array("hook"=>"tile_click" , "params"=>'3');
+   $game_instance = game_instance_load("22");
+        // Events are invoked by the event name, followed by the event variables in
+      // the same order as they are listed in the event declaration. You can also
+      // use rules_invoke_event_by_args() to call the event with all the variables
+      // collected in an associative array – which is particularly useful if there
+      // are a shifting number of variables.
+      // dpm($game_instance);
+     //  dpm($action['params'] . " " . $action['hook']);
+      //dpm($game_instance);
+      //$game_instance->id
+      rules_invoke_event($action['hook'], $game_instance, $action['params']);
+      //rules_invoke_event($action['hook'], $game_instance, $action['params']);
+      //rules_invoke_event($action['hook'], array("tile_position"=>$action['params'],"game_instance"=> $game_instance));
+      //rules_invoke_component("this_tile_set_owner",array("game_instance"=>$game_instance, "tile_position"=>$action['params']));
+      
+      //$action_return = rules_invoke_event_by_args("ss" , array("game_instance"=>$game_instance,"tile_num"=>$action['params']));
+      //$action_return = rules_invoke_event_by_args($action['hook'] , array("game_instance"=>$game_instance,"tile_position"=>$action['params']));
+      
+      //array("account"=>$user)
+     
+   
+   
+   return "11";
+}

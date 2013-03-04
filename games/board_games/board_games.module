@@ -1,0 +1,423 @@
+<?php
+
+function board_games_menu() {
+  $items = array();
+  $items['test_fields'] = array(
+      'title' => 'test_fields',
+      'page callback' => 'test_fields',
+      'access arguments' => array('administer game entities'),
+      'type' => MENU_LOCAL_ACTION,
+  );
+  return $items;
+}
+
+function _form_board_games_steps() {
+  return array(
+      1 => array(
+          'title' => 'Step One',
+          'form' => 'board_games_set_default_board',
+      ),
+      2 => array(
+          'title' => 'Step Two',
+          'form' => 'board_games_submit_this_board',
+      )
+  );
+}
+
+function board_games_set_default_board($form, $form_state, $form_id) {
+  
+}
+
+function board_games_submit_this_board() {
+  
+}
+
+function board_games_form_alter($form, $form_state, $form_id) {
+
+  if ($form["#id"] == "game-ui-form" && $form['#bundle'] == "board_game") {
+    if (empty($form_state['step'])) {
+      $form_state['step'] = 1;
+      $form_state['step_information'] = _form_board_games_steps();
+    }
+    //dpm($form);
+    //dpm($form['actions']['submit']);
+    $form['actions']['submit']["#value"] = "next step";
+    $form['actions']['submit']["#submit"][0] = "board_games_set_default_board";
+
+    /*
+      $form['#next'] = array(
+      '#type' => 'submit',
+      '#value' => t('Next'),
+      '#name' => 'next',
+      '#submit' => array('board_games_set_default_board'),
+      );
+     */
+    //$form['actions']['submit'] //$submit + array('game_ui_form_submit'),
+    // dpm($form);
+  }
+}
+
+//  Do something when Game Type Board is being saved is bean saved
+function board_games_game_presave($game) {
+  
+}
+
+function board_games_game_instance_presave($game_instance) {
+  
+}
+
+/*
+  function board_games_trigger_info() {
+  return array(
+  'game' => array(
+  'board_games_tile_on_click' => array(
+  'label' => t('When tile click event is called'),
+  'type' => 'game',
+  ),
+  'board_games_tile_on_hover' => array(
+  'label' => t('When tile hover event is called'),
+  'type' => 'game',
+  ),
+  ),
+  );
+  }
+
+  function board_games_action_info() {
+  return array(
+  'board_games_tile_set_owner_action' => array(
+  'label' => t('Tile set owner'),
+  'type' => 'game',
+  'configurable' => TRUE,
+  'triggers' => array('any', 'game'),
+  ),
+  );
+  }
+ */
+
+function board_games_tile_set_owner_action(&$game_instance, $context = array()) {
+  if ($context['game_id'] == $game_instance->gid) {
+
+    $conditions = array("instance_id" => $game_instance->id, 'participant_session' => session_id());
+
+    $entity = entity_load("game_instance_participant", FALSE, $conditions);
+    $player = $entity[key($entity)];
+
+    //dpm($player->participant_turn);
+    // dpm($game_instance->field_matrix['und']);
+    if ($game_instance->field_matrix['und'][$context['params']]['value'] == 0 || empty($game_instance->field_matrix['und'][$context['params']]['value'])) {
+      $game_instance->field_matrix['und'][$context['params']]['value'] = $player->participant_turn;
+
+      if ($game_instance->save()) {
+        $params = array("tile_id" => $context['params'], "participant_turn" => $player->participant_turn);
+        $game_instance_command = array();
+        $game_instance_command['instance_id'] = $game_instance->id;
+        $game_instance_command['command_id'] = 2;
+        $game_instance_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "callback" => array("module" => "boardGame", "fn" => $context['callback'], "params" => $params), "time" => time()));
+        $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
+        $game_instance_command_entity->save();
+      } else {
+
+        // dpm("cant save game instance");
+      }
+    } else {
+      // the tile is already owned by user cannot
+      return array("callback" => array("module" => "gameInstance", "fn" => "message", "params" => array("The tile is already owned")));
+      //dpm("the tile is already owned by user cannot");
+    }
+
+
+    //  dpm("got to action " . board_games_tile_set_owner_action);
+  }
+}
+
+function board_games_tile_set_owner_action_form($context) {
+  $games = entity_load('game');
+  $string = array();
+
+  foreach ($games as $key => $game) {
+    $string[$key] = $game->label();
+  }
+
+  $form = array();
+
+  $form['game_id'] = array(
+      '#title' => t('The game'),
+      '#type' => 'select',
+      '#description' => t('the game this action will affect.'),
+      '#options' => $string,
+  );
+
+  return $form;
+}
+
+function board_games_tile_set_owner_action_validate($form, $form_state) {
+  //if (! $account = user_load_by_name($form_state['values']['author']) ) {
+  //  form_set_error('author', t('Please, provide a valid username'));
+  //}
+}
+
+function board_games_tile_set_owner_action_submit($form, $form_state) {
+
+  return array('game_id' => $form_state['values']['game_id']);
+}
+
+function board_games_game_init_load($game) {
+  if ($game->type == "board_game") {
+    // add js
+    $path = drupal_get_path('module', 'board_games');
+    drupal_add_js($path . "/board_games.js", 'file');
+    drupal_add_css($path . "/board_games.css", 'file');
+  }
+}
+
+function board_games_tile_set_action_form($context) {
+  $games = entity_load('game');
+  $string = array();
+  //dpm($games);
+  foreach ($games as $key => $game) {
+    $string[$key] = $game->label();
+  }
+  $form = array();
+
+  $form['game_id'] = array(
+      '#title' => t('The game'),
+      '#type' => 'select',
+      '#description' => t('the game this action will affect.'),
+      '#options' => $string,
+  );
+  /*  $form['x_position'] = array(
+    '#title' => t('tile x position'),
+    '#type' => 'textfield',
+    '#description' => t('the tile x position.'),
+    );
+    $form['y_position'] = array(
+    '#title' => t('tile y position'),
+    '#type' => 'textfield',
+    '#description' => t('the tile y position.'),
+    ); */
+  /*
+    $form['what_to_do'] = array(
+    '#title' => t('That to do'),
+    '#type' => 'option',
+    '#description' => t('the tile y position.'),
+    '#options' =>array("1"=>t('change binari state'),'2'=>'set tile belong to current player'),
+    );
+   */
+
+  /*
+    // Verify user permissions and provide an easier way to fill this field.
+    if (user_access('access user profiles')) {
+    $form['text']['#autocomplete_path'] = 'user/autocomplete';
+    } */
+
+  // No more options, return the form.
+  return $form;
+}
+
+function board_games_tile_set_action_validate($form, $form_state) {
+  //if (! $account = user_load_by_name($form_state['values']['author']) ) {
+  //  form_set_error('author', t('Please, provide a valid username'));
+  //}
+}
+
+function board_games_entity_property_info_alter(&$info) {
+  $info['site']['properties']['current_tile_clicked'] = array(
+      'label' => t('Current Tile clicked'),
+      'type' => 'integer',
+      'getter callback' => 'board_games_get_tile',
+  );
+  $info['site']['properties']['current_tile_clicked_value'] = array(
+      'label' => t('Current Tile clicked value'),
+      'type' => 'integer',
+      'getter callback' => 'board_games_get_tile_value',
+  );
+  $info['site']['properties']['current_player_id'] = array(
+      'label' => t('Current Tile clicked value'),
+      'type' => 'integer',
+      'getter callback' => 'board_games_get_player_id',
+  );  
+  $info['site']['properties']['current_player_turn'] = array(
+      'label' => t('Current Tile clicked value'),
+      'type' => 'integer',
+      'getter callback' => 'board_games_current_player_turn',
+  );    
+  $info['site']['properties']['current_game_matrix'] = array(
+      'label' => t('Current Tile clicked'),
+      'type' => 'list',
+      'getter callback' => 'board_games_current_matrix',
+  );
+}
+
+/**
+ * board_games_get_tile
+ * gets tile from ajax loading 
+ * @return type 
+ */
+function board_games_get_tile() {
+  $tile_position = intval(check_plain($_POST['action']['params']['tile_position']));
+  // chack valid tail position for current game
+  return $tile_position;
+}
+function board_games_get_player_id() {
+  $session = session_id();
+  $game_instance = _board_games_get_current_instance();
+    //  load current user session data
+  $conditions = array("instance_id" => $game_instance->id, 'participant_session' => $session);
+  $entity = entity_load("game_instance_participant", FALSE, $conditions);
+  $player = $entity[key($entity)];
+  //dpm($player->participant_turn);
+  return $player->participant_turn;
+}
+function board_games_current_player_turn() {
+  $game_instance = _board_games_get_current_instance();
+  return $game_instance->field_current_turn['und'][0]['value'];
+}
+function board_games_get_tile_value() {
+  $tile_position = intval(check_plain($_POST['action']['params']['tile_position']));
+  $game_instance = _board_games_get_current_instance();
+  return $game_instance->field_matrix['und'][$tile_position]['value'];
+}
+
+function board_games_current_matrix() {
+  $game_instance = _board_games_get_current_instance();
+  return $game_instance->field_matrix;
+}
+function _board_games_get_current_instance() {
+  $session = check_plain($_POST['action']['params']['session']);
+  //dpm($session);
+  $conditions = array("session" => $session);
+  $e = entity_load('game_instance', array(), $conditions, FALSE);
+  $k = array_keys($e);
+  return $e[$k[0]];
+}
+function board_games_tile_set_action_submit($form, $form_state) {
+
+  return array('game_id' => $form_state['values']['game_id']);
+}
+
+/**
+ *  Game board default fields for Game and GameInstance entities of type board_games
+ *  
+ * @return string 
+ */
+function _board_games_default_fields() {
+  $bundle = 'board_game';
+
+  $fields = array();
+
+  //$fields[] =  array('field_name'=>'field_test','type' => 'numeric', 'size' => 'normal', 'not null' => TRUE, 'default' => 0, 'precision' => 10, 'scale' => 2);
+  //  Fields for game entity
+  $fields[] = array(
+      'field_name' => 'field_board_width',
+      'label' => t('Board Width'),
+      'type' => 'number_integer',
+      'default_value' => 0,
+      'cardinality' => '1',
+      'entity_type' => 'game',
+  );
+  $fields[] = array(
+      'field_name' => 'field_board_height',
+      'label' => t('Board Height'),
+      'type' => 'number_integer',
+      'default_value' => 0,
+      'cardinality' => '1',
+      'entity_type' => 'game',
+  );
+  $fields[] = array(
+      'field_name' => 'field_min_num_players',
+      'label' => t('Minmum Number Fields'),
+      'type' => 'number_integer',
+      'default_value' => 0,
+      'cardinality' => 1,
+      'entity_type' => 'game',
+      'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
+  );
+  $fields[] = array(
+      'field_name' => 'field_max_num_players',
+      'label' => t('Maximum Number Fields'),
+      'type' => 'number_integer',
+      'default_value' => 0,
+      'cardinality' => 1,
+      'entity_type' => 'game',
+      'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
+  );
+  //  Fields for game insatnce
+  $fields[] = array(
+      'field_name' => 'field_matrix',
+      'label' => t('Matrix'),
+      'type' => 'number_integer',
+      'default_value' => 0,
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'entity_type' => 'game_instance',
+      'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
+  );
+  $fields[] = array(
+      'field_name' => 'field_players',
+      'label' => t('Players'),
+      'type' => 'entityreference',
+      // 'default_value' => '0',
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'entity_type' => 'game_instance',
+          //'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
+  );
+  $fields[] = array(
+      'field_name' => 'field_current_turn',
+      'label' => t('Current Turn'),
+      'type' => 'number_integer',
+      'default_value' => 1,
+      'cardinality' => 1,
+      'entity_type' => 'game_instance',
+      'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
+  );
+  return $fields;
+}
+
+function _board_games_add_default_fields() {
+  $bundle = 'board_game';
+
+  $fields = _board_games_default_fields();
+  foreach ($fields as $field) {
+    $field_info = field_info_field($field['field_name']);
+    if (!$field_info) {
+
+      field_create_field($field);
+
+      $instance = array(
+          'field_name' => $field['field_name'],
+          'label' => $field['label'],
+          'entity_type' => $field['entity_type'],
+          'bundle' => $bundle,
+      );
+      $instance += $field;
+
+      field_create_instance($instance);
+    }
+  }
+}
+
+function _board_games_add_default_games() {
+  $entity_type="game";
+  $bundle = 'board_game';
+  
+  $game = entity_create($entity_type, array());
+  
+  $game->title="TicTacToe";
+  $game->type = $bundle;
+  $game->description = "Tic-tac-toe (or Noughts and crosses, Xs and Os) is a pencil-and-paper game for two players, X and O, who take turns marking the spaces in a 3×3 grid. The player who succeeds in placing three respective marks in a horizontal, vertical, or diagonal row wins the game.";
+  $game->field_board_width['und'][]['value'] = 3;
+  $game->field_board_height['und'][]['value'] = 3;
+  $game->field_min_num_players['und'][]['value'] = 2;
+  $game->field_max_num_players['und'][]['value'] = 2;
+  
+  game_save($game);
+}
+
+function _board_games_remove_default_fields() {
+  
+}
+
+function test_fields() {
+  //_board_games_add_default_fields();
+  //_board_games_add_default_games();
+  return "";
+}
