@@ -63,8 +63,8 @@ function board_games_game_presave($game) {
 }
 
 function board_games_game_instance_presave($game_instance) {
-  
-  if($game_instance->is_new && $game_instance->type=="board_game") {
+
+  if ($game_instance->is_new && $game_instance->type == "board_game") {
     $game_instance->field_current_turn['und'][]["value"] = $game_instance->participant_turn;
     //game_instance_save($game_instance);
     //dpm($game_instance);
@@ -107,8 +107,6 @@ function board_games_tile_set_owner_action(&$game_instance, $context = array()) 
     $entity = entity_load("game_instance_participant", FALSE, $conditions);
     $player = $entity[key($entity)];
 
-    //dpm($player->participant_turn);
-    // dpm($game_instance->field_matrix['und']);
     if ($game_instance->field_matrix['und'][$context['params']]['value'] == 0 || empty($game_instance->field_matrix['und'][$context['params']]['value'])) {
       $game_instance->field_matrix['und'][$context['params']]['value'] = $player->participant_turn;
 
@@ -178,7 +176,7 @@ function board_games_game_init_load($game) {
 function board_games_tile_set_action_form($context) {
   $games = entity_load('game');
   $string = array();
-  //dpm($games);
+
   foreach ($games as $key => $game) {
     $string[$key] = $game->label();
   }
@@ -226,7 +224,7 @@ function board_games_tile_set_action_validate($form, $form_state) {
 }
 
 function board_games_entity_property_info_alter(&$info) {
-  
+
   $info['site']['properties']['current_tile_clicked'] = array(
       'label' => t('Current Tile clicked'),
       'type' => 'integer',
@@ -238,21 +236,20 @@ function board_games_entity_property_info_alter(&$info) {
       'getter callback' => 'board_games_get_tile_value',
   );
   $info['site']['properties']['current_player_id'] = array(
-      'label' => t('Current Tile clicked value'),
+      'label' => t('Current player id'),
       'type' => 'integer',
       'getter callback' => 'board_games_get_player_id',
-  );  
+  );
   $info['site']['properties']['current_player_turn'] = array(
-      'label' => t('Current Tile clicked value'),
+      'label' => t('Current player turn'),
       'type' => 'integer',
       'getter callback' => 'board_games_current_player_turn',
-  );    
+  );
   $info['site']['properties']['current_game_matrix'] = array(
       'label' => t('Current Tile clicked'),
-      'type' => 'list<integer>',//number_integer
+      'type' => 'list<integer>', //number_integer
       'getter callback' => 'board_games_current_matrix',
   );
-  
 }
 
 /**
@@ -265,20 +262,37 @@ function board_games_get_tile() {
   // chack valid tail position for current game
   return $tile_position;
 }
+
 function board_games_get_player_id() {
   $session = session_id();
-  $game_instance = _board_games_get_current_instance();
-    //  load current user session data
-  $conditions = array("instance_id" => $game_instance->id, 'participant_session' => $session);
-  $entity = entity_load("game_instance_participant", FALSE, $conditions);
-  $player = $entity[key($entity)];
-  //dpm($player->participant_turn);
-  return $player->participant_turn;
+  $game_session = check_plain($_POST['action']['params']['session']);
+
+  //dpm("GameSession: ".$session);
+  //dpm("ParticipantSession: ".$game_session);
+
+  $sql = "SELECT id FROM {game_instance} WHERE session=':gs'";
+  $sql2 = str_replace(":gs", $game_session, $sql);
+  //$result  = db_query($sql, array(":gs"=>$game_session));
+  $result = db_query($sql2);
+  $game_instance = $result->fetchObject();
+  //dpm($game_instance->id);
+  //  load current user session data
+  $sql = "SELECT participant_turn FROM {game_instance_participant} WHERE instance_id=':gid' AND participant_session=':ses'";
+  //$result  = db_query($sql, array(":gid"=>$game_instance->gid,"ses"=>$session));
+  $sql2 = str_replace(":gid", $game_instance->id, $sql);
+  $sql3 = str_replace(":ses", $session, $sql2);
+  $result = db_query($sql3);
+
+  $participant = $result->fetchObject();
+
+  return $participant->participant_turn;
 }
+
 function board_games_current_player_turn() {
   $game_instance = _board_games_get_current_instance();
   return $game_instance->field_current_turn['und'][0]['value'];
 }
+
 function board_games_get_tile_value() {
   $tile_position = intval(check_plain($_POST['action']['params']['tile_position']));
   $game_instance = _board_games_get_current_instance();
@@ -286,17 +300,36 @@ function board_games_get_tile_value() {
 }
 
 function board_games_current_matrix() {
-  $game_instance = _board_games_get_current_instance();
-  return $game_instance->field_matrix;
+  //$game_instance = _board_games_get_current_instance();
+  $game_session = check_plain($_POST['action']['params']['session']);
+  //SELECT fm.field_matrix_value FROM game_instance gi LEFT JOIN field_revision_field_matrix fm ON (gi.id=fm.entity_id) WHERE gi.session='7b5c00a67c7e8a6247212c84dd38678c' ORDER BY delta ASC
+  $sql = "SELECT field_revision_field_matrix.field_matrix_value FROM {game_instance} LEFT JOIN {field_revision_field_matrix} ON (game_instance.id=field_revision_field_matrix.entity_id) WHERE game_instance.session=':gs' ORDER BY delta ASC";
+  $sql2 = str_replace(":gs", $game_session, $sql);
+  $result = db_query($sql2);
+  
+  if(empty($result)) {
+    return array();
+  }
+  $field_matrix = $result->fetchAll();
+  foreach($field_matrix as $field) {
+    $re[] = $field->field_matrix_value;
+  }
+  //dpm("field_matrix_value");
+  //dpm($re);
+  return $re;
 }
-function _board_games_get_current_instance() {
-  $session = check_plain($_POST['action']['params']['session']);
-  //dpm($session);
+
+function _board_games_get_current_instance($session = null) {
+  if (empty($session)) {
+    $session = check_plain($_POST['action']['params']['session']);
+  }
   $conditions = array("session" => $session);
+  game_instance_load();
   $e = entity_load('game_instance', array(), $conditions, FALSE);
   $k = array_keys($e);
   return $e[$k[0]];
 }
+
 function board_games_tile_set_action_submit($form, $form_state) {
 
   return array('game_id' => $form_state['values']['game_id']);
@@ -312,7 +345,6 @@ function _board_games_default_fields() {
 
   $fields = array();
 
-  //$fields[] =  array('field_name'=>'field_test','type' => 'numeric', 'size' => 'normal', 'not null' => TRUE, 'default' => 0, 'precision' => 10, 'scale' => 2);
   //  Fields for game entity
   $fields[] = array(
       'field_name' => 'field_board_width',
@@ -352,7 +384,7 @@ function _board_games_default_fields() {
   $fields[] = array(
       'field_name' => 'field_matrix',
       'label' => t('Matrix'),
-      'type' => 'number_integer',//'number_integer',
+      'type' => 'number_integer', //'number_integer',
       'default_value' => 0,
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
       'entity_type' => 'game_instance',
@@ -403,19 +435,19 @@ function _board_games_add_default_fields() {
 }
 
 function _board_games_add_default_games() {
-  $entity_type="game";
+  $entity_type = "game";
   $bundle = 'board_game';
-  
+
   $game = entity_create($entity_type, array());
-  
-  $game->title="TicTacToe";
+
+  $game->title = "TicTacToe";
   $game->type = $bundle;
   $game->description = "Tic-tac-toe (or Noughts and crosses, Xs and Os) is a pencil-and-paper game for two players, X and O, who take turns marking the spaces in a 3×3 grid. The player who succeeds in placing three respective marks in a horizontal, vertical, or diagonal row wins the game.";
   $game->field_board_width['und'][]['value'] = 3;
   $game->field_board_height['und'][]['value'] = 3;
   $game->field_min_num_players['und'][]['value'] = 2;
   $game->field_max_num_players['und'][]['value'] = 2;
-  
+
   game_save($game);
 }
 

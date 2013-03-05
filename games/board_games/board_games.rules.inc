@@ -30,7 +30,31 @@ function board_games_rules_condition_info() {
           ),
           'module' => 'board_games',
       ),
+      'board_games_rules_condition_check_matrix' => array(
+          'group' => 'game',
+          'label' => t('Board Check Matrix'),
+          'arguments' => array(
+              'item1' => array(
+                  'type' => 'integer',
+                  'label' => 'Item1',
+                  'optional' => TRUE,
+              ),
+              'item2' => array(
+                  'type' => 'integer',
+                  'label' => 'Item2',
+                  'optional' => TRUE,
+              ),
+          ),
+          'module' => 'board_games',
+      ),
   );
+}
+
+function board_games_rules_condition_check_matrix($item1=0, $item2=0,$options) {
+  if ($item1 == $item2) {
+    return TRUE;
+  }
+  return FALSE;
 }
 
 function board_games_rules_condition_check_pattren($board, $game_instance) {
@@ -215,8 +239,7 @@ function rules_tile_decrement($game_instance_session, $tile_position = 0, $modul
     $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
     $game_instance_command_entity->save();
   } else {
-
-    dpm("cant save game instance");
+    watchdog(WATCHDOG_ALERT, "cant save game instance");
   }
 }
 
@@ -238,21 +261,26 @@ function rules_game_change_turn($game_instance_session) {
 
     // load all players
     $conditions = array("instance_id" => $game_instance->id);
-    $entity = entity_load("game_instance_participant", FALSE, $conditions);
+    $participants = entity_load("game_instance_participant", FALSE, $conditions);
 
-    $keys = array_keys($entity);
-    $player_count = count($entity);
+    $keys = array_keys($participants);
+    $player_count = count($participants);
 
     $current_turn = $game_instance->field_current_turn['und'][0]['value'];
     if (empty($current_turn)) {
       $current_turn = 1;
     } else {
-      $current_turn = ($current_turn % $player_count) + 1;
+      $current_turn = (($current_turn) % $player_count) + 1;
     }
     $game_instance->field_current_turn['und'][0]['value'] = $current_turn;
-    dpm($keys);
-    dpm($current_turn);
-    $message=$entity[$keys[$current_turn-1]]->participant_name." turn";
+    
+    // Search for participent name
+    foreach ($participants as $participant) {
+      if ($participant->participant_turn == $current_turn) {
+        $participant_name = $participant->participant_name;
+      }
+    }
+    $message = $participant_name . " turn";
     $game_instance_command = array();
     $game_instance_command['instance_id'] = $game_instance->id;
     $game_instance_command['command_id'] = 2;
@@ -322,7 +350,7 @@ function rules_tile_set_owner($game_instance_session, $tile_position = 0) {
       $game_instance_command_entity->save();
     } else {
 
-      dpm("cant save game instance");
+      watchdog(WATCHDOG_ALERT, "cant save game instance");
     }
   } else {
     // the tile is already owned by player cannot
@@ -343,7 +371,7 @@ function rules_tile_set_owner_validation() {
 }
 
 function rules_tile_set_owner_callback() {
-  dpm("rules_tile_set_owner_callback");
+ // dpm("rules_tile_set_owner_callback");
   //return "";
   //return array("callback" => array("module" => "gameInstance", "fn" => "message", "params" => array("The tile is already owned")));
   /*
