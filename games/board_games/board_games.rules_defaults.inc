@@ -4,9 +4,6 @@ function board_games_default_rules_configuration() {
 
   $rules = array();
 
-  // Add a reaction rule to display the default game TicTacToe.
-  $rule = rules_reaction_rule();
-
   $rule->label = t('TickTackToe Game Rules');
   $rule->active = TRUE;
 
@@ -82,17 +79,7 @@ function board_games_default_rules_configuration() {
     ]
   }
 }');
-  $rule2 = rule();
-  //$rule2->label = t('TickTackToe check winner');
-  //uses_
-  /*$rule2->veriables = array(
-      "player_id"=>array('label'=>"player id",'type'=>"integer"),
-      "game_session"=>array('label'=>"Game session",'type'=>"text"),
-      "game_matrix"=>array('label'=>"Game matrix",'type'=>"list<integer>"),
-      
-      );
-  */
-  //$rule2->rules = array();
+
  $rule2 = rules_import('{ "rules_ticktacktoe_checkwinner" : {
     "LABEL" : "TickTackToe CheckWinner",
     "PLUGIN" : "rule set",
@@ -248,10 +235,4 @@ function board_games_default_rules_configuration() {
 
   return $rules;
 
-  //$configs['rules_ticktacktoe_checkwinner'] = $rule;
-  //$configs['rules_ticktacktoe_game_rules'] = $rule2;
-  $configs = array();
-  //$configs['rules_ticktacktoe_game_rules'] = $rule2;
-
-  return $configs;
 }
