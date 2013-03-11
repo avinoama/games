@@ -32,6 +32,7 @@ font-size:30px;
 .owned_4 {
    background:blue; 
 }
+
 #game4.boardInstance .column {
   position:relative;
 display:inline-block;
