@@ -55,23 +55,24 @@ function game_ui_instance_ajax_callback($game_instance) {
       //dpm($game);
       $game->field_max_num_players;
       $game->field_min_num_players;
-      
+
       if (count($result['game_instance_participant']) >= $game->field_max_num_players['und'][0]['value']) {
         echo drupal_json_encode(array("message" => "Game is already full", "time" => time()));
         return null;
       }
-      
+
       $can_start_game = false;
       $num_of_players = count($result['game_instance_participant']);
       if (( $num_of_players + 1) >= $game->field_min_num_players['und'][0]['value']) {
         $can_start_game = true;
       }
-        $can_start_game = true;
+      //$can_start_game = true;
+
       $player_name = trim($action['player_name']);
       if (empty($player_name)) {
         $player_name = "Player" . ($num_of_players + 1);
       }
-      
+
       //  Create an instance of current user to play this game
       $game_instance_participant = array();
       $game_instance_participant['instance_id'] = $game_instance->id;
@@ -94,13 +95,14 @@ function game_ui_instance_ajax_callback($game_instance) {
         if ($game_instance_command_entity->save()) {
           if (count($result['game_instance_participant']) >= $game->field_max_min_players['und'][0]['value']) {
             //  allow game to start
-            $game_instance_command2 = array();
-            $game_instance_command2['instance_id'] = $game_instance->id;
-            $game_instance_command2['command_id'] = 1;
-            $game_instance_command2['command_data'] = drupal_json_encode(array("callback" => array("fn" => "show_start_game_button", "module" => "gameInstance", "params" => "1"), "time" => time()));
-            $game_instance_command_entity2 = entity_create("game_instance_command", $game_instance_command2);
-            $game_instance_command_entity2->save();
-
+            if ($can_start_game) {
+              $game_instance_command2 = array();
+              $game_instance_command2['instance_id'] = $game_instance->id;
+              $game_instance_command2['command_id'] = 1;
+              $game_instance_command2['command_data'] = drupal_json_encode(array("callback" => array("fn" => "show_start_game_button", "module" => "gameInstance", "params" => "1"), "time" => time()));
+              $game_instance_command_entity2 = entity_create("game_instance_command", $game_instance_command2);
+              $game_instance_command_entity2->save();
+            }
             echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game, to start game press the start button", "time" => time()));
           } else {
             echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "time" => time()));
@@ -138,7 +140,7 @@ function game_ui_instance_ajax_callback($game_instance) {
       // use rules_invoke_event_by_args() to call the event with all the variables
       // collected in an associative array – which is particularly useful if there
       // are a shifting number of variables
-     
+
       rules_invoke_event($action['hook'], $game_instance, $action['params']);
 
       echo drupal_json_encode(array("Return" => $action_return, "time" => time(), "action" => $action));

@@ -46,5 +46,11 @@ function game_ui_play($game_instance) {
     $function($game);
   }
   drupal_set_message("&nbsp;");
+  
+  
+  //$output = theme('games_ui_play_template');
+  //echo $output;
+  //return null;
+  
   return "Loading game...";
 }

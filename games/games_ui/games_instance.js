@@ -6,21 +6,25 @@
       Drupal.settings.gameInstance.clientId = 0;
       $("#messages").css("overflow","auto");
       $("#messages").css("height","100px");
-      //  game didnot start yet
+      
+      
+      //  Show Game Status
+      
+      //  IF game didnot start yet
       if(Drupal.settings.gameInstance.instance.status==1) {        
         if(!Drupal.settings.gameInstance.player_joined_game) {
           m = new Array('trying to join game...');
           Drupal.behaviors.gameInstance.message(m);    
           joinGame("");
         } else {
-          
-          //if(Drupal.settings.gameInstance.num_players  >= Drupal.settings.gameInstance.game.field_min_num_players['und'][0].value) {
+          if(Drupal.settings.gameInstance.num_players  >= Drupal.settings.gameInstance.game.field_min_num_players['und'][0].value) {
             this.show_start_game_button();
-          //}
+          }
         }
-      //  game started
+      //  ELSE IF game started
       } else if ( Drupal.settings.gameInstance.instance.status==2 ) {
-            
+            //alert(Drupal.settings.gameInstance.player_joined_game);
+            //console.log(Drupal.settings.gameInstance);
         if(Drupal.settings.gameInstance.player_joined_game) {
               
         } else {
@@ -28,13 +32,13 @@
           m[0]= "game already started, and your not in it.";
           Drupal.behaviors.gameInstance.message(m);
         }
-      // game ended
+      // ELSE IF game ended
       } else if ( Drupal.settings.gameInstance.instance.status==2 ) {
         m = new Array();
         m[0]= "game already ended";
         Drupal.behaviors.gameInstance.message(m);
       }
-      //alert();
+      
       setTimeout(getCommands,1000);
 
     /**

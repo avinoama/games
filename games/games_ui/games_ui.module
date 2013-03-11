@@ -13,12 +13,7 @@ function games_ui_menu() {
       'tab_parent' => 'game',
       'tab_root' => 'game',
   );
-$items['game_debug'] = array(
-      'title' => 'game_debug',
-      'page callback' => 'debug_game',
-      'access arguments' => array('administer game entities'),
-      'type' => MENU_LOCAL_ACTION,
-  );
+  
   $game_uri = 'game/%game';
   $play_uri = 'play/%game_instance';
   $game_uri_argument_position = 1;
@@ -31,6 +26,7 @@ $items['game_debug'] = array(
       'page arguments' => array($game_uri_argument_position),
       'access arguments' => array('play game entities'),
       'file' => 'games_ui.pages.inc',
+      'theme callback' => 'games_ui_play_template',
   );
   $items[$play_uri . "/ajax"] = array(
       'page callback' => 'game_ui_instance_ajax_callback',
@@ -111,12 +107,49 @@ $items['game_debug'] = array(
 
   return $items;
 }
+
+/**
+ * Implements hook_menu_alter().
+ */
+/*
+  function games_ui_menu_alter(&$items) {
+  // Set the theme callback function for all node pages. As per the
+  // standard behavior for hook_menu() properties, this will be
+  // inherited by all paths underneath node/%node as well, unless
+  // they define their own theme callback.
+  dpm($items);
+  $play_uri = 'play/%game_instance';
+  $items[$play_uri]['theme callback'] = 'games_ui_html5_play_default_theme';
+  } */
+
+function games_ui_custom_theme() {
+  // check path using arg(0)
+  // check $user
+  // do whatever special checking you want and simply return theme key (name of theme folder most of the time)
+
+  if (arg(0) == 'play') {
+   // print_r(arg());
+    return 'games_ui_play_template';
+  }
+}
+
+function games_ui_theme() {
+  return array(
+      'games_ui_play_template' => array(
+          'template' => 'game_ui_play',
+          'variables' => array('page' => NULL),
+      ),
+  );
+}
+
+
 function games_ui_views_api() {
   return array(
       'api' => 3,
       'path' => drupal_get_path('module', 'games_ui'),
   );
 }
+
 function games_ui_preprocess_page(&$vars) {
   if (arg(0) == 'play') {
     //drupal_add_library('system', 'ui.resizable');
@@ -124,50 +157,22 @@ function games_ui_preprocess_page(&$vars) {
     drupal_add_js($path . "/games_instance.js", 'file');
   }
 }
-function startsWith($haystack, $needle)
-{
-    return !strncmp($haystack, $needle, strlen($needle));
+
+function startsWith($haystack, $needle) {
+  return !strncmp($haystack, $needle, strlen($needle));
 }
+
 function games_ui_view() {
   $gid = arg(1);
   $game = game_load($gid);
   //dpm($game);
-  $string="";
-  foreach($game as $key => $field) {
-    if(startsWith($key,"field")) {
-      if(isset($field["und"][0]["value"])) {
-      $string .= $key. " ". $field["und"][0]["value"]."<br>";
+  $string = "";
+  foreach ($game as $key => $field) {
+    if (startsWith($key, "field")) {
+      if (isset($field["und"][0]["value"])) {
+        $string .= $key . " " . $field["und"][0]["value"] . "<br>";
       }
     }
-    
   }
-  return "title : ".$game->title."<br>description:".$game->description."<br>".$string ;
-  
-}
-function debug_game() {
-  
-  $action= array("hook"=>"tile_click" , "params"=>'3');
-   $game_instance = game_instance_load("22");
-        // Events are invoked by the event name, followed by the event variables in
-      // the same order as they are listed in the event declaration. You can also
-      // use rules_invoke_event_by_args() to call the event with all the variables
-      // collected in an associative array – which is particularly useful if there
-      // are a shifting number of variables.
-      // dpm($game_instance);
-     //  dpm($action['params'] . " " . $action['hook']);
-      //dpm($game_instance);
-      //$game_instance->id
-      rules_invoke_event($action['hook'], $game_instance, $action['params']);
-      //rules_invoke_event($action['hook'], $game_instance, $action['params']);
-      //rules_invoke_event($action['hook'], array("tile_position"=>$action['params'],"game_instance"=> $game_instance));
-      //rules_invoke_component("this_tile_set_owner",array("game_instance"=>$game_instance, "tile_position"=>$action['params']));
-      
-      //$action_return = rules_invoke_event_by_args("ss" , array("game_instance"=>$game_instance,"tile_num"=>$action['params']));
-      //$action_return = rules_invoke_event_by_args($action['hook'] , array("game_instance"=>$game_instance,"tile_position"=>$action['params']));
-      
-      //array("account"=>$user)
-     
-   
-   
-   return "11";
+  return "title : " . $game->title . "<br>description:" . $game->description . "<br>" . $string;
 }
