@@ -6,7 +6,6 @@ function board_games_install() {
   
   _board_games_add_default_fields();
   _board_games_add_default_games();
-  
 }
  
 function board_games_uninstall() {

@@ -50,9 +50,7 @@ function game_ui_instance_ajax_callback($game_instance) {
         echo drupal_json_encode(array("message" => "Already joind game, please be patiant or ask a friend to join.", "players_count" => count($result['game_instance_participant']), "time" => time()));
         return null;
       }
-
       // check if user can join current game
-      //dpm($game);
       $game->field_max_num_players;
       $game->field_min_num_players;
 

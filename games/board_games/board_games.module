@@ -2,9 +2,9 @@
 
 function board_games_menu() {
   $items = array();
-  $items['test_fields'] = array(
-      'title' => 'test_fields',
-      'page callback' => 'test_fields',
+  $items['test_rules'] = array(
+      'title' => 'test_rules',
+      'page callback' => 'test_rules',
       'access arguments' => array('administer game entities'),
       'type' => MENU_LOCAL_ACTION,
   );
@@ -39,21 +39,11 @@ function board_games_form_alter($form, $form_state, $form_id) {
       $form_state['step'] = 1;
       $form_state['step_information'] = _form_board_games_steps();
     }
-    //dpm($form);
-    //dpm($form['actions']['submit']);
+
     $form['actions']['submit']["#value"] = "next step";
     $form['actions']['submit']["#submit"][0] = "board_games_set_default_board";
 
-    /*
-      $form['#next'] = array(
-      '#type' => 'submit',
-      '#value' => t('Next'),
-      '#name' => 'next',
-      '#submit' => array('board_games_set_default_board'),
-      );
-     */
-    //$form['actions']['submit'] //$submit + array('game_ui_form_submit'),
-    // dpm($form);
+   
   }
 }
 
@@ -71,33 +61,6 @@ function board_games_game_instance_presave($game_instance) {
   }
 }
 
-/*
-  function board_games_trigger_info() {
-  return array(
-  'game' => array(
-  'board_games_tile_on_click' => array(
-  'label' => t('When tile click event is called'),
-  'type' => 'game',
-  ),
-  'board_games_tile_on_hover' => array(
-  'label' => t('When tile hover event is called'),
-  'type' => 'game',
-  ),
-  ),
-  );
-  }
-
-  function board_games_action_info() {
-  return array(
-  'board_games_tile_set_owner_action' => array(
-  'label' => t('Tile set owner'),
-  'type' => 'game',
-  'configurable' => TRUE,
-  'triggers' => array('any', 'game'),
-  ),
-  );
-  }
- */
 
 function board_games_tile_set_owner_action(&$game_instance, $context = array()) {
   if ($context['game_id'] == $game_instance->gid) {
@@ -449,14 +412,234 @@ function _board_games_add_default_games() {
   $game->field_max_num_players['und'][]['value'] = 2;
 
   game_save($game);
+  
 }
 
 function _board_games_remove_default_fields() {
   
 }
 
-function test_fields() {
+function test_rules() {
   //_board_games_add_default_fields();
   //_board_games_add_default_games();
+  $rule = '{ "rules_ticktacktoe_checkwinner" : {
+    "LABEL" : "TickTackToe CheckWinner",
+    "PLUGIN" : "rule set",
+    "REQUIRES" : [ "rules", "game" ],
+    "RULES" : [
+      { "RULE" : {
+          "IF" : [
+            { "OR" : [
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "0" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "1" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "2" } }
+              ]
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:0" ],
+                "value" : [ "site:current-game-matrix:1" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:1" ],
+                "value" : [ "site:current-game-matrix:2" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-tile-clicked-value" ],
+                "value" : [ "site:current-player-id" ]
+              }
+            }
+          ],
+          "DO" : [
+            { "rules_game_set_winners" : {
+                "game_instance_session" : [ "site:current-game-instance" ],
+                "player_id" : [ "site:current-player-id" ]
+              }
+            },
+            { "rules_game_over" : { "game_instance_session" : [ "site:current-game-instance" ] } }
+          ],
+          "LABEL" : "CheckMatrix row1"
+        }
+      },
+      { "RULE" : {
+          "IF" : [
+            { "OR" : [
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "3" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "4" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "5" } }
+              ]
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:3" ],
+                "value" : [ "site:current-game-matrix:4" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:4" ],
+                "value" : [ "site:current-game-matrix:5" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-tile-clicked-value" ],
+                "value" : [ "site:current-player-id" ]
+              }
+            }
+          ],
+          "DO" : [
+            { "rules_game_set_winners" : {
+                "game_instance_session" : [ "site:current-game-instance" ],
+                "player_id" : [ "site:current-player-id" ]
+              }
+            },
+            { "rules_game_over" : { "game_instance_session" : [ "site:current-game-instance" ] } }
+          ],
+          "LABEL" : "CheckMatrix row2"
+        }
+      },
+      { "RULE" : {
+          "IF" : [
+            { "OR" : [
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "6" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "7" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "8" } }
+              ]
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:6" ],
+                "value" : [ "site:current-game-matrix:7" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:7" ],
+                "value" : [ "site:current-game-matrix:8" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-tile-clicked-value" ],
+                "value" : [ "site:current-player-id" ]
+              }
+            }
+          ],
+          "DO" : [
+            { "rules_game_set_winners" : {
+                "game_instance_session" : [ "site:current-game-instance" ],
+                "player_id" : [ "site:current-player-id" ]
+              }
+            },
+            { "rules_game_over" : { "game_instance_session" : [ "site:current-game-instance" ] } }
+          ],
+          "LABEL" : "CheckMatrix row3"
+        }
+      },
+      { "RULE" : {
+          "IF" : [
+            { "OR" : [
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "0" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "3" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "6" } }
+              ]
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:0" ],
+                "value" : [ "site:current-game-matrix:3" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:3" ],
+                "value" : [ "site:current-game-matrix:6" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-tile-clicked-value" ],
+                "value" : [ "site:current-player-id" ]
+              }
+            }
+          ],
+          "DO" : [
+            { "rules_game_set_winners" : {
+                "game_instance_session" : [ "site:current-game-instance" ],
+                "player_id" : [ "site:current-game-id" ]
+              }
+            },
+            { "rules_game_over" : { "game_instance_session" : [ "site:current-game-instance" ] } }
+          ],
+          "LABEL" : "CheckMatrix col1"
+        }
+      },
+      { "RULE" : {
+          "IF" : [
+            { "OR" : [
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "1" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "4" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "7" } }
+              ]
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:1" ],
+                "value" : [ "site:current-game-matrix:4" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:4" ],
+                "value" : [ "site:current-game-matrix:7" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-tile-clicked-value" ],
+                "value" : [ "site:current-player-id" ]
+              }
+            }
+          ],
+          "DO" : [
+            { "rules_game_set_winners" : {
+                "game_instance_session" : [ "site:current-game-instance" ],
+                "player_id" : [ "site:current-game-id" ]
+              }
+            },
+            { "rules_game_over" : { "game_instance_session" : [ "site:current-game-instance" ] } }
+          ],
+          "LABEL" : "CheckMatrix col2"
+        }
+      },
+      { "RULE" : {
+          "IF" : [
+            { "OR" : [
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "2" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "5" } },
+                { "data_is" : { "data" : [ "site:current-tile-clicked" ], "value" : "8" } }
+              ]
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:2" ],
+                "value" : [ "site:current-game-matrix:5" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-game-matrix:5" ],
+                "value" : [ "site:current-game-matrix:8" ]
+              }
+            },
+            { "data_is" : {
+                "data" : [ "site:current-tile-clicked-value" ],
+                "value" : [ "site:current-player-id" ]
+              }
+            }
+          ],
+          "DO" : [
+            { "rules_game_set_winners" : {
+                "game_instance_session" : [ "site:current-game-instance" ],
+                "player_id" : [ "site:current-player-id" ]
+              }
+            },
+            { "rules_game_over" : { "game_instance_session" : [ "site:current-game-instance" ] } }
+          ],
+          "LABEL" : "CheckMatrix col3"
+        }
+      }
+    ]
+  }
+}';
+  
   return "";
 }

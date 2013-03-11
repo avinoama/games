@@ -132,16 +132,16 @@ function game_entity_info() {
       'access callback' => 'game_instance_command_access',
   );
 
-    
+
   return $return;
 }
 
 function game_preprocess_page(&$vars) {
-  /*if (arg(0) == 'play') {
+  /* if (arg(0) == 'play') {
     //drupal_add_library('system', 'ui.resizable');
     $path = drupal_get_path('module', 'game');
     drupal_add_js($path . "/game_instance.js", 'file');
-  }*/
+    } */
 }
 
 /**
@@ -208,54 +208,6 @@ function game_permission() {
   return $permissions;
 }
 
-/*
-  function game_entity_property_info() {
-  $info = array();
-
-  // Add meta-data about the basic commerce_line_item properties.
-  $properties = &$info['game_instance']['properties'];
-
-  $properties['id'] = array(
-  'label' => t('GameInstance ID'),
-  'description' => t('The internal numeric ID of the instance.'),
-  'type' => 'integer',
-  'schema field' => 'id',
-  );
-  $properties['type'] = array(
-  'label' => t('Bundle type'),
-  'type' => 'text',
-  'description' => t('the bundle type of the game'),
-  'schema field' => 'type',
-  );
-  $properties['gid'] = array(
-  'label' => t('Gmae ID'),
-  'type' => 'integer',
-  'description' => t('The order the line item belongs to.'),
-  'getter callback' => 'commerce_line_item_get_properties',
-  'setter callback' => 'commerce_line_item_set_properties',
-  'setter permission' => 'administer line items',
-  'required' => TRUE,
-  'computed' => TRUE,
-  'clear' => array('order_id'),
-  );
-  $properties['session'] = array(
-  'label' => t('Session'),
-  'description' => t('The unique identifer that will make hard time for hackers.'),
-  'type' => 'token',
-  'required' => TRUE,
-  'schema field' => 'session',
-  );
-  $properties['title'] = array(
-  'label' => t('Title'),
-  'description' => t('The unique identifer that will make hard time for hackers.'),
-  'type' => 'text',
-  'required' => TRUE,
-  'schema field' => 'title',
-  );
-  return $info;
-  }
- */
-
 /**
  *  implements hook_entity_property_info_alter(&$info)
  * @param type $info 
@@ -277,21 +229,6 @@ function game_entity_property_info_alter(&$info) {
       'getter callback' => 'game_current_id',
   );
   
-  /*
-    $properties = &$info['game_instance']['properties'];
-    $properties['id'] = array(
-    'label' => t("instance id"),
-    'type' => 'integer',
-    'schema field' => 'id',
-    'description' => t("The unique field that we can create."),
-    );
-    $properties['gid'] = array(
-    'label' => t("Game id"),
-    'type' => 'user',
-    'description' => t("The author of the game."),
-    'schema field' => 'gid',
-    );
-   */
   return $info;
 }
 
@@ -299,15 +236,17 @@ function game_current_instance() {
   $session = check_plain($_POST['action']['params']['session']);
   return $session;
 }
+
 function game_current_id() {
   $session = check_plain($_POST['action']['params']['session']);
   //dpm($session);
-  $conditions = array("session"=>$session);
+  $conditions = array("session" => $session);
   $e = entity_load('game_instance', array(), $conditions, FALSE);
-  $k  = array_keys($e);
+  $k = array_keys($e);
   $entity = $e[$k[0]];
   return $entity->gid;
 }
+
 /* * *****************************************************************************
  * ******************************** Game API's **********************************
  * **************************************************************************** */
