@@ -3,7 +3,7 @@ The module uses entity as its base and create a "game" entity.
 Each Game entity has a bundle that describ its base logic like "Board Game", "Card Game" etc..
 
 Each game can be "played", whan you play the game you create a server side instance called "running_game",
-this "running_game" will save all changes to the game.
+this "running_game" will save all changes to current game being played.
 
 We are using Rules module for logical implementation.
 To view forther more just install the board_game module and go into rules ui,
