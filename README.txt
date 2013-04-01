@@ -26,4 +26,4 @@ Remember : this module is just a showcase and is not ment to use in production e
 
 TODO:
 1. Add a module that will connect to services module
-2. Create an entity called "Pawn" that will be able to move on a board
+2. Create an entity called "Pawn" that will be able to move on a board acording to movment rules
