@@ -232,7 +232,7 @@ function game_delete_form_submit($form, &$form_state) {
   $form_state['redirect'] = '<front>';
 }
 
-/* function game_instance_admin_add_page() {
+/* function running_game_admin_add_page() {
   $items = array();
   foreach (game_types() as $game_type_key => $game_type) {
   $items[] = l(entity_label('game_type', $game_type), 'game/add/' . $game_type_key);
@@ -243,29 +243,29 @@ function game_delete_form_submit($form, &$form_state) {
 /**
  * Generates the game instance editing form.
  */
-function game_instance_form($form, &$form_state, $game_instance, $op = 'edit') {
+function running_game_form($form, &$form_state, $running_game, $op = 'edit') {
   
-  if (empty($game_instance) && isset($form_state['game_instance'])) {
+  if (empty($running_game) && isset($form_state['running_game'])) {
 
-    $game_instance = $form_state['game_instance'];
+    $running_game = $form_state['running_game'];
   } else {
 
-    $form_state['game_instance'] = $game_instance;
-    if (isset($game_instance->gid) && !isset($form_state['values']['gid'])) {
-      $form_state['values']['gid'] = $game_instance->gid;
+    $form_state['running_game'] = $running_game;
+    if (isset($running_game->gid) && !isset($form_state['values']['gid'])) {
+      $form_state['values']['gid'] = $running_game->gid;
     }
   }
-  dpm($game_instance);
+  dpm($running_game);
   /*
-  //dpm($game_instance);
+  //dpm($running_game);
 
   if ($op == 'clone') {
-    //  $game_instance->label .= ' (cloned)';
-    // $game_instance->type = '';
+    //  $running_game->label .= ' (cloned)';
+    // $running_game->type = '';
   }
 
-  if (!isset($game_instance->gid)) {
-    $game_instance->gid = '';
+  if (!isset($running_game->gid)) {
+    $running_game->gid = '';
   } else {
     $game_entities = entity_load('game', array($form_state['values']['gid']));
     $key = key($game_entities);
@@ -288,7 +288,7 @@ function game_instance_form($form, &$form_state, $game_instance, $op = 'edit') {
     $form['gid'] = array(
         '#title' => t('Game'),
         '#type' => 'select',
-        '#default_value' => $game_instance->gid,
+        '#default_value' => $running_game->gid,
         '#description' => t('The human-readable name of this game.'),
         '#required' => TRUE,
         '#options' => $string,
@@ -296,17 +296,17 @@ function game_instance_form($form, &$form_state, $game_instance, $op = 'edit') {
   }
     if (!empty($game)) {
       //dpm($game);
-      //$game_instance->type=$game[$form_state['values']['gid']]->type;
-      $game_instance->type = $game->type;
-      $game_instance->gid = $game->gid;
-      //$game_instance->gid = $form_state['values']['gid'];
-      //$form_state['game'] = $game[$game_instance->gid];
+      //$running_game->type=$game[$form_state['values']['gid']]->type;
+      $running_game->type = $game->type;
+      $running_game->gid = $game->gid;
+      //$running_game->gid = $form_state['values']['gid'];
+      //$form_state['game'] = $game[$running_game->gid];
       $form_state['game'] = $game;
-      //field_attach_form('game', $game[$game_instance->gid], $form, $form_state);
+      //field_attach_form('game', $game[$running_game->gid], $form, $form_state);
       //field_attach_form('game', $game, $form, $form_state);
     }
     
-    field_attach_form('game_instance', $game_instance, $form, $form_state);
+    field_attach_form('running_game', $running_game, $form, $form_state);
     
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['submit'] = array(
@@ -315,13 +315,13 @@ function game_instance_form($form, &$form_state, $game_instance, $op = 'edit') {
         '#weight' => 40,
     );
 
-    if (!$game_instance->isLocked() && $op != 'add' && $op != 'clone') {
+    if (!$running_game->isLocked() && $op != 'add' && $op != 'clone') {
       $form['actions']['delete'] = array(
           '#type' => 'submit',
           '#value' => t('Delete game instance'),
           '#weight' => 45,
           '#limit_validation_errors' => array(),
-          '#submit' => array('game_instance_form_submit_delete')
+          '#submit' => array('running_game_form_submit_delete')
       );
     }
  */
@@ -329,11 +329,11 @@ function game_instance_form($form, &$form_state, $game_instance, $op = 'edit') {
   return $form;
 }
 
-function game_instance_bundle_form(&$form, &$form_state) {
+function running_game_bundle_form(&$form, &$form_state) {
   $current_step = &$form_state['step'];
   //  save information
 
-  $form_state['game_instance'] = $form_state['game_instance'];
+  $form_state['running_game'] = $form_state['running_game'];
   //  go to next step
   $current_step++;
   $form_state['rebuild'] = TRUE;
@@ -343,77 +343,77 @@ function game_instance_bundle_form(&$form, &$form_state) {
 /**
  * Submit handler for creating/editing game_type.
  */
-function game_instance_form_submit(&$form, &$form_state) {
-  $game_instance = $form_state['game_instance'];
+function running_game_form_submit(&$form, &$form_state) {
+  $running_game = $form_state['running_game'];
   //dpm($form_state);
-  $game = entity_load('game', array($game_instance->gid));
+  $game = entity_load('game', array($running_game->gid));
 
-  entity_form_submit_build_entity('game_instance', $game_instance, $form, $form_state);
+  entity_form_submit_build_entity('running_game', $running_game, $form, $form_state);
 
-  game_instance_save($game_instance);
+  running_game_save($running_game);
 
-  $game_instance_uri = entity_uri('game_instance', $game_instance);
+  $running_game_uri = entity_uri('running_game', $running_game);
 
-  $form_state['redirect'] = $game_instance_uri['path'];
+  $form_state['redirect'] = $running_game_uri['path'];
 
-  drupal_set_message(t('Game %title saved.', array('%title' => entity_label('game_instance', $game_instance))));
+  drupal_set_message(t('Game %title saved.', array('%title' => entity_label('running_game', $running_game))));
 }
 
-function game_instance_create_instance($game) {
+function running_game_create_instance($game) {
   $game->gid;
 
-  $game_instance = array();
-  $game_instance['gid'] = $game->gid;
-  $game_instance['type'] = $game->type;
-  $game_instance['bundle'] = 'game_instance';
+  $running_game = array();
+  $running_game['gid'] = $game->gid;
+  $running_game['type'] = $game->type;
+  $running_game['bundle'] = 'running_game';
 
-  $game_instance_entity = entity_create("game_instance", $game_instance);
-  $game_instance_entity->save();
+  $running_game_entity = entity_create("running_game", $running_game);
+  $running_game_entity->save();
 
-  $game_instance_uri = entity_uri('game_instance', $game_instance_entity);
-  drupal_goto($game_instance_uri['path']);
+  $running_game_uri = entity_uri('running_game', $running_game_entity);
+  drupal_goto($running_game_uri['path']);
   return "This page is a redirect";
 }
 
-function game_instance_form_submit_delete(&$form, &$form_state) {
-  $form_state['redirect'] = 'admin/structure/game-instances/' . $form_state['game_instance']->id . '/delete';
+function running_game_form_submit_delete(&$form, &$form_state) {
+  $form_state['redirect'] = 'admin/structure/game-instances/' . $form_state['running_game']->id . '/delete';
 }
 
-function game_instance_participant_create_participant($game_instance) {
-  $game_instance_participant = array();
-  $game_instance_participant['instance_id'] = $game_instance->id;
-  $game_instance_participant['bundle'] = 'game_instance_participant';
-  //dpm($game_instance);
+function running_game_participant_create_participant($running_game) {
+  $running_game_participant = array();
+  $running_game_participant['running_game_id'] = $running_game->id;
+  $running_game_participant['bundle'] = 'running_game_participant';
+  //dpm($running_game);
 
-  $game_instance_entity = entity_create("game_instance_participant", $game_instance_participant);
-  $game_instance_entity->save();
+  $running_game_entity = entity_create("running_game_participant", $running_game_participant);
+  $running_game_entity->save();
   return true;
 }
 
 /**
  * Game type delete form.
  */
-function game_instance_form_delete_confirm($form, &$form_state, $game_instance) {
+function running_game_form_delete_confirm($form, &$form_state, $running_game) {
   //print "11";
   //die();
-  $form_state['game_instance'] = $game_instance;
+  $form_state['running_game'] = $running_game;
   // Always provide entity id in the same form key as in the entity edit form.
-  $form['game_instance_id'] = array('#type' => 'value', '#value' => entity_id('game_instance', $game_instance));
-  return confirm_form($form, t('Are you sure you want to delete game instance %session?', array('%session' => entity_label('game_instance', $game_instance))), 'game/' . entity_id('game_instance', $game_instance), t('This action cannot be undone.'), t('Delete'), t('Cancel')
+  $form['running_game_id'] = array('#type' => 'value', '#value' => entity_id('running_game', $running_game));
+  return confirm_form($form, t('Are you sure you want to delete game instance %session?', array('%session' => entity_label('running_game', $running_game))), 'game/' . entity_id('running_game', $running_game), t('This action cannot be undone.'), t('Delete'), t('Cancel')
   );
 }
 
 /**
  * Game type delete form submit handler.
  */
-function game_instance_form_delete_confirm_submit($form, &$form_state) {
-  $game_instance = $form_state['game_instance'];
-  //dpm($game_instance);
+function running_game_form_delete_confirm_submit($form, &$form_state) {
+  $running_game = $form_state['running_game'];
+  //dpm($running_game);
 
-  game_instance_delete($game_instance);
+  running_game_delete($running_game);
 
-  watchdog('game_instance', '@type: deleted %title.', array('@type' => $game_instance->type, '%title' => $game_instance->label));
-  drupal_set_message(t('@type %title has been deleted.', array('@type' => $game_instance->type, '%title' => $game_instance->session)));
+  watchdog('running_game', '@type: deleted %title.', array('@type' => $running_game->type, '%title' => $running_game->label));
+  drupal_set_message(t('@type %title has been deleted.', array('@type' => $running_game->type, '%title' => $running_game->session)));
 
   $form_state['redirect'] = 'admin/structure/game-instances';
 }
@@ -421,6 +421,6 @@ function game_instance_form_delete_confirm_submit($form, &$form_state) {
 function game_create_instance($game) {
   
   // create instance and redirect to that instance to start playing
-  return game_instance_create_instance($game);
+  return running_game_create_instance($game);
 }
 

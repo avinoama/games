@@ -2,7 +2,7 @@
 
 function board_games_menu() {
   $items = array();
-  
+
   return $items;
 }
 
@@ -37,8 +37,6 @@ function board_games_form_alter($form, $form_state, $form_id) {
 
     $form['actions']['submit']["#value"] = "next step";
     $form['actions']['submit']["#submit"][0] = "board_games_set_default_board";
-
-   
   }
 }
 
@@ -47,42 +45,41 @@ function board_games_game_presave($game) {
   
 }
 
-function board_games_game_instance_presave($game_instance) {
+function board_games_running_game_presave($running_game) {
 
-  if ($game_instance->is_new && $game_instance->type == "board_game") {
-    $game_instance->field_current_turn['und'][]["value"] = $game_instance->participant_turn;
-    //game_instance_save($game_instance);
-    //dpm($game_instance);
+  if ($running_game->is_new && $running_game->type == "board_game") {
+    $running_game->field_current_turn['und'][]["value"] = $running_game->participant_turn;
+    //running_game_save($running_game);
+    //dpm($running_game);
   }
 }
 
+function board_games_tile_set_owner_action(&$running_game, $context = array()) {
+  if ($context['game_id'] == $running_game->gid) {
 
-function board_games_tile_set_owner_action(&$game_instance, $context = array()) {
-  if ($context['game_id'] == $game_instance->gid) {
+    $conditions = array("running_game_id" => $running_game->id, 'participant_session' => session_id());
 
-    $conditions = array("instance_id" => $game_instance->id, 'participant_session' => session_id());
-
-    $entity = entity_load("game_instance_participant", FALSE, $conditions);
+    $entity = entity_load("running_game_participant", FALSE, $conditions);
     $player = $entity[key($entity)];
 
-    if ($game_instance->field_matrix['und'][$context['params']]['value'] == 0 || empty($game_instance->field_matrix['und'][$context['params']]['value'])) {
-      $game_instance->field_matrix['und'][$context['params']]['value'] = $player->participant_turn;
+    if ($running_game->field_matrix['und'][$context['params']]['value'] == 0 || empty($running_game->field_matrix['und'][$context['params']]['value'])) {
+      $running_game->field_matrix['und'][$context['params']]['value'] = $player->participant_turn;
 
-      if ($game_instance->save()) {
+      if ($running_game->save()) {
         $params = array("tile_id" => $context['params'], "participant_turn" => $player->participant_turn);
-        $game_instance_command = array();
-        $game_instance_command['instance_id'] = $game_instance->id;
-        $game_instance_command['command_id'] = 2;
-        $game_instance_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "callback" => array("module" => "boardGame", "fn" => $context['callback'], "params" => $params), "time" => time()));
-        $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
-        $game_instance_command_entity->save();
+        $running_game_command = array();
+        $running_game_command['running_game_id'] = $running_game->id;
+        $running_game_command['command_id'] = 2;
+        $running_game_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "callback" => array("module" => "boardGame", "fn" => $context['callback'], "params" => $params), "time" => time()));
+        $running_game_command_entity = entity_create("running_game_command", $running_game_command);
+        $running_game_command_entity->save();
       } else {
 
         // dpm("cant save game instance");
       }
     } else {
       // the tile is already owned by user cannot
-      return array("callback" => array("module" => "gameInstance", "fn" => "message", "params" => array("The tile is already owned")));
+      return array("callback" => array("module" => "RunningGame", "fn" => "message", "params" => array("The tile is already owned")));
       //dpm("the tile is already owned by user cannot");
     }
 
@@ -124,7 +121,6 @@ function board_games_tile_set_owner_action_submit($form, $form_state) {
 
 function board_games_game_init_load($game) {
   if ($game->type == "board_game") {
-    // add js
     $path = drupal_get_path('module', 'board_games');
     drupal_add_js($path . "/board_games.js", 'file');
     drupal_add_css($path . "/board_games.css", 'file');
@@ -217,27 +213,28 @@ function board_games_entity_property_info_alter(&$info) {
  */
 function board_games_get_tile() {
   $tile_position = intval(check_plain($_POST['action']['params']['tile_position']));
-  // chack valid tail position for current game
+  // chack valid tile position for current game
   return $tile_position;
+}
+function board_games_get_tile_value() {
+  $tile_position = intval(check_plain($_POST['action']['params']['tile_position']));
+  $running_game = _board_games_get_current_instance();
+  return $running_game->field_matrix['und'][$tile_position]['value'];
 }
 
 function board_games_get_player_id() {
   $session = session_id();
-  $game_session = check_plain($_POST['action']['params']['session']);
+  $game_session = check_plain($_POST['action']['game']['session']);
 
-  //dpm("GameSession: ".$session);
-  //dpm("ParticipantSession: ".$game_session);
-
-  $sql = "SELECT id FROM {game_instance} WHERE session=':gs'";
+  $sql = "SELECT id FROM {running_game} WHERE session=':gs'";
   $sql2 = str_replace(":gs", $game_session, $sql);
   //$result  = db_query($sql, array(":gs"=>$game_session));
   $result = db_query($sql2);
-  $game_instance = $result->fetchObject();
-  //dpm($game_instance->id);
+  $running_game = $result->fetchObject();
   //  load current user session data
-  $sql = "SELECT participant_turn FROM {game_instance_participant} WHERE instance_id=':gid' AND participant_session=':ses'";
-  //$result  = db_query($sql, array(":gid"=>$game_instance->gid,"ses"=>$session));
-  $sql2 = str_replace(":gid", $game_instance->id, $sql);
+  $sql = "SELECT participant_turn FROM {running_game_participant} WHERE running_game_id=':gid' AND participant_session=':ses'";
+  //$result  = db_query($sql, array(":gid"=>$running_game->gid,":ses"=>$session));
+  $sql2 = str_replace(":gid", $running_game->id, $sql);
   $sql3 = str_replace(":ses", $session, $sql2);
   $result = db_query($sql3);
 
@@ -247,43 +244,37 @@ function board_games_get_player_id() {
 }
 
 function board_games_current_player_turn() {
-  $game_instance = _board_games_get_current_instance();
-  return $game_instance->field_current_turn['und'][0]['value'];
+  $running_game = _board_games_get_current_instance();
+  return $running_game->field_current_turn['und'][0]['value'];
 }
 
-function board_games_get_tile_value() {
-  $tile_position = intval(check_plain($_POST['action']['params']['tile_position']));
-  $game_instance = _board_games_get_current_instance();
-  return $game_instance->field_matrix['und'][$tile_position]['value'];
-}
+
 
 function board_games_current_matrix() {
-  //$game_instance = _board_games_get_current_instance();
-  $game_session = check_plain($_POST['action']['params']['session']);
-  //SELECT fm.field_matrix_value FROM game_instance gi LEFT JOIN field_revision_field_matrix fm ON (gi.id=fm.entity_id) WHERE gi.session='7b5c00a67c7e8a6247212c84dd38678c' ORDER BY delta ASC
-  $sql = "SELECT field_revision_field_matrix.field_matrix_value FROM {game_instance} LEFT JOIN {field_revision_field_matrix} ON (game_instance.id=field_revision_field_matrix.entity_id) WHERE game_instance.session=':gs' ORDER BY delta ASC";
+  //$running_game = _board_games_get_current_instance();
+  $game_session = check_plain($_POST['action']['game']['session']);
+  //SELECT fm.field_matrix_value FROM running_game gi LEFT JOIN field_revision_field_matrix fm ON (gi.id=fm.entity_id) WHERE gi.session='7b5c00a67c7e8a6247212c84dd38678c' ORDER BY delta ASC
+  $sql = "SELECT field_revision_field_matrix.field_matrix_value FROM {running_game} LEFT JOIN {field_revision_field_matrix} ON (running_game.id=field_revision_field_matrix.entity_id) WHERE running_game.session=':gs' ORDER BY delta ASC";
   $sql2 = str_replace(":gs", $game_session, $sql);
   $result = db_query($sql2);
-  
-  if(empty($result)) {
+
+  if (empty($result)) {
     return array();
   }
   $field_matrix = $result->fetchAll();
-  foreach($field_matrix as $field) {
+  foreach ($field_matrix as $field) {
     $re[] = $field->field_matrix_value;
   }
-  //dpm("field_matrix_value");
-  //dpm($re);
   return $re;
 }
 
 function _board_games_get_current_instance($session = null) {
   if (empty($session)) {
-    $session = check_plain($_POST['action']['params']['session']);
+    $session = check_plain($_POST['action']['game']['session']);
   }
   $conditions = array("session" => $session);
-  game_instance_load();
-  $e = entity_load('game_instance', array(), $conditions, FALSE);
+  running_game_load();
+  $e = entity_load('running_game', array(), $conditions, FALSE);
   $k = array_keys($e);
   return $e[$k[0]];
 }
@@ -323,7 +314,7 @@ function _board_games_default_fields() {
   );
   $fields[] = array(
       'field_name' => 'field_min_num_players',
-      'label' => t('Minmum Number Fields'),
+      'label' => t('Minmum Number Players'),
       'type' => 'number_integer',
       'default_value' => 0,
       'cardinality' => 1,
@@ -332,31 +323,52 @@ function _board_games_default_fields() {
   );
   $fields[] = array(
       'field_name' => 'field_max_num_players',
-      'label' => t('Maximum Number Fields'),
+      'label' => t('Maximum Number Players'),
       'type' => 'number_integer',
       'default_value' => 0,
       'cardinality' => 1,
       'entity_type' => 'game',
       'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
   );
-  //  Fields for game insatnce
+  $fields[] = array(
+      'field_name' => 'field_tile_type',
+      'label' => t('Tile Type'),
+      'type' => 'list_integer',
+      'default_value' => 1,
+      'cardinality' => 1,
+      'entity_type' => 'game',
+      'indexes' => array(
+          'value' => array(
+              0 => 'value',
+          ),
+      ),
+      'module' => 'list',
+      'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle), 'allowed_values_function' => '_board_games_allowed_tile_type_options_list'),
+      'widget' => array(
+          'active' => 1,
+          'module' => 'options',
+          'settings' => array(),
+          'type' => 'options_select',
+          'weight' => '5',
+      ),
+  );
+
+  //  Fields for Running Game
   $fields[] = array(
       'field_name' => 'field_matrix',
       'label' => t('Matrix'),
       'type' => 'number_integer', //'number_integer',
       'default_value' => 0,
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-      'entity_type' => 'game_instance',
+      'entity_type' => 'running_game',
       'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
   );
   $fields[] = array(
       'field_name' => 'field_players',
       'label' => t('Players'),
       'type' => 'entityreference',
-      // 'default_value' => '0',
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-      'entity_type' => 'game_instance',
-          //'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
+      'entity_type' => 'running_game',
   );
   $fields[] = array(
       'field_name' => 'field_current_turn',
@@ -364,10 +376,18 @@ function _board_games_default_fields() {
       'type' => 'number_integer',
       'default_value' => 1,
       'cardinality' => 1,
-      'entity_type' => 'game_instance',
+      'entity_type' => 'running_game',
       'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
   );
   return $fields;
+}
+
+function _board_games_allowed_tile_type_options_list() {
+  $options = array(
+      1 => 'Divs',
+      2 => 'Text boxes',
+  );
+  return $options;
 }
 
 function _board_games_add_default_fields() {
@@ -406,8 +426,21 @@ function _board_games_add_default_games() {
   $game->field_board_height['und'][]['value'] = 3;
   $game->field_min_num_players['und'][]['value'] = 2;
   $game->field_max_num_players['und'][]['value'] = 2;
-
+  $game->field_tile_type['und'][]['value'] = 1;
   game_save($game);
+
+  $game2 = entity_create($entity_type, array());
+
+  $game2->title = "Sudoku";
+  $game2->type = $bundle;
+  $game2->description = 'Sudoku (数独 sūdoku?, すうどく) i/suːˈdoʊkuː/ soo-doh-koo, originally called Number Place,[1] is a logic-based,[2][3] combinatorial[4] number-placement puzzle. The objective is to fill a 9×9 grid with digits so that each column, each row, and each of the nine 3×3 sub-grids that compose the grid (also called "boxes", "blocks", "regions", or "sub-squares") contains all of the digits from 1 to 9. The puzzle setter provides a partially completed grid, which typically has a unique solution.';
+  $game2->field_board_width['und'][]['value'] = 9;
+  $game2->field_board_height['und'][]['value'] = 9;
+  $game2->field_min_num_players['und'][]['value'] = -1;
+  $game2->field_max_num_players['und'][]['value'] = -1;
+  $game2->field_tile_type['und'][]['value'] = 2;
+  game_save($game2);
+
   
 }
 

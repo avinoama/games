@@ -55,11 +55,11 @@ function game_entity_info() {
       'access callback' => 'game_type_access',
   );
 
-  $return['game_instance'] = array(
-      'label' => t('Game Instance'),
-      'entity class' => 'GameInstance',
-      'controller class' => 'GameInstanceController',
-      'base table' => 'game_instance',
+  $return['running_game'] = array(
+      'label' => t('RunningGame'),
+      'entity class' => 'RunningGame',
+      'controller class' => 'RunningGameController',
+      'base table' => 'running_game',
       'fieldable' => TRUE,
       'entity keys' => array(
           'id' => 'id',
@@ -69,7 +69,7 @@ function game_entity_info() {
           'bundle' => 'type',
       ),
       'bundles' => array(),
-      'load hook' => 'game_instance_load',
+      'load hook' => 'running_game_load',
       'view modes' => array(
           'full' => array(
               'label' => t('Default'),
@@ -79,25 +79,25 @@ function game_entity_info() {
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
       'module' => 'game',
-      'access callback' => 'game_instance_access',
+      'access callback' => 'running_game_access',
       'admin ui' => array(
-          'path' => 'admin/structure/game-instances',
+          'path' => 'admin/structure/running-game',
           'file' => 'game.admin.inc',
-          'controller class' => 'GameInstanceUIController',
+          'controller class' => 'RunningGameUIController',
       ),
   );
 
-  $return['game_instance_participant'] = array(
-      'label' => t('Game Instance Participant'),
-      'entity class' => 'GameInstanceParticipant',
-      'controller class' => 'GameInstanceParticipantController',
-      'base table' => 'game_instance_participant',
+  $return['running_game_participant'] = array(
+      'label' => t('Running Game Participant'),
+      'entity class' => 'RunningGameParticipant',
+      'controller class' => 'RunningGameParticipantController',
+      'base table' => 'running_game_participant',
       'fieldable' => FALSE,
       'entity keys' => array(
           'id' => 'id',
       ),
       'bundles' => array(),
-      'load hook' => 'game_instance_participant_load',
+      'load hook' => 'running_game_participant_load',
       'view modes' => array(
           'full' => array(
               'label' => t('Default'),
@@ -107,19 +107,19 @@ function game_entity_info() {
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
       'module' => 'game',
-      'access callback' => 'game_instance_participant_access',
+      'access callback' => 'running_game_participant_access',
   );
-  $return['game_instance_command'] = array(
-      'label' => t('Game Instance Command'),
-      'entity class' => 'GameInstanceCommand',
-      'controller class' => 'GameInstanceCommandController',
-      'base table' => 'game_instance_command',
+  $return['running_game_command'] = array(
+      'label' => t('Running Game Command'),
+      'entity class' => 'RunningGameCommand',
+      'controller class' => 'RunningGameCommandController',
+      'base table' => 'running_game_command',
       'fieldable' => FALSE,
       'entity keys' => array(
           'id' => "id",
       ),
       'bundles' => array(),
-      'load hook' => 'game_instance_command_load',
+      'load hook' => 'running_game_command_load',
       'view modes' => array(
           'full' => array(
               'label' => t('Default'),
@@ -129,19 +129,11 @@ function game_entity_info() {
       'label callback' => 'entity_class_label',
       'uri callback' => 'entity_class_uri',
       'module' => 'game',
-      'access callback' => 'game_instance_command_access',
+      'access callback' => 'running_game_command_access',
   );
 
 
   return $return;
-}
-
-function game_preprocess_page(&$vars) {
-  /* if (arg(0) == 'play') {
-    //drupal_add_library('system', 'ui.resizable');
-    $path = drupal_get_path('module', 'game');
-    drupal_add_js($path . "/game_instance.js", 'file');
-    } */
 }
 
 /**
@@ -157,7 +149,7 @@ function game_entity_info_alter(&$entity_info) {
             'bundle argument' => 4,
         ),
     );
-    $entity_info['game_instance']['bundles'][$type] = array(
+    $entity_info['running_game']['bundles'][$type] = array(
         'label' => $info->label,
         'admin' => array(
             'path' => 'admin/structure/game-types/manage/%game_type',
@@ -213,26 +205,28 @@ function game_permission() {
  * @param type $info 
  */
 function game_entity_property_info_alter(&$info) {
-
+/*
   $info['site']['properties']['current_game_session'] = array(
       'label' => t('Current game played at the moment'),
-      'description' => t('the current game instance.'),
+      'description' => t('the current game running.'),
       'type' => 'text',
       'getter callback' => 'game_current_session',
   );
-  $info['site']['properties']['current_game_instance'] = array(
+ */
+  $info['site']['properties']['current_running_game'] = array(
       'label' => t('Current game played at the moment'),
-      'description' => t('the current game instance.'),
-      'type' => 'game_instance',
-      'getter callback' => 'game_current_instance',
+      'description' => t('the current game running.'),
+      'type' => 'running_game',
+      'getter callback' => 'game_current_running',
   );
+ /*
   $info['site']['properties']['current_game_id'] = array(
       'label' => t('Current game played at the moment'),
       'description' => t('the current game.'),
       'type' => 'text',
       'getter callback' => 'game_current_id',
   );
-
+*/
   return $info;
 }
 
@@ -241,10 +235,10 @@ function game_current_session() {
   return $session;
 }
 
-function game_current_instance() {
+function game_current_running() {
   $session = check_plain($_POST['action']['params']['session']);
   $conditions = array("session" => $session);
-  $e = entity_load('game_instance', array(), $conditions, FALSE);
+  $e = entity_load('running_game', array(), $conditions, FALSE);
   $k = array_keys($e);
   $entity = $e[$k[0]];
   
@@ -254,7 +248,7 @@ function game_current_instance() {
 function game_current_id() {
   $session = check_plain($_POST['action']['params']['session']);
   $conditions = array("session" => $session);
-  $e = entity_load('game_instance', array(), $conditions, FALSE);
+  $e = entity_load('running_game', array(), $conditions, FALSE);
   $k = array_keys($e);
   $entity = $e[$k[0]];
   return $entity->gid;
@@ -376,50 +370,50 @@ function game_type_delete_multiple($game_type_ids) {
 }
 
 /* * *****************************************************************************
- * ***************************** Game Instance API's ********************************
+ * ***************************** Game Running API's ********************************
  * **************************************************************************** */
 
 /**
  * Access callback for game Type.
  */
-function game_instance_access($op, $entity = NULL) {
-  return user_access('administer game instance');
+function running_game_access($op, $entity = NULL) {
+  return user_access('administer running games');
 }
 
 /**
  * Load game Type.
  */
-function game_instance_load($game_instance) {
-  return game_instance($game_instance);
+function running_game_load($running_game) {
+  return running_game($running_game);
 }
 
 /**
  * List of game Types.
  */
-function game_instance($instance_name = NULL) {
-  $instances = entity_load_multiple_by_name('game_instance', isset($instance_name) ? array($instance_name) : FALSE);
-  return isset($instance_name) ? reset($instances) : $instances;
+function running_game($running_game_name = NULL) {
+  $inst = entity_load_multiple_by_name('running_game', isset($running_game_name) ? array($running_game_name) : FALSE);
+  return isset($running_game_name) ? reset($inst) : $inst;
 }
 
 /**
  * Save game type entity.
  */
-function game_instance_save($game_instance) {
-  return entity_save('game_instance', $game_instance);
+function running_game_save($running_game) {
+  return entity_save('running_game', $running_game);
 }
 
 /**
  * Delete single case type.
  */
-function game_instance_delete($game_instance) {
-  entity_delete('game_instance', entity_id('game_instance', $game_instance));
+function running_game_delete($running_game) {
+  entity_delete('running_game', entity_id('running_game', $running_game));
 }
 
 /**
  * Delete multiple case types.
  */
-function game_instance_delete_multiple($game_instance_ids) {
-  entity_delete_multiple('game_instance', $game_instance_ids);
+function running_game_delete_multiple($running_game_ids) {
+  entity_delete_multiple('running_game', $running_game_ids);
 }
 
 /**
@@ -473,17 +467,17 @@ function game_action_info() {
   );
 }
 
-function game_message_action(&$game_instance, $context = array()) {
-  //dpm($game_instance);
+function game_message_action(&$running_game, $context = array()) {
+  //dpm($running_game);
   //dpm($context);
   if ($context['game_id'] == $entity->gid || $context['game_id'] == -1) {
 
-    $game_instance_command = array();
-    $game_instance_command['instance_id'] = $game_instance->id;
-    $game_instance_command['command_id'] = 1;
-    $game_instance_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "time" => time()));
-    $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
-    $game_instance_command_entity->save();
+    $running_game_command = array();
+    $running_game_command['running_game_id'] = $running_game->id;
+    $running_game_command['command_id'] = 1;
+    $running_game_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "time" => time()));
+    $running_game_command_entity = entity_create("running_game_command", $running_game_command);
+    $running_game_command_entity->save();
   }
 }
 

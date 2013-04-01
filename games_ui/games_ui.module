@@ -13,15 +13,15 @@ function games_ui_menu() {
       'tab_parent' => 'game',
       'tab_root' => 'game',
   );
-  
+
   $game_uri = 'game/%game';
-  $play_uri = 'play/%game_instance';
+  $play_uri = 'play/%running_game';
   $game_uri_argument_position = 1;
 
   // will show game page
   $items[$play_uri] = array(
       'title' => 'Play',
-      //'title arguments' => array('game_instance', $game_uri_argument_position),
+      //'title arguments' => array('running_game', $game_uri_argument_position),
       'page callback' => 'game_ui_play',
       'page arguments' => array($game_uri_argument_position),
       'access arguments' => array('play game entities'),
@@ -118,7 +118,7 @@ function games_ui_menu() {
   // inherited by all paths underneath node/%node as well, unless
   // they define their own theme callback.
   dpm($items);
-  $play_uri = 'play/%game_instance';
+  $play_uri = 'play/%running_game';
   $items[$play_uri]['theme callback'] = 'games_ui_html5_play_default_theme';
   } */
 
@@ -126,22 +126,23 @@ function games_ui_custom_theme() {
   // check path using arg(0)
   // check $user
   // do whatever special checking you want and simply return theme key (name of theme folder most of the time)
-
-  if (arg(0) == 'play') {
-   // print_r(arg());
+  /*
+    if (arg(0) == 'play') {
+    // print_r(arg());
     return 'games_ui_play_template';
-  }
+    }
+   *
+   */
 }
 
 function games_ui_theme() {
   return array(
       'games_ui_play_template' => array(
           'template' => 'game_ui_play',
-          'variables' => array('page' => NULL),
+          'variables' => array('game' => NULL, 'running_game' => NULL, 'status' => NULL, 'num_players' => NULL, 'player_name' => NULL),
       ),
   );
 }
-
 
 function games_ui_views_api() {
   return array(
@@ -155,6 +156,7 @@ function games_ui_preprocess_page(&$vars) {
     //drupal_add_library('system', 'ui.resizable');
     $path = drupal_get_path('module', 'games_ui');
     drupal_add_js($path . "/games_instance.js", 'file');
+    drupal_add_css($path . "/games_ui.css", 'file');
   }
 }
 
@@ -175,4 +177,15 @@ function games_ui_view() {
     }
   }
   return "title : " . $game->title . "<br>description:" . $game->description . "<br>" . $string;
+}
+
+/**
+ * This hook is called at the very beginning of views processing,
+ * before anything is done.
+ *
+ * Adding output to the view can be accomplished by placing text on
+ * $view->attachment_before and $view->attachment_after.
+ */
+function game_ui_views_pre_view(&$view, &$display_id, &$args) {
+  dpm($view);
 }

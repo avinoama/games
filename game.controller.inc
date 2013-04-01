@@ -8,8 +8,8 @@ class GameController extends EntityAPIController {
     $values += array(
       'title' => '',
       'description' => '',
-      //'created' => date("Y-m-d H:i:s",REQUEST_TIME),
-      'created' => REQUEST_TIME,
+      'created' => date("Y-m-d H:i:s",REQUEST_TIME),
+      //'created' => REQUEST_TIME,
       'changed' => REQUEST_TIME,
       'uid' => $user->uid,
     );
@@ -18,8 +18,9 @@ class GameController extends EntityAPIController {
 
   public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
     $wrapper = entity_metadata_wrapper('game', $entity);
-    $content['author'] = array('#markup' => t('Created by: !author', array('!author' => $wrapper->uid->name->value(array('sanitize' => TRUE)))));
-
+    
+    //$content['author'] = array('#markup' => t('Created by: !author', array('!author' => $wrapper->uid->name->value(array('sanitize' => TRUE)))));
+    /*
     // Make Description and Status themed like default fields.
     $content['description'] = array(
       '#theme' => 'field',
@@ -37,12 +38,12 @@ class GameController extends EntityAPIController {
       '#formatter' => 'text_default',
       0 => array('#markup' => check_plain($entity->description))
     );
-
+*/
     return parent::buildContent($entity, $view_mode, $langcode, $content);
   }
 }
 
-class GameInstanceController extends EntityAPIController {
+class RunningGameController extends EntityAPIController {
 
   public function create(array $values = array()) {
     global $user;
@@ -57,7 +58,7 @@ class GameInstanceController extends EntityAPIController {
     return parent::create($values);
   }
 }
-class GameInstanceParticipantController extends EntityAPIController {
+class RunningGameParticipantController extends EntityAPIController {
 
   public function create(array $values = array()) {
     global $user;
@@ -72,7 +73,7 @@ class GameInstanceParticipantController extends EntityAPIController {
     return parent::create($values);
   }
 }
-class GameInstanceCommandController extends EntityAPIController {
+class RunningGameCommandController extends EntityAPIController {
 
   public function create(array $values = array()) {
     global $user;
@@ -115,15 +116,15 @@ class GameInstanceCommandController extends EntityAPIController {
 
 
 /**
- * UI controller for Game Instance.
+ * UI controller for Running Game.
  */
-class GameInstanceUIController extends EntityDefaultUIController {
+class RunningGameUIController extends EntityDefaultUIController {
   /**
    * Overrides hook_menu() defaults.
    */
   public function hook_menu() {
     $items = parent::hook_menu();
-    $items[$this->path]['description'] = 'Manage Game Instances.';
+    $items[$this->path]['description'] = 'Manage Running Games.';
     return $items;
   }
 }
@@ -157,9 +158,9 @@ class Game extends Entity {
 }
 
 /**
- * GameInstance class.
+ * RunningGame class.
  */
-class GameInstance extends Entity {
+class RunningGame extends Entity {
   protected function defaultLabel() {
     return $this->session;
   }
@@ -173,9 +174,9 @@ class GameInstance extends Entity {
 }
 
 /**
- * GameInstance class.
+ * RunningGame class.
  */
-class GameInstanceParticipant extends Entity {
+class RunningGameParticipant extends Entity {
   protected function defaultLabel() {
     return $this->participant_session;
   }
@@ -188,9 +189,9 @@ class GameInstanceParticipant extends Entity {
   }
 }
 /**
- * GameInstance class.
+ * RunningGame class.
  */
-class GameInstanceCommand extends Entity {
+class RunningGameCommand extends Entity {
   
   protected function defaultLabel() {
     return $this->participant_session;

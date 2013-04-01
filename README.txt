@@ -1,16 +1,34 @@
-Place downloaded and custom modules that extend your site functionality beyond
-Drupal core in this directory to ensure clean separation from core modules and
-to facilitate safe, self-contained code updates. Contributed modules from the
-Drupal community may be downloaded at http://drupal.org/project/modules.
+This module is a show case that will try to implement a logical game.
+The module uses entity as its base and create a game entity.
+Game entity has a bundle that describ its base logic like "Board Game", "Card Game" etc..
 
-It is safe to organize modules into subdirectories, such as "contrib" for
-contributed modules, and "custom" for custom modules. Note that if you move a
-module to a subdirectory after it has been enabled, you may need to clear the
-Drupal cache so that it can be found.
+Each game can be "played", whan you play the game you create a server side instance that will save all changes to the game.
 
-In multisite configuration, modules found in this directory are available to
-all sites. Alternatively, the sites/your_site_name/modules directory pattern may
-be used to restrict modules to a specific site instance.
 
-Refer to the "Developing for Drupal" section of the README.txt in the Drupal
-root directory for further information on extending Drupal with custom modules.
+We are using Rules module for logical implementation
+When you can trigger a logic event for base triggers:
+on CREATING A NEW GAME
+on GAME START
+on GAME END
+
+For base turn module there are 2 more triggers
+on TURN STARTS
+on TURN ENDS
+
+For Board Game there are 2 more triggers
+on CLICK EVENT IS CALLED
+on HOVER EVENT IS CALLED
+
+When action can be customize per game or for all games
+for now i have 2 actions custom
+message => a dynamic message that can be set to a certain game or all games
+TileSetOwner => that will take a certain tile and make player own it
+
+This module is build to be expended and not to use as is.
+
+
+TODO:
+1. Separate UI from code and build 2 different modules for that
+2. Change The player Join/leave in to the trigger circle
+3. Add a module that will connect to services module
+4. Make Turn base game a boolean option

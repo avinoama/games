@@ -100,7 +100,7 @@ function game_schema() {
               'type' => 'int',
               'not null' => TRUE,
           ),
-          /*      'created' => array(
+          'created' => array(
             'description' => 'The Unix timestamp when the game was created.',
             'type' => 'date',
             'mysql_type' => 'DATETIME',
@@ -108,14 +108,14 @@ function game_schema() {
             'sqlite_type' => 'VARCHAR',
             'sqlsrv_type' => 'smalldatetime',
             'not null' => TRUE,
-            ), */
+            ), /*
           'created' => array(
               'description' => 'The Unix timestamp when the game was created.',
               'type' => 'int',
               'unsigned' => TRUE,
               'not null' => TRUE,
               'default' => 0,
-          ),
+          ),*/
           'changed' => array(
               'description' => 'The Unix timestamp when the game was most recently saved.',
               'type' => 'int',
@@ -169,7 +169,7 @@ function game_schema() {
       ),
   );
 
-  $schema['game_instance'] = array(
+  $schema['running_game'] = array(
       'description' => 'the base table for state machine that will help save live instance of game.',
       'fields' => array(
   'id' => array(
@@ -227,7 +227,7 @@ function game_schema() {
           'type' => array('session'),
       ),
   );
-  $schema['game_instance_participant'] = array(
+  $schema['running_game_participant'] = array(
       'description' => 'The base user table to hold all participent of a single instance of a game.',
       'fields' => array(
   'id' => array(
@@ -235,7 +235,7 @@ function game_schema() {
       'not null' => TRUE,
       'description' => 'Primary Key: Unique game instance ID.',
   ),
-  'instance_id' => array(
+  'running_game_id' => array(
       'description' => 'game id that user is playing.',
       'type' => 'int',
       'not null' => TRUE,
@@ -276,7 +276,7 @@ function game_schema() {
       'primary key' => array('id'),
   );
 
-  $schema['game_instance_command'] = array(
+  $schema['running_game_command'] = array(
       'description' => 'The base user table to hold all commands of a game.',
       'fields' => array(
           'id' => array(
@@ -284,7 +284,7 @@ function game_schema() {
               'not null' => TRUE,
               'description' => 'Primary Key: Unique.',
           ),
-          'instance_id' => array(
+          'running_game_id' => array(
               'description' => 'game id that user is playing.',
               'type' => 'int',
               'not null' => TRUE,
@@ -303,8 +303,7 @@ function game_schema() {
           ),
           'command_data' => array(
               'description' => 'Extra data that the command passes to JS.',
-              'type' => 'varchar',
-              'length' => 256,
+              'type' => 'text',
               'not null' => TRUE,
           ),
           'command_time' => array(

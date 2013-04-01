@@ -1,9 +1,9 @@
 
 <?php
 
-define("GAME_STATUS_NOT_STARTED", 1);
-define("GAME_STATUS_STARTED", 2);
-define("GAME_STATUS_ENDED", 3);
+define("GAME_STATUS_NOT_STARTED", 1); // Wating for players to join
+define("GAME_STATUS_STARTED", 2); // Game is in progress
+define("GAME_STATUS_ENDED", 3); // Game Ended
 
 define("PLAYER_STATUS_JOINED", 1);
 define("PLAYER_STATUS_PLAYING", 2);
@@ -13,20 +13,20 @@ define("PLAYER_STATUS_WON", 4);
 define("PLAYER_MAX_IDLE_TIME", 120); // in seconds
 
 /**
- * game_instance_ajax_callback( gameInstance )
+ * running_game_ajax_callback( RunningGame )
  * 
- * @param type $game_instance
+ * @param type $running_game
  * @return json object
  * 
  */
-function game_ui_instance_ajax_callback($game_instance) {
+function game_ui_instance_ajax_callback($running_game) {
   drupal_session_start();
   global $user;
   //ajax_get_form() function will be the drupal way of doing it
   $_SESSION["anonymous-tracker"] = time();
 
   //  load game instance
-  $game = game_load($game_instance->gid);
+  $game = game_load($running_game->gid);
 
   $tabs = array();
 
@@ -42,26 +42,26 @@ function game_ui_instance_ajax_callback($game_instance) {
       //  check if user is playing current game
       $query = new EntityFieldQuery;
       $result = $query
-              ->entityCondition('entity_type', 'game_instance_participant')
-              ->propertyCondition('instance_id', $game_instance->id)
+              ->entityCondition('entity_type', 'running_game_participant')
+              ->propertyCondition('running_game_id', $running_game->id)
               ->execute();
       //  if user is currently register to this game
-      if (isset($result['game_instance_participant'][session_id()])) {
-        echo drupal_json_encode(array("message" => "Already joind game, please be patiant or ask a friend to join.", "players_count" => count($result['game_instance_participant']), "time" => time()));
+      if (isset($result['running_game_participant'][session_id()])) {
+        echo drupal_json_encode(array("message" => "Already joind game, please be patiant or ask a friend to join.", "players_count" => count($result['running_game_participant']), "time" => time()));
         return null;
       }
       // check if user can join current game
       $game->field_max_num_players;
       $game->field_min_num_players;
 
-      if (count($result['game_instance_participant']) >= $game->field_max_num_players['und'][0]['value']) {
+      if (count($result['running_game_participant']) >= $game->field_max_num_players['und'][0]['value'] && $game->field_max_num_players['und'][0]['value']!=-1 ) {
         echo drupal_json_encode(array("message" => "Game is already full", "time" => time()));
         return null;
       }
 
       $can_start_game = false;
-      $num_of_players = count($result['game_instance_participant']);
-      if (( $num_of_players + 1) >= $game->field_min_num_players['und'][0]['value']) {
+      $num_of_players = count($result['running_game_participant']);
+      if (( $num_of_players + 1) >= $game->field_min_num_players['und'][0]['value'] ||  $game->field_min_num_players['und'][0]['value']==-1) {
         $can_start_game = true;
       }
       //$can_start_game = true;
@@ -72,39 +72,41 @@ function game_ui_instance_ajax_callback($game_instance) {
       }
 
       //  Create an instance of current user to play this game
-      $game_instance_participant = array();
-      $game_instance_participant['instance_id'] = $game_instance->id;
-      $game_instance_participant['bundle'] = 'game_instance_participant';
-      $game_instance_participant['participant_name'] = $player_name;
+      $running_game_participant = array();
+      $running_game_participant['running_game_id'] = $running_game->id;
+      $running_game_participant['bundle'] = 'running_game_participant';
+      $running_game_participant['participant_name'] = $player_name;
 
-      $game_instance_participant_entity = entity_create("game_instance_participant", $game_instance_participant);
+      $running_game_participant_entity = entity_create("running_game_participant", $running_game_participant);
 
-      if ($game_instance_participant_entity->save()) {
+      if ($running_game_participant_entity->save()) {
 
         //  Write to other user that a new user has just joined in
-        $game_instance_command = array();
-        $game_instance_command['instance_id'] = $game_instance->id;
-        $game_instance_command['command_id'] = 1;
-        $game_instance_command['command_data'] = drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "time" => time()));
-        $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
+        $running_game_command = array();
+        $running_game_command['running_game_id'] = $running_game->id;
+        $running_game_command['command_id'] = 1;
+        $running_game_command['command_data'] = drupal_json_encode(array("message" => "user " . $player_name . " has joined the game","callback" => array("fn" => "set_players_count", "module" => "RunningGame", "params" => ($num_of_players+1)), "time" => time()));
+        $running_game_command_entity = entity_create("running_game_command", $running_game_command);
 
 
         //  check if command can occure
-        if ($game_instance_command_entity->save()) {
-          if (count($result['game_instance_participant']) >= $game->field_max_min_players['und'][0]['value']) {
+        if ($running_game_command_entity->save()) {
+          if (count($result['running_game_participant']) >= $game->field_max_min_players['und'][0]['value']) {
             //  allow game to start
             if ($can_start_game) {
-              $game_instance_command2 = array();
-              $game_instance_command2['instance_id'] = $game_instance->id;
-              $game_instance_command2['command_id'] = 1;
-              $game_instance_command2['command_data'] = drupal_json_encode(array("callback" => array("fn" => "show_start_game_button", "module" => "gameInstance", "params" => "1"), "time" => time()));
-              $game_instance_command_entity2 = entity_create("game_instance_command", $game_instance_command2);
-              $game_instance_command_entity2->save();
+              $running_game_command2 = array();
+              $running_game_command2['running_game_id'] = $running_game->id;
+              $running_game_command2['command_id'] = 1;
+              $running_game_command2['command_data'] = drupal_json_encode(array("callback" => array("fn" => "show_start_game_button", "module" => "RunningGame", "params" => "1"), "time" => time()));
+              $running_game_command_entity2 = entity_create("running_game_command", $running_game_command2);
+              $running_game_command_entity2->save();
             }
-            echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game, to start game press the start button", "time" => time()));
-          } else {
-            echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "time" => time()));
           }
+          //echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "time" => time()));
+          echo drupal_json_encode(array(
+              array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_player_name", "module" => "RunningGame", "params" => $player_name))),
+              array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_players_count", "module" => "RunningGame", "params" => ($num_of_players+1))))
+          ));
           return null;
         } else {
           drupal_json_encode(array("message" => "opps somthing went wrong could not save game", "time" => time()));
@@ -132,24 +134,29 @@ function game_ui_instance_ajax_callback($game_instance) {
           'hook' => $action['hook'],
           'params' => $action['params'],
       );
-
+      // Always add game instance to rules_invoke_event
+      $action['params']['running_game']=$running_game;
       // Events are invoked by the event name, followed by the event variables in
       // the same order as they are listed in the event declaration. You can also
       // use rules_invoke_event_by_args() to call the event with all the variables
       // collected in an associative array – which is particularly useful if there
       // are a shifting number of variables
-
-      rules_invoke_event($action['hook'], $game_instance, $action['params']);
-
-      echo drupal_json_encode(array("Return" => $action_return, "time" => time(), "action" => $action));
-
-
+      //dpm($action['hook']);
+      //dpm($running_game);
+      //dpm($action['params']);
+      //dpm($action['params']);
+      //$response = rules_invoke_event($action['hook'], $action['params'], $running_game);
+      
+      $response = rules_invoke_event_by_args($action['hook'], $action['params']);
+      
+      //rules_invoke_event($action['hook'], $action['params']);
+      //echo drupal_json_encode(array("Return" => $action_return, "time" => time(), "action" => $action));
       //  change game status
       if ($action['hook'] == "game_start") {
         // Notice : need to check if game can change the status to start
-        // load all players and add there turn in the game the count starts with 1....
+        // load all players and add there turn in the game the count starts with 1,2,3,4... etc
         // db query
-        $query = db_select('game_instance_participant', 'p')->fields('p')->condition('instance_id', $game_instance->id, '=');
+        $query = db_select('running_game_participant', 'p')->fields('p')->condition('running_game_id', $running_game->id, '=');
         $players = $query->execute();
 
         $i = 1;
@@ -160,44 +167,28 @@ function game_ui_instance_ajax_callback($game_instance) {
           }
           $player->status = PLAYER_STATUS_PLAYING;
           $player->participant_turn = $i;
-          entity_save("game_instance_participant", $player);
+          entity_save("running_game_participant", $player);
           $i++;
         }
 
-        // TODO : add command "turn Start for $first_player"
-        /*
-          $game_instance_command = array('instance_id' => $game_instance->id,
-          'command_id' => 3,
-          'command_data' => drupal_json_encode(array(
-          "message" => "Game Started its ".$first_player. " turn" ,
-          "callback" => array("fn"=>"start_game","module"=>"gameInstance","params"=>"1"),
-          "time" => time()))
-          );
-         */
-
-        $game_instance_command = array();
-        $game_instance_command['instance_id'] = $game_instance->id;
-        $game_instance_command['command_id'] = 1;
-        $game_instance_command['command_data'] = drupal_json_encode(array("message" => "Game Started its " . $first_player . " turn", "time" => time()));
-        //$game_instance_command['command_data'] = drupal_json_encode(array("callback" => array("fn" => "message", "module" => "gameInstance", "params" => array("Game Started its " . $first_player . " turn")), "time" => time()));
-        $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
-        $game_instance_command_entity->save();
-        //{"message":"Game Started its Player1 turn","time":1355586007}
-//{"callback":{"fn":"show_start_game_button","module":"gameInstance","params":"1"},"time":1355585344}
+        $running_game_command = array();
+        $running_game_command['running_game_id'] = $running_game->id;
+        $running_game_command['command_id'] = 1;
+        $running_game_command['command_data'] = drupal_json_encode(array("callback" => array("fn" => "start_game", "module" => "RunningGame", "params" => "1")));
+        $running_game_command_entity = entity_create("running_game_command", $running_game_command);
+        $running_game_command_entity->save();
         //  Start game
-        $game_instance->started = REQUEST_TIME;
-        $game_instance->status = GAME_STATUS_STARTED;
-        if ($game_instance->save()) {
-
-
+        $running_game->started = REQUEST_TIME;
+        $running_game->status = GAME_STATUS_STARTED;
+        if ($running_game->save()) {
           //  game saved
-          // dpm("game saved");
         } else {
           //  problom saving game
         }
       }
 
-
+      echo drupal_json_encode(array(""));
+      return;
 
       //echo drupal_json_encode(array("Error" => $_POST, "time" => time()));
       break;
@@ -207,9 +198,9 @@ function game_ui_instance_ajax_callback($game_instance) {
 
       /* check id a user is idle for over a minute */
       $now = time();
-      $query2 = db_select('game_instance_participant', 'p');
-      $query2->fields('p', array('instance_id', 'participant_session', 'participant_name', 'status'))
-              ->condition('p.instance_id', $game_instance->id, '=')
+      $query2 = db_select('running_game_participant', 'p');
+      $query2->fields('p', array('running_game_id', 'participant_session', 'participant_name', 'status'))
+              ->condition('p.running_game_id', $running_game->id, '=')
               ->condition('p.alive', ($now - (PLAYER_MAX_IDLE_TIME)), '<')
               ->condition("p.status", PLAYER_STATUS_PLAYING, "=")
               ->orderBy('p.alive', 'ASC');
@@ -221,38 +212,38 @@ function game_ui_instance_ajax_callback($game_instance) {
 
       $i = 0;
       foreach ($players as $player) {
-        $query = db_update('game_instance_participant');
+        $query = db_update('running_game_participant');
         $query->fields(array('status' => PLAYER_STATUS_IDLE))
-                ->condition('instance_id', $game_instance->id, '=')
+                ->condition('running_game_id', $running_game->id, '=')
                 ->condition('participant_session', $player->participant_session, '=')
                 ->execute();
         //  Add command user is idle
-        /*        $game_instance_command = array();
-          $game_instance_command['instance_id'] = $game_instance->id;
-          $game_instance_command['command_id'] = 1;
-          $game_instance_command['command_data'] = drupal_json_encode(array("message" => "user " .$player->participant_name . " is IDLE", "time" => time()));
-          $game_instance_command_entity = entity_create("game_instance_command", $game_instance_command);
+        /*        $running_game_command = array();
+          $running_game_command['running_game_id'] = $running_game->id;
+          $running_game_command['command_id'] = 1;
+          $running_game_command['command_data'] = drupal_json_encode(array("message" => "user " .$player->participant_name . " is IDLE", "time" => time()));
+          $running_game_command_entity = entity_create("running_game_command", $running_game_command);
 
           //  check if command can occure
-          $game_instance_command_entity->save();
+          $running_game_command_entity->save();
          * 
          */
       }
 
       //  $action['time'];
-      //   change user time stamp to know
+      //   change user time stamp to now
       //  find new command that had been done by other players
 
-      $query = db_update('game_instance_participant');
+      $query = db_update('running_game_participant');
       $query->fields(array('alive' => time()))
-              ->condition('instance_id', $game_instance->id, '=')
+              ->condition('running_game_id', $running_game->id, '=')
               ->condition('participant_session', session_id(), '=')
               ->execute();
 
 
-      $query = db_select('game_instance_command', 'c');
+      $query = db_select('running_game_command', 'c');
       $query->fields('c', array('id', 'command_id', 'command_data', 'command_time'))
-              ->condition('c.instance_id', $game_instance->id, '=')
+              ->condition('c.running_game_id', $running_game->id, '=')
               ->condition('c.command_time', $action['time'], '>=')
               ->condition('c.id', $action['id'], '>')
               ->orderBy('c.command_time', 'ASC');
@@ -267,8 +258,8 @@ function game_ui_instance_ajax_callback($game_instance) {
       /*
        * $query = new EntityFieldQuery;
        * $results = $query
-        ->entityCondition('entity_type', 'game_instance_command')
-        ->propertyCondition('instance_id', $game_instance->id)
+        ->entityCondition('entity_type', 'running_game_command')
+        ->propertyCondition('running_game_id', $running_game->id)
         //->fieldCondition("command_id")
         //->propertyCondition('command_time', $action['time'], ">")
         ->execute();
@@ -288,33 +279,23 @@ function game_ui_instance_ajax_callback($game_instance) {
       echo drupal_json_encode($array);
       return null;
       break;
-    /*
-
-      case "game_start":
-
-
-
-      echo drupal_json_encode(array("message" => "starting game", "time" => time()));
-      return null;
-      break;
-     */
     default:
-      echo drupal_json_encode(array("Error" => "command not known", "time" => time()));
+      echo drupal_json_encode(array("Error" => "command not known " . $action['command'], "time" => time()));
       break;
   }
   //$tabs = module_invoke_all('uiu_mgn_tabs', $tabs);
-  //$game_instance
+  //$running_game
   //arg()
   //$_POST
   //echo  drupal_json_encode($_POST['action']);
   return null;
 }
 
-function check_if_user_left($game_instance) {
+function check_if_user_left($running_game) {
   $query = new EntityFieldQuery;
   $result = $query
-          ->entityCondition('entity_type', 'game_instance_participant')
-          ->propertyCondition('instance_id', $game_instance->id)
+          ->entityCondition('entity_type', 'running_game_participant')
+          ->propertyCondition('running_game_id', $running_game->id)
           ->execute();
 }
 
