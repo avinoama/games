@@ -1,34 +1,29 @@
-This module is a show case that will try to implement a logical game.
-The module uses entity as its base and create a game entity.
-Game entity has a bundle that describ its base logic like "Board Game", "Card Game" etc..
+This module is a showcase that will try to implement Games inside drupal.
+The module uses entity as its base and create a "game" entity.
+Each Game entity has a bundle that describ its base logic like "Board Game", "Card Game" etc..
 
-Each game can be "played", whan you play the game you create a server side instance that will save all changes to the game.
+Each game can be "played", whan you play the game you create a server side instance called "running_game",
+this "running_game" will save all changes to the game.
 
+We are using Rules module for logical implementation.
+To view forther more just install the board_game module and go into rules ui,
+There you will see example for 2 games TicTacToe and Sudoku.
 
-We are using Rules module for logical implementation
-When you can trigger a logic event for base triggers:
-on CREATING A NEW GAME
+Logic event for base triggers:
+on Game Created
 on GAME START
 on GAME END
 
-For base turn module there are 2 more triggers
-on TURN STARTS
-on TURN ENDS
-
-For Board Game there are 2 more triggers
-on CLICK EVENT IS CALLED
-on HOVER EVENT IS CALLED
+For Board Games there are more triggers
+Tile clicked
+Tile hoverd
+Tile set
 
 When action can be customize per game or for all games
-for now i have 2 actions custom
-message => a dynamic message that can be set to a certain game or all games
-TileSetOwner => that will take a certain tile and make player own it
 
-This module is build to be expended and not to use as is.
+Remember : this module is just a showcase and is not ment to use in production envirements
 
 
 TODO:
-1. Separate UI from code and build 2 different modules for that
-2. Change The player Join/leave in to the trigger circle
-3. Add a module that will connect to services module
-4. Make Turn base game a boolean option
+1. Add a module that will connect to services module
+2. Create an entity called "Pawn" that will be able to move on a board
