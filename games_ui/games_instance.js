@@ -8,7 +8,8 @@
       // $("#messages").css("overflow","auto");
       // $("#messages").css("height","100px");
       
-      
+      $.jGrowl.defaults.pool = 5;
+      $.jGrowl.defaults.position = "bottom-right";
       //  Show Game Status
       
       //  IF game didnot start yet
@@ -42,31 +43,24 @@
       
       setTimeout(getCommands,1000);
 
-    /**
-     * show number of players in game
-     */
-    
-    /**
-     * show game status
-     */
-    
-    /**
-     * show current player name
-     */
     
     }, // end attach
     message: function(params){
       for(i in params) {
         if(params[i]!=undefined && params[i]!="") {
           $("#game-last-notice").text(params[i]);
+          $("#game-notice-board").jGrowl(params[i], {
+            sticky:			false,
+            life: 			12000
+          });
         }
       }
       
     },
     start_game: function() {
       //console.log("game started");
-       $(".start-game").fadeOut(500);
-      //Drupal.settings.RunningGame.instance.status=2;
+      $(".start-game").fadeOut(500);
+    //Drupal.settings.RunningGame.instance.status=2;
       
     },
     game_ended: function() {

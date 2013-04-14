@@ -25,4 +25,5 @@
   </div>
   <div id="game-canvas" class="game-canvas">
   </div>
+  <div id="game-notice-board" class="game-notice-board"></div>
 </div>

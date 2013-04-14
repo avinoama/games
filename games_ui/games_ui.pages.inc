@@ -16,6 +16,11 @@ function game_ui_play($running_game) {
   drupal_session_start();
   drupal_set_title("");
   global $user;
+  $path = drupal_get_path('module', 'games_ui');
+  drupal_add_js($path . "/jgrowl/jquery.jgrowl.js", 'file');
+  drupal_add_css($path . "/jgrowl/jquery.jgrowl.css", 'file');
+
+
   $game = game_load($running_game->gid);
 
   $player_joined_game = false;

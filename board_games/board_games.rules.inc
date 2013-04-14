@@ -155,27 +155,27 @@ function board_games_rules_action_info() {
               'validate' => 'rules_tile_decrement_validation',
           ),
       ),
-      'rules_game_set_matrix' => array(
-          'label' => t('Game set Metrix'),
-          'parameter' => array(
-              'running_game' => array(
-                  'type' => 'running_game',
-                  'label' => 'running_game',
-                  'optional' => FALSE,
-              ),
-              'matrix_jason' => array(
-                  'type' => 'text',
-                  'label' => 'valid jason array',
-                  'description' => "example : [{\"20\": 8},{\"25\": 6}] in position 20 put value 8 and in position 25 put value 6.",
-                  "optional" => FALSE,
-              ),
-          ),
-          'group' => t('Game Board'),
-          'base' => 'rules_game_set_matrix',
-          'callbacks' => array(
-              'validate' => 'rules_game_set_matrix_validation',
-          ),
-      ),
+//      'rules_game_set_matrix' => array(
+//          'label' => t('Game set Metrix'),
+//          'parameter' => array(
+//              'running_game' => array(
+//                  'type' => 'running_game',
+//                  'label' => 'running_game',
+//                  'optional' => FALSE,
+//              ),
+//              'matrix_text' => array(
+//                  'type' => 'text',
+//                  'label' => 'valid jason array',
+//                  'description' => "example : [{\"20\": 8},{\"25\": 6}] in position 20 put value 8 and in position 25 put value 6.",
+//                  "optional" => FALSE,
+//              ),
+//          ),
+//          'group' => t('Game Board'),
+//          'base' => 'rules_game_set_matrix',
+//          'callbacks' => array(
+//              'validate' => 'rules_game_set_matrix_validation',
+//          ),
+//      ),
       'rules_game_set_tile_in_matrix' => array(
           'label' => t('Game set Tile'),
           'parameter' => array(
@@ -203,39 +203,40 @@ function board_games_rules_action_info() {
       ),
   );
 }
-
-function rules_game_set_matrix_validation($running_game, $matrix_jason) {
-  $j = drupal_json_decode($matrix_jason);
-  if ($j == null) {
-    return false;
-  }
-  return true;
-}
-
-function rules_game_set_matrix($running_game, $matrix_jason) {
-  $matrix = drupal_json_decode($matrix_jason);
-  $max_position = 0;
-  foreach ($matrix as $key => $value) {
-    $k = key($value);
-    $running_game->field_matrix['und'][$k]['value'] = $value[$k];
-    if ($k > $max_position) {
-      $max_position = $k;
-    }
-  }
-  for ($i = 0; $i < $max_position; $i++) {
-    if (!isset($running_game->field_matrix['und'][$i])) {
-      $running_game->field_matrix['und'][$i]['value'] = "0";
-    }
-  }
-  if ($running_game->save()) {
-    $running_game_command = array();
-    $running_game_command['running_game_id'] = $running_game->id;
-    $running_game_command['command_id'] = 1;
-    $running_game_command['command_data'] = drupal_json_encode(array("callback" => array("module" => "boardGame", "fn" => "board_game_set_matrix", "params" => array("matrix" => $matrix)), "time" => time()));
-    $running_game_command_entity = entity_create("running_game_command", $running_game_command);
-    $running_game_command_entity->save();
-  }
-}
+// Not a good way to do design for none programmers game
+// 
+//function rules_game_set_matrix_validation($running_game, $matrix) {
+////  $j = drupal_json_decode($matrix_jason);
+////  if ($j == null) {
+////    return false;
+////  }
+//  return true;
+//}
+//
+//function rules_game_set_matrix($running_game, $matrix_text) {
+//  $matrix = drupal_json_decode($matrix_text);
+//  $max_position = 0;
+//  foreach ($matrix as $key => $value) {
+//    $k = key($value);
+//    $running_game->field_matrix['und'][$k]['value'] = $value[$k];
+//    if ($k > $max_position) {
+//      $max_position = $k;
+//    }
+//  }
+//  for ($i = 0; $i < $max_position; $i++) {
+//    if (!isset($running_game->field_matrix['und'][$i])) {
+//      $running_game->field_matrix['und'][$i]['value'] = "0";
+//    }
+//  }
+//  if ($running_game->save()) {
+//    $running_game_command = array();
+//    $running_game_command['running_game_id'] = $running_game->id;
+//    $running_game_command['command_id'] = 1;
+//    $running_game_command['command_data'] = drupal_json_encode(array("callback" => array("module" => "boardGame", "fn" => "board_game_set_matrix", "params" => array("matrix" => $matrix)), "time" => time()));
+//    $running_game_command_entity = entity_create("running_game_command", $running_game_command);
+//    $running_game_command_entity->save();
+//  }
+//}
 
 function rules_game_set_tile_in_matrix_validation($running_game, $tile_postion) {
   return true;

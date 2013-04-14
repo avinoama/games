@@ -237,11 +237,187 @@ function board_games_default_rules_configuration() {
     "REQUIRES" : [ "board_games" ],
     "USES VARIABLES" : { "running_game" : { "label" : "running game", "type" : "running_game" } },
     "ACTION SET" : [
-      { "rules_game_set_matrix" : {
+      { "rules_game_set_tile_in_matrix" : {
           "running_game" : [ "running_game" ],
-          "matrix_jason" : "[{\u00220\u0022: 5},{\u00221\u0022: 3},{\u00224\u0022: 7},{\u00229\u0022: 6},{\u002212\u0022: 1},{\u002213\u0022: 9},{\u002214\u0022: 5},{\u002219\u0022: 9},{\u002220\u0022: 8},{\u002225\u0022: 6},{\u002227\u0022: 8},{\u002231\u0022: 6},{\u002235\u0022: 3},{\u002236\u0022: 4},{\u002239\u0022: 8},{\u002241\u0022: 3},{\u002244\u0022: 1},{\u002245\u0022: 7},{\u002249\u0022: 2},{\u002253\u0022: 6},{\u002255\u0022: 6},{\u002260\u0022: 2},{\u002261\u0022: 8},{\u002266\u0022: 4},{\u002267\u0022: 1},{\u002268\u0022: 9},{\u002271\u0022: 5},{\u002276\u0022: 8},{\u002279\u0022: 7},{\u002280\u0022: 9}]"
+          "tile_postion" : "0",
+          "tile_value" : "5"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "1",
+          "tile_value" : "3"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "4",
+          "tile_value" : "7"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "9",
+          "tile_value" : "6"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "12",
+          "tile_value" : "1"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "13",
+          "tile_value" : "9"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "14",
+          "tile_value" : "5"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "19",
+          "tile_value" : "9"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "20",
+          "tile_value" : "8"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "25",
+          "tile_value" : "6"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "27",
+          "tile_value" : "8"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "31",
+          "tile_value" : "6"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "35",
+          "tile_value" : "3"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "36",
+          "tile_value" : "4"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "39",
+          "tile_value" : "8"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "41",
+          "tile_value" : "3"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "44",
+          "tile_value" : "1"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "45",
+          "tile_value" : "7"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "49",
+          "tile_value" : "2"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "53",
+          "tile_value" : "6"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "55",
+          "tile_value" : "6"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "60",
+          "tile_value" : "2"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "61",
+          "tile_value" : "8"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "66",
+          "tile_value" : "4"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "67",
+          "tile_value" : "1"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "68",
+          "tile_value" : "9"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "71",
+          "tile_value" : "5"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "76",
+          "tile_value" : "8"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "79",
+          "tile_value" : "7"
+        }
+      },
+      { "rules_game_set_tile_in_matrix" : {
+          "running_game" : [ "running_game" ],
+          "tile_postion" : "80",
+          "tile_value" : "9"
         }
       }
+
     ]
   }
 }');

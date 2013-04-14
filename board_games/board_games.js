@@ -1,8 +1,6 @@
 (function ($) {
- 
   Drupal.behaviors.boardGame = {
     attach: function (context, settings) {
-      //console.log(Drupal.settings.RunningGame);
       field_matrix = Drupal.settings.RunningGame.instance.field_matrix;
       console.log(field_matrix);
       height = Drupal.settings.RunningGame.game.field_board_height['und'][0].value;

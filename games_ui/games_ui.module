@@ -21,7 +21,6 @@ function games_ui_menu() {
   // will show game page
   $items[$play_uri] = array(
       'title' => 'Play',
-      //'title arguments' => array('running_game', $game_uri_argument_position),
       'page callback' => 'game_ui_play',
       'page arguments' => array($game_uri_argument_position),
       'access arguments' => array('play game entities'),
