@@ -3,6 +3,14 @@
 function board_games_menu() {
   $items = array();
 
+  // form to add game
+  /*$items['testing_board_game'] = array(
+      'title' => 'testing_board_game',
+      'page callback' => '_board_games_remove_default_game_type',
+      'access arguments' => TRUE,
+  );*/
+
+
   return $items;
 }
 
@@ -216,6 +224,7 @@ function board_games_get_tile() {
   // chack valid tile position for current game
   return $tile_position;
 }
+
 function board_games_get_tile_value() {
   $tile_position = intval(check_plain($_POST['action']['params']['tile_position']));
   $running_game = _board_games_get_current_instance();
@@ -247,8 +256,6 @@ function board_games_current_player_turn() {
   $running_game = _board_games_get_current_instance();
   return $running_game->field_current_turn['und'][0]['value'];
 }
-
-
 
 function board_games_current_matrix() {
   //$running_game = _board_games_get_current_instance();
@@ -284,103 +291,7 @@ function board_games_tile_set_action_submit($form, $form_state) {
   return array('game_id' => $form_state['values']['game_id']);
 }
 
-/**
- *  Game board default fields 
- *  Create fields for Game and GameInstance entities of type board_games
- *  
- * @return string 
- */
-function _board_games_default_fields() {
-  $bundle = 'board_game';
 
-  $fields = array();
-
-  //  Fields for game entity
-  $fields[] = array(
-      'field_name' => 'field_board_width',
-      'label' => t('Board Width'),
-      'type' => 'number_integer',
-      'default_value' => 0,
-      'cardinality' => '1',
-      'entity_type' => 'game',
-  );
-  $fields[] = array(
-      'field_name' => 'field_board_height',
-      'label' => t('Board Height'),
-      'type' => 'number_integer',
-      'default_value' => 0,
-      'cardinality' => '1',
-      'entity_type' => 'game',
-  );
-  $fields[] = array(
-      'field_name' => 'field_min_num_players',
-      'label' => t('Minmum Number Players'),
-      'type' => 'number_integer',
-      'default_value' => 0,
-      'cardinality' => 1,
-      'entity_type' => 'game',
-      'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
-  );
-  $fields[] = array(
-      'field_name' => 'field_max_num_players',
-      'label' => t('Maximum Number Players'),
-      'type' => 'number_integer',
-      'default_value' => 0,
-      'cardinality' => 1,
-      'entity_type' => 'game',
-      'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
-  );
-  $fields[] = array(
-      'field_name' => 'field_tile_type',
-      'label' => t('Tile Type'),
-      'type' => 'list_integer',
-      'default_value' => 1,
-      'cardinality' => 1,
-      'entity_type' => 'game',
-      'indexes' => array(
-          'value' => array(
-              0 => 'value',
-          ),
-      ),
-      'module' => 'list',
-      'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle), 'allowed_values_function' => '_board_games_allowed_tile_type_options_list'),
-      'widget' => array(
-          'active' => 1,
-          'module' => 'options',
-          'settings' => array(),
-          'type' => 'options_select',
-          'weight' => '5',
-      ),
-  );
-
-  //  Fields for Running Game
-  $fields[] = array(
-      'field_name' => 'field_matrix',
-      'label' => t('Matrix'),
-      'type' => 'number_integer', //'number_integer',
-      'default_value' => 0,
-      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-      'entity_type' => 'running_game',
-      'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
-  );
-  $fields[] = array(
-      'field_name' => 'field_players',
-      'label' => t('Players'),
-      'type' => 'entityreference',
-      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-      'entity_type' => 'running_game',
-  );
-  $fields[] = array(
-      'field_name' => 'field_current_turn',
-      'label' => t('Current Turn'),
-      'type' => 'number_integer',
-      'default_value' => 1,
-      'cardinality' => 1,
-      'entity_type' => 'running_game',
-      'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
-  );
-  return $fields;
-}
 
 function _board_games_allowed_tile_type_options_list() {
   $options = array(
@@ -413,6 +324,11 @@ function _board_games_add_default_fields() {
   }
 }
 
+
+/**
+ * _board_games_add_default_games()
+ * after adding game_type board game add default games
+ */
 function _board_games_add_default_games() {
   $entity_type = "game";
   $bundle = 'board_game';
@@ -421,6 +337,7 @@ function _board_games_add_default_games() {
 
   $game->title = "TicTacToe";
   $game->type = $bundle;
+  $game->machine_name= "tic_tac_toe";
   $game->description = "Tic-tac-toe (or Noughts and crosses, Xs and Os) is a pencil-and-paper game for two players, X and O, who take turns marking the spaces in a 3×3 grid. The player who succeeds in placing three respective marks in a horizontal, vertical, or diagonal row wins the game.";
   $game->field_board_width['und'][]['value'] = 3;
   $game->field_board_height['und'][]['value'] = 3;
@@ -433,6 +350,7 @@ function _board_games_add_default_games() {
 
   $game2->title = "Sudoku";
   $game2->type = $bundle;
+  $game2->machine_name= "sudoku";
   $game2->description = 'Sudoku (数独 sūdoku?, すうどく) i/suːˈdoʊkuː/ soo-doh-koo, originally called Number Place,[1] is a logic-based,[2][3] combinatorial[4] number-placement puzzle. The objective is to fill a 9×9 grid with digits so that each column, each row, and each of the nine 3×3 sub-grids that compose the grid (also called "boxes", "blocks", "regions", or "sub-squares") contains all of the digits from 1 to 9. The puzzle setter provides a partially completed grid, which typically has a unique solution.';
   $game2->field_board_width['und'][]['value'] = 9;
   $game2->field_board_height['und'][]['value'] = 9;
@@ -440,10 +358,34 @@ function _board_games_add_default_games() {
   $game2->field_max_num_players['und'][]['value'] = -1;
   $game2->field_tile_type['und'][]['value'] = 2;
   game_save($game2);
-
-  
 }
 
-function _board_games_remove_default_fields() {
-  
+/**
+ *   _board_games_add_default_game_type()
+ *  Adds default game type if not exsits.
+ */
+function _board_games_add_default_game_type() {
+  $query = new EntityFieldQuery();
+
+  $query->entityCondition('entity_type', 'game_type')
+          ->entityCondition('type', 'board_game');
+
+  $result = $query->execute();
+  if (!isset($result["game_type"])) {
+    $values = array('uid' => 1, 'label' => 'board_game', 'type' => 'board_game', 'description' => 'bla bla bla');
+    $new_ent = entity_create('game_type', $values)->save();
+  }
+}
+
+function _board_games_remove_default_game_type() {
+  $query = new EntityFieldQuery();
+
+  $query->entityCondition('entity_type', 'game_type')
+          ->entityCondition('type', 'board_game');
+
+  $result = $query->execute();
+  if (isset($result["game_type"])) {
+    $game_type = reset($result["game_type"]);
+    entity_delete("game_type", $game_type->id);
+  }
 }

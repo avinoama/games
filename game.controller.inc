@@ -6,23 +6,24 @@ class GameController extends EntityAPIController {
     //print_r(date("Y-m-d H:i:s",REQUEST_TIME));
     global $user;
     $values += array(
-      'title' => '',
-      'description' => '',
-      'created' => date("Y-m-d H:i:s",REQUEST_TIME),
-      //'created' => REQUEST_TIME,
-      'changed' => REQUEST_TIME,
-      'uid' => $user->uid,
+        'title' => '',
+        'machine_name' => '',
+        'description' => '',
+        'created' => date("Y-m-d H:i:s", REQUEST_TIME),
+        //'created' => REQUEST_TIME,
+        'changed' => REQUEST_TIME,
+        'uid' => $user->uid,
     );
     return parent::create($values);
   }
 
   public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
     $wrapper = entity_metadata_wrapper('game', $entity);
-    
+
     //$content['author'] = array('#markup' => t('Created by: !author', array('!author' => $wrapper->uid->name->value(array('sanitize' => TRUE)))));
     /*
-    // Make Description and Status themed like default fields.
-    $content['description'] = array(
+      // Make Description and Status themed like default fields.
+      $content['description'] = array(
       '#theme' => 'field',
       '#weight' => 0,
       '#title' =>t('Description'),
@@ -37,60 +38,68 @@ class GameController extends EntityAPIController {
       '#items' => array(array('value' => $entity->description)),
       '#formatter' => 'text_default',
       0 => array('#markup' => check_plain($entity->description))
-    );
-*/
+      );
+     */
     return parent::buildContent($entity, $view_mode, $langcode, $content);
   }
+
 }
 
 class RunningGameController extends EntityAPIController {
 
   public function create(array $values = array()) {
     global $user;
-    
+
     $values += array(
-      'session'=>md5(time()+""+$user->uid+session_id()),
-      'created' => REQUEST_TIME,
-      'participant_turn' =>1,
-      'started'=>REQUEST_TIME,
-      'uid' => $user->uid,
+        'session' => md5(time() + "" + $user->uid + session_id()),
+        'created' => REQUEST_TIME,
+        'participant_turn' => 1,
+        'started' => REQUEST_TIME,
+        'uid' => $user->uid,
     );
     return parent::create($values);
   }
+
 }
+
 class RunningGameParticipantController extends EntityAPIController {
 
   public function create(array $values = array()) {
     global $user;
     drupal_session_start();
-    
+
     $values += array(
-      'participant_session' => session_id(),
-      'participant_name' => "",
-      'joined' => REQUEST_TIME,
-      'alive' =>  REQUEST_TIME,
+        'participant_session' => session_id(),
+        'participant_name' => "",
+        'joined' => REQUEST_TIME,
+        'alive' => REQUEST_TIME,
     );
     return parent::create($values);
   }
+
 }
+
 class RunningGameCommandController extends EntityAPIController {
 
   public function create(array $values = array()) {
     global $user;
     drupal_session_start();
-    
+
     $values += array(
-      'participant_session' => session_id(),
-      'command_time' => REQUEST_TIME,
+        'participant_session' => session_id(),
+        'command_time' => REQUEST_TIME,
     );
     return parent::create($values);
   }
+
 }
- class GameTypeController extends EntityAPIControllerExportable {
-   public function create(array $values = array()) {
+
+class GameTypeController extends EntityAPIControllerExportable {
+
+  public function create(array $values = array()) {
     $values += array(
-      'label' => '',
-      'description' => '',
+        'label' => '',
+        'description' => '',
     );
     return parent::create($values);
   }
@@ -105,20 +114,14 @@ class RunningGameCommandController extends EntityAPIController {
     // @see http://drupal.org/node/1399618
     variable_set('menu_rebuild_needed', TRUE);
   }
+
 }
-
-
-
-
-
-
-
-
 
 /**
  * UI controller for Running Game.
  */
 class RunningGameUIController extends EntityDefaultUIController {
+
   /**
    * Overrides hook_menu() defaults.
    */
@@ -127,12 +130,14 @@ class RunningGameUIController extends EntityDefaultUIController {
     $items[$this->path]['description'] = 'Manage Running Games.';
     return $items;
   }
+
 }
 
 /**
  * UI controller for Game Type.
  */
 class GameTypeUIController extends EntityDefaultUIController {
+
   /**
    * Overrides hook_menu() defaults.
    */
@@ -141,13 +146,14 @@ class GameTypeUIController extends EntityDefaultUIController {
     $items[$this->path]['description'] = 'Manage Game types.';
     return $items;
   }
-}
 
+}
 
 /**
  * Game class.
  */
 class Game extends Entity {
+
   protected function defaultLabel() {
     return $this->title;
   }
@@ -155,12 +161,14 @@ class Game extends Entity {
   protected function defaultUri() {
     return array('path' => 'game/' . $this->identifier());
   }
+
 }
 
 /**
  * RunningGame class.
  */
 class RunningGame extends Entity {
+
   protected function defaultLabel() {
     return $this->session;
   }
@@ -168,47 +176,56 @@ class RunningGame extends Entity {
   protected function defaultUri() {
     return array('path' => 'play/' . $this->identifier());
   }
+
   function isLocked() {
     return isset($this->status) && empty($this->is_new) && (($this->status & ENTITY_IN_CODE) || ($this->status & ENTITY_FIXED));
   }
+
 }
 
 /**
  * RunningGame class.
  */
 class RunningGameParticipant extends Entity {
+
   protected function defaultLabel() {
     return $this->participant_session;
   }
 
   protected function defaultUri() {
-    return "";//array('path' => 'play/' . $this->identifier());
+    return ""; //array('path' => 'play/' . $this->identifier());
   }
+
   function isLocked() {
     return isset($this->status) && empty($this->is_new) && (($this->status & ENTITY_IN_CODE) || ($this->status & ENTITY_FIXED));
   }
+
 }
+
 /**
  * RunningGame class.
  */
 class RunningGameCommand extends Entity {
-  
+
   protected function defaultLabel() {
     return $this->participant_session;
   }
 
   protected function defaultUri() {
-    return "";//array('path' => 'play/' . $this->identifier());
+    return ""; //array('path' => 'play/' . $this->identifier());
   }
+
   function isLocked() {
     return isset($this->status) && empty($this->is_new) && (($this->status & ENTITY_IN_CODE) || ($this->status & ENTITY_FIXED));
   }
+
 }
 
 /**
  * Game Type class.
  */
 class GameType extends Entity {
+
   public $type;
   public $label;
   public $weight = 0;
@@ -220,14 +237,6 @@ class GameType extends Entity {
   function isLocked() {
     return isset($this->status) && empty($this->is_new) && (($this->status & ENTITY_IN_CODE) || ($this->status & ENTITY_FIXED));
   }
+
 }
-
-
-
-
-
-
-
-
-
 

@@ -70,7 +70,7 @@ function game_type_form_submit(&$form, &$form_state) {
 }
 
 function game_type_form_submit_delete(&$form, &$form_state) {
-  $form_state['redirect'] = 'admin/structure/game-types/' . $form_state['game_type']->type . '/delete';
+  $form_state['redirect'] = 'admin/structure/game-types/manage/' . $form_state['game_type']->type . '/delete';
 }
 
 /**

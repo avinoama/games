@@ -51,7 +51,7 @@ function game_ui_type_form($form, &$form_state, $game_type, $op = 'edit') {
         '#value' => t('Delete game type'),
         '#weight' => 45,
         '#limit_validation_errors' => array(),
-        '#submit' => array('game_type_form_submit_delete')
+        '#submit' => array('game_ui_type_form_submit_delete')
     );
   }
   return $form;
@@ -70,7 +70,7 @@ function game_ui_type_form_submit(&$form, &$form_state) {
 }
 
 function game_ui_type_form_submit_delete(&$form, &$form_state) {
-  $form_state['redirect'] = 'admin/structure/game-types/' . $form_state['game_type']->type . '/delete';
+  $form_state['redirect'] = 'admin/structure/game-types/manage/' . $form_state['game_type']->type . '/delete';
 }
 
 /**
@@ -89,7 +89,7 @@ function game_ui_type_form_delete_confirm($form, &$form_state, $game_type) {
  */
 function game_ui_type_form_delete_confirm_submit($form, &$form_state) {
   $game_type = $form_state['game_type'];
-  
+
   game_type_delete($game_type);
 
   watchdog('game_type', '@type: deleted %title.', array('@type' => $game_type->type, '%title' => $game_type->label));
@@ -114,13 +114,11 @@ function game_ui_admin_add_page() {
  */
 function game_ui_add($type) {
   $game_type = game_types($type);
-  
+
   $game = entity_create('game', array('type' => $type));
   drupal_set_title(t('Create @name', array('@name' => entity_label('game_type', $game_type))));
 
-  $output = drupal_get_form('game_ui_form', $game);
-
-  return $output;
+  return drupal_get_form('game_ui_form', $game);
 }
 
 /**
@@ -135,12 +133,28 @@ function game_ui_form($form, &$form_state, $game) {
       '#required' => TRUE,
       '#title' => t('Name'),
       '#default_value' => $game->title,
+      '#weight' => -15,
+  );
+
+  $form['machine_name'] = array(
+      '#type' => 'machine_name',
+      '#required' => TRUE,
+      '#title' => t('Machine Name'),
+      '#default_value' => $game->machine_name,
+      '#machine_name' => array(
+          'exists' => 'game_ui_machine_name_exists',
+          'source' => array('title'),
+          'replace_pattern' => '[^a-z0-9-]+',
+          'replace' => '-',
+      ),
+      '#weight' => -10,
   );
 
   $form['description'] = array(
       '#type' => 'textarea',
       '#title' => t('Description'),
       '#default_value' => $game->description,
+      '#weight' => 20,
   );
 
   $form['uid'] = array(
@@ -180,6 +194,10 @@ function game_ui_form($form, &$form_state, $game) {
   return $form;
 }
 
+function game_ui_machine_name_exists() {
+  return false;
+}
+
 function game_ui_form_validate($form, &$form_state) {
   
 }
@@ -191,14 +209,14 @@ function game_ui_form_submit($form, &$form_state) {
   $game = $form_state['game'];
 
   entity_form_submit_build_entity('game', $game, $form, $form_state);
-  
-  if(!isset($game->entity_id)) {
-    $game->entity_id=1;
-    
+
+  if (!isset($game->entity_id)) {
+    $game->entity_id = 1;
   }
   game_save($game);
 
   drupal_set_message(t('Game %title saved.', array('%title' => entity_label('game', $game))));
+  $form_state['redirect'] = 'games';
 }
 
 function game_ui_form_submit_delete($form, &$form_state) {
@@ -304,9 +322,9 @@ function game_ui_instance_form($form, &$form_state, $running_game, $op = 'edit')
       $form_state['game'] = $game;
       field_attach_form('game', $game, $form, $form_state);
     }
-    
+
     field_attach_form('running_game', $running_game, $form, $form_state);
-    
+
     $form['actions'] = array('#type' => 'actions');
     $form['actions']['submit'] = array(
         '#type' => 'submit',
@@ -340,7 +358,7 @@ function game_ui_instance_bundle_form(&$form, &$form_state) {
  */
 function game_ui_instance_form_submit(&$form, &$form_state) {
   $running_game = $form_state['running_game'];
-  
+
   $game = entity_load('game', array($running_game->gid));
 
   entity_form_submit_build_entity('running_game', $running_game, $form, $form_state);
@@ -389,7 +407,7 @@ function game_ui_instance_participant_create_participant($running_game) {
  * Game type delete form.
  */
 function game_ui_instance_form_delete_confirm($form, &$form_state, $running_game) {
-  
+
   $form_state['running_game'] = $running_game;
   // Always provide entity id in the same form key as in the entity edit form.
   $form['running_game_id'] = array('#type' => 'value', '#value' => entity_id('running_game', $running_game));

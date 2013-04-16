@@ -97,7 +97,7 @@ function games_ui_menu() {
   $items['admin/structure/game-types/%game_type/delete'] = array(
       'title' => 'Delete',
       'page callback' => 'drupal_get_form',
-      'page arguments' => array('game_type_form_delete_confirm', 4),
+      'page arguments' => array('game_ui_type_form_delete_confirm', 4),
       'access arguments' => array('administer game types'),
       'weight' => 1,
       'type' => MENU_NORMAL_ITEM,
