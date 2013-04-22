@@ -3,7 +3,7 @@
   Drupal.behaviors.RunningGame = {
     attach: function (context, settings) {
       // set default id to 0
-      console.log(Drupal.settings.RunningGame);
+      //console.log(Drupal.settings.RunningGame);
       Drupal.settings.RunningGame.clientId = 0;
       // $("#messages").css("overflow","auto");
       // $("#messages").css("height","100px");

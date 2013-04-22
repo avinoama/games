@@ -7,7 +7,7 @@
 //dpm($game_instance);
 //dpm(get_defined_vars());
 ?>
-<div class="game">
+<div id="<?php echo $game->machine_name?>" class="game">
 
   <div class="game-header-row game-header-row-1">
     <div class="game-header-row-middle game-title">

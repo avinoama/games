@@ -1,0 +1,17 @@
+name = Board Game Pieces
+description = is a module that handles pieces and enable the attachment to a board position. the interactions of players is through rules. This module comes with a pre built game called Chess
+package = Games
+version = VERSION
+core = 7.x
+
+
+dependencies[] = board_games
+dependencies[] = rules
+dependencies[] = entityreference
+dependencies[] = number
+dependencies[] = list
+dependencies[] = entity
+dependencies[] = views
+dependencies[] = game
+
+files[] = board_game_pieces.controller.inc

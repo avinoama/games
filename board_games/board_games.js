@@ -2,7 +2,6 @@
   Drupal.behaviors.boardGame = {
     attach: function (context, settings) {
       field_matrix = Drupal.settings.RunningGame.instance.field_matrix;
-      console.log(field_matrix);
       height = Drupal.settings.RunningGame.game.field_board_height['und'][0].value;
       width = Drupal.settings.RunningGame.game.field_board_width['und'][0].value;
       tile_type = Drupal.settings.RunningGame.game.field_tile_type['und'][0].value;
@@ -136,7 +135,7 @@
       dataType :"json",
       type:"post",
       success: function(data) {
-        console.log(data);
+      //  console.log(data);
       /*
         for(r in data) {
           //console.log(data[r])
