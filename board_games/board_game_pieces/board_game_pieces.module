@@ -166,6 +166,26 @@ function board_game_pieces_game_init_load($game, $running_game) {
     $path = drupal_get_path('module', 'board_game_pieces');
     drupal_add_js($path . "/board_game_pieces.js", 'file');
     drupal_add_css($path . "/board_game_pieces.css", 'file');
+    //$r = rule_load();
+    //$d = rules_element_load("pawn_white_move_conditions","pawn_white_move_conditions");
+    $name = "pawn_white_move_conditions";
+    //$component = rules_get_cache('comp_' . $name);
+    //$cache = rules_get_cache();
+     // $d = rules_get_components(FALSE,'condition');//'condition'
+     //$e = rules_get_cache();
+    //TRUE,"ruleset",array()
+    //$d["rules_pawn_white_move_condition"];
+    //rules_pawn_white_move_condition
+    //$t = $d["rules_pawn_white_move_condition"];
+    //$f = entity_load("rules_config",array($t->id));
+    //$f = rules_config_load($t->id);
+    //dpm($f);
+    //$result =db_query("SELECT data FROM {rules_config} WHERE id=".$t->id);
+    //$r = reset($result->fetchAll());
+    //dpm(unserialize($r->data));
+    
+    //$l = rules_link_load('1');
+    //dpm($l);
     // load entities to pre set the game
     $pieces_type = array();
     if (property_exists($running_game, "field_pieces")) {
@@ -182,6 +202,7 @@ function board_game_pieces_game_init_load($game, $running_game) {
           $e = reset(entity_load("piece_type", FALSE, array("type" => $p->type)));
           if (!empty($e)) {
             $pieces_type[$p->type] = $e;
+            $p->type . "_move_conditions";
           }
         }
       }
@@ -314,28 +335,28 @@ function _board_game_pieces_add_default_piece_types() {
 function _board_game_pieces_default_piece_types() {
   $piece_types = array();
   $piece_types[] = array(
-              "label" => "Pawn White",
-              "symbol" => "♙",
-              "type" => "pawn_white",
-              "description" => "The pawn (♙♟) is the most numerous and in most circumstances the weakest piece in the game of chess, historically representing infantry or, more particularly, armed peasants or pikemen.[citation needed]. In chess, each player begins the game with eight pawns, one on each square of the rank immediately in front of the other pieces."
+      "label" => "Pawn White",
+      "symbol" => "♙",
+      "type" => "pawn_white",
+      "description" => "The pawn (♙♟) is the most numerous and in most circumstances the weakest piece in the game of chess, historically representing infantry or, more particularly, armed peasants or pikemen.[citation needed]. In chess, each player begins the game with eight pawns, one on each square of the rank immediately in front of the other pieces."
   );
   $piece_types[] = array(
-              "label" => "Pawn Black",
-              "symbol" => "♟",
-              "type" => "pawn_black",
-              "description" => "The pawn (♙♟) is the most numerous and in most circumstances the weakest piece in the game of chess, historically representing infantry or, more particularly, armed peasants or pikemen.[citation needed]. In chess, each player begins the game with eight pawns, one on each square of the rank immediately in front of the other pieces."
+      "label" => "Pawn Black",
+      "symbol" => "♟",
+      "type" => "pawn_black",
+      "description" => "The pawn (♙♟) is the most numerous and in most circumstances the weakest piece in the game of chess, historically representing infantry or, more particularly, armed peasants or pikemen.[citation needed]. In chess, each player begins the game with eight pawns, one on each square of the rank immediately in front of the other pieces."
   );
   $piece_types[] = array(
-              "label" => "King White",
-              "symbol" => "♔",
-              "type" => "king_white",
-              "description" => ""
+      "label" => "King White",
+      "symbol" => "♔",
+      "type" => "king_white",
+      "description" => ""
   );
   $piece_types[] = array(
-              "label" => "King Black",
-              "symbol" => "♚",
-              "type" => "king_black",
-              "description" => ""
+      "label" => "King Black",
+      "symbol" => "♚",
+      "type" => "king_black",
+      "description" => ""
   );
 
   return $piece_types;

@@ -77,10 +77,7 @@ function piece_create($running_game = null, $piece_type = null, $tile_position =
   $entity_type = "piece";
   $piece = entity_create($entity_type, array());
   
-  dpm($piece_type);
-  
   $piece_type_entity = reset(entity_load("piece_type", FALSE, array("type"=>$piece_type)));
-  dpm($piece_type_entity);
   
   $piece->label = $piece_type_entity->symbol;
   $piece->type = $piece_type;

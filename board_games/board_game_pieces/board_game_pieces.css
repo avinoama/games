@@ -11,3 +11,6 @@
   cursor: pointer;
   cursor: hand;
 }
+#chess .piece.selected {
+  border:1px solid black;
+}
