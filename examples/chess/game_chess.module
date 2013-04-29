@@ -1,0 +1,120 @@
+<?php
+
+function _game_chess_add_default_games() {
+  $entity_type = "game";
+  $bundle = 'board_game';
+  $e = entity_load($entity_type, FALSE, array("machine_name" => "chess"));
+  if (empty($e)) {
+    $game = entity_create($entity_type, array());
+
+    $game->title = "Chess";
+    $game->type = $bundle;
+    $game->description = "Chess is a two-player strategy board game played on a chessboard, a checkered gameboard with 64 squares arranged in an eight-by-eight grid. It is one of the world's most popular games, played by millions of people worldwide at home, in clubs, online, by correspondence, and in tournaments.";
+    $game->machine_name = "chess";
+    $game->field_board_width['und'][]['value'] = 8;
+    $game->field_board_height['und'][]['value'] = 8;
+    $game->field_min_num_players['und'][]['value'] = 2;
+    $game->field_max_num_players['und'][]['value'] = 2;
+    $game->field_tile_type['und'][]['value'] = 1;
+
+    game_save($game);
+  }
+}
+
+function _game_chess_add_default_piece_types() {
+  $entity_type = "piece_type";
+  foreach (_game_chess_pieces_default_piece_types() as $piece) {
+    $e = entity_load($entity_type, FALSE, array("type" => $piece['type']));
+    if (empty($e)) {
+      $p = entity_create($entity_type, $piece);
+      piece_save($p);
+    }
+  }
+}
+
+function _game_chess_pieces_default_piece_types() {
+  $piece_types = array();
+  $piece_types[] = array(
+      "label" => "Pawn White",
+      "symbol" => "♙",
+      "type" => "pawn_white",
+      "description" => "The pawn (♙♟) is the most numerous and in most circumstances the weakest piece in the game of chess, historically representing infantry or, more particularly, armed peasants or pikemen.[citation needed]. In chess, each player begins the game with eight pawns, one on each square of the rank immediately in front of the other pieces."
+  );
+  $piece_types[] = array(
+      "label" => "Pawn Black",
+      "symbol" => "♟",
+      "type" => "pawn_black",
+      "description" => "The pawn (♙♟) is the most numerous and in most circumstances the weakest piece in the game of chess, historically representing infantry or, more particularly, armed peasants or pikemen.[citation needed]. In chess, each player begins the game with eight pawns, one on each square of the rank immediately in front of the other pieces."
+  );
+  $piece_types[] = array(
+      "label" => "King White",
+      "symbol" => "♔",
+      "type" => "king_white",
+      "description" => "In chess, the king (♔, ♚) is the most important piece. The object of the game is to trap the opponent's king so that its escape is not possible (checkmate)."
+  );
+  $piece_types[] = array(
+      "label" => "King Black",
+      "symbol" => "♚",
+      "type" => "king_black",
+      "description" => "In chess, the king (♔, ♚) is the most important piece. The object of the game is to trap the opponent's king so that its escape is not possible (checkmate)."
+  );
+
+  $piece_types[] = array(
+      "label" => "Queen White",
+      "symbol" => "♕",
+      "type" => "queen_white",
+      "description" => "The queen (♕,♛) is the most powerful piece in the game of chess, able to move any number of squares vertically, horizontally, or diagonally"
+  );
+  $piece_types[] = array(
+      "label" => "Queen Black",
+      "symbol" => "♛",
+      "type" => "queen_black",
+      "description" => "The queen (♕,♛) is the most powerful piece in the game of chess, able to move any number of squares vertically, horizontally, or diagonally"
+  );
+
+
+  $piece_types[] = array(
+      "label" => "Bishop White",
+      "symbol" => "♗",
+      "type" => "bishop_white",
+      "description" => 'A bishop (♗,♝) is a piece in the board game of chess. Each player begins the game with two bishops.'
+  );
+  $piece_types[] = array(
+      "label" => "Bishop Black",
+      "symbol" => "♝",
+      "type" => "bishop_black",
+      "description" => 'A bishop (♗,♝) is a piece in the board game of chess. Each player begins the game with two bishops.'
+  );
+
+
+$piece_types[] = array(
+      "label" => "Knight White",
+      "symbol" => "♘",
+      "type" => "knight_white",
+      "description" => ''
+  );
+  $piece_types[] = array(
+      "label" => "Knight Black",
+      "symbol" => "♞",
+      "type" => "knight_black",
+      "description" => ''
+  );
+  
+
+  $piece_types[] = array(
+      "label" => "Rook White",
+      "symbol" => "♖",
+      "type" => "rook_white",
+      "description" => 'A rook (♖ ♜ borrowed from Persian رخ rokh, Sanskrit रथ rath, "chariot") is a piece in the strategy board game of chess.'
+  );
+  $piece_types[] = array(
+      "label" => "Rook Black",
+      "symbol" => "♜",
+      "type" => "rook_black",
+      "description" => 'A rook (♖ ♜ borrowed from Persian رخ rokh, Sanskrit रथ rath, "chariot") is a piece in the strategy board game of chess.'
+  );
+
+
+
+  return $piece_types;
+}

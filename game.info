@@ -1,5 +1,5 @@
 name = Game
-description = base game development properties for building game.
+description = base game abstraction for building games.
 package = Games
 version = VERSION
 core = 7.x

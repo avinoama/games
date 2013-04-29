@@ -1,0 +1,11 @@
+name = Games UI
+description = provides interface for playing and building games
+package = Games
+version = VERSION
+core = 7.x
+
+dependencies[] = entity
+dependencies[] = views
+dependencies[] = game
+
+files[] = games_ui.actions.inc

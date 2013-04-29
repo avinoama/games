@@ -20,30 +20,6 @@ function game_install() {
   // Outside of the .install file we would use drupal_write_record() to
   // populate the database, but it cannot be used here, so we'll use
   // db_insert().
-  // Add a default entry.
-  /* $fields = array(
-    'name'    => 'John',
-    'surname' => 'Doe',
-    'age'     => 0,
-    ); */
-  /*
-    db_insert('dbtng_example')
-    ->fields($fields)
-    ->execute();
-
-    // Add another entry.
-    $fields = array(
-    'name'    => 'John',
-    'surname' => 'Roe',
-    'age'     => 100,
-    'uid'     => 1,
-    );
-
-    db_insert('dbtng_example')
-    ->fields($fields)
-    ->execute();
-   */
-  //drupal_install_schema('gaming_platform');
 }
 
 /**
@@ -235,6 +211,12 @@ function game_schema() {
       'primary key' => array('id'),
       'unique keys' => array(
           'type' => array('session'),
+      ),
+      'foreign keys' => array(
+          'game' => array(
+              'table' => 'game',
+              'columns' => array('gid' => 'gid'),
+          )
       ),
   );
   $schema['running_game_participant'] = array(

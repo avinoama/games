@@ -1,0 +1,12 @@
+name = Tic Tac Toe
+description = basic example of using game module that creates a game that can be alter by rules.
+package = Game examples
+version = VERSION
+core = 7.x
+
+dependencies[] = entity
+dependencies[] = views
+dependencies[] = game
+dependencies[] = board_games
+
+files[] = game_tictacttoe.rules.inc

@@ -1,0 +1,16 @@
+#chess .piece {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  /*background: red;*/
+  font-size: 40px;
+  margin: 0 auto;
+  line-height: 40px;
+  cursor: pointer;
+  cursor: hand;
+}
+#chess .piece.selected {
+  border:1px solid black;
+}

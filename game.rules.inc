@@ -1,4 +1,20 @@
 <?php
+/**
+ *
+ * @return type
+ */
+function game_rules_data_info() {
+  $data = array();
+  $data['running_game'] = array(
+      'label' => t('Game Instance'),
+      'ui class' => 'RunningGameController',
+  );
+  $data['game'] = array(
+      'label' => t('Game'),
+      'ui class' => 'GameController',
+  );
+  return $data;
+}
 
 function game_rules_event_info() {
 
@@ -16,6 +32,10 @@ function game_rules_event_info() {
                   'type' => 'running_game',
                   'label' => t('Running Game'),
               ),
+              'game' => array(
+                  'type' => 'game',
+                  'label' => t('Game'),
+              ),
           ),
       ),
       'game_end' => array(
@@ -25,6 +45,10 @@ function game_rules_event_info() {
               'running_game' => array(
                   'type' => 'running_game',
                   'label' => t('Running Game'),
+              ),
+              'game' => array(
+                  'type' => 'game',
+                  'label' => t('Game'),
               ),
           ),
       ),
@@ -47,6 +71,7 @@ function _rules_game_select_info() {
 /**
  *  Fix this most importent 
  */
+/*
 function game_rules_data_info() {
   return array(
       'running_game' => array(
@@ -72,7 +97,7 @@ function game_rules_data_info() {
       ),
   );
 }
-
+*/
 function game_rules_action_info() {
 
   return array(
@@ -146,7 +171,6 @@ function game_rules_action_info() {
               'validate' => 'rules_game_send_message_validation',
           ),
       ),
- 
   );
 }
 
@@ -155,7 +179,7 @@ function rules_game_send_message_validation($running_game, $message) {
 }
 
 function rules_game_send_message($running_game, $message) {
-  
+
   $running_game_command = array();
   $running_game_command['running_game_id'] = $running_game->id;
   $running_game_command['command_id'] = 1;

@@ -1,0 +1,73 @@
+.boardInstance {
+  position:relative;
+  width:100%;
+  height:100%;
+  margin: 0 auto;
+  text-align: center;
+
+}
+.boardInstance .row {
+  position:relative;
+  width:100%;
+  clear :both;
+}
+
+.boardInstance .tile {
+  position:relative;
+  display:inline-block;
+  border:1px solid black;
+  width:100px;
+  height:100px;
+  margin:0 auto;
+  padding:0;
+  text-align :center;
+  font-size:30px;
+}
+.owned_1 {
+  background: greenyellow;
+
+}
+.owned_2 {
+  background: #FFBE7D;
+}
+.owned_3 {
+  background:red;
+}
+.owned_4 {
+  background:blue;
+}
+#tic_tac_toe #game-canvas .boardInstance {width:407px;}
+#tic_tac_toe #game-canvas .boardInstance .tile.clicked {background-color: #DCDCDC;}
+
+
+#sudoku #game-canvas .boardInstance {width:507px}
+#sudoku #game-canvas .boardInstance .tile:nth-child(3n+3) {margin-right: 2px}
+#sudoku #game-canvas .boardInstance .tile:nth-child(19),
+#sudoku #game-canvas .boardInstance .tile:nth-child(54)
+{margin-bottom: 2px}
+
+#sudoku #game-canvas .boardInstance .tile {
+  position:relative;
+  display:inline-block;
+  border:1px solid black;
+  width:50px;
+  height:50px;
+  margin:0 auto;
+  padding:0;
+  text-align :center;
+  font-size:30px;
+}
+
+
+#chess #game-canvas .boardInstance .tile
+{
+  position:relative;
+  display:inline-block;
+  border:1px solid black;
+  width:80px;
+  height:80px;
+  margin:0 auto;
+  padding:0;
+  text-align :center;
+  font-size:20px;
+}

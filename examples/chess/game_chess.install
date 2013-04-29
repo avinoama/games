@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @function  Hook_install
+ * when installing board games we want to add default fields and default games that comes with this module
+ */
+function game_chess_install() {
+  _game_chess_add_default_games();
+  _game_chess_add_default_piece_types();
+}
+function game_chess_uninstall() {
+  _game_chess_remove_default_games();
+}
+function _game_chess_remove_default_games() {
+
+}

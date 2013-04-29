@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @function  Hook_install
+ * when installing board games we want to add default fields and default games that comes with this module
+ */
+function game_tictactoe_install() {
+  _game_tictactoe_add_default_games();
+}
+function game_tictactoe_uninstall() {
+  _game_tictactoe_remove_default_games();
+}
+function _game_tictactoe_remove_default_games() {
+  
+}
