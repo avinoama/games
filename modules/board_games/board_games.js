@@ -34,19 +34,12 @@
             } else {
               tile.html("&nbsp;");
             }
-            
-            tile.bind("click",function(){
-              board_games_tile_on_click(this)
-            });
           }else if(tile_type==2) {
             
             if(field_matrix[count]!=undefined && field_matrix[count].value>0) {
               tile.val(field_matrix[count].value);
             }
 
-            tile.bind("keyup",function(event){
-              board_games_tile_on_key_up(this,event);
-            });            
           }
           count++;
           board.append(tile);
@@ -54,6 +47,16 @@
       }
       $("#game-canvas").html('');
       $("#game-canvas").append(board);
+    },
+    board_games_listen_to_click_event: function(params){
+      $(".tile").bind("click",function(){
+        board_games_tile_on_click(this)
+      });
+    },
+    board_games_listen_to_input_changed_event: function(params){
+      $(".tile").bind("keyup",function(event){
+        board_games_tile_on_key_up(this,event);
+      });
     },
     board_games_tile_set_owner_action: function(params){
       $("#tile_"+params.tile_id).addClass("owned_"+params.participant_turn).addClass("owned");

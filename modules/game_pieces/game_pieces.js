@@ -14,8 +14,8 @@
         });
       }
       $(".game-canvas").bind("click",function(e) {
-        piece_end_tap(e)
-        });
+        piece_end_tap(e);
+      });
     },
     create_piece: function(params){
       
@@ -23,7 +23,7 @@
       piece.text(params.piece.label).addClass("piece").addClass(params.piece.type).addClass(params.piece.id).attr("id",params.piece.id);
       piece.bind("click",function(){
         piece_tap(this)
-        });
+      });
       $("#tile_"+params.tile_position).append(piece);
       
     // add another piece to game pieces
@@ -40,7 +40,9 @@
     current = Drupal.behaviors.gamePieces.current;
     if(current != piece.id) {
       mark_piece(piece);
-      setTimeout(function(){Drupal.behaviors.gamePieces.current = piece.id;},1000);
+      setTimeout(function(){
+        Drupal.behaviors.gamePieces.current = piece.id;
+      },1000);
     }
   }
   function mark_piece(piece) {
@@ -50,13 +52,14 @@
   }
   function piece_end_tap(e) {
     if(Drupal.behaviors.gamePieces.current!=undefined) {
-      console.log("piece_end_tap");
-      console.log(e);
+      elem = document.elementFromPoint(e.clientX, e.clientY);
+      position = $(elem).attr("id").replace("tile_","");
+      request_move(Drupal.behaviors.gamePieces.current,position);
       Drupal.behaviors.gamePieces.current = undefined;
       $(".piece").removeClass("selected");
     }
   }
-  function request_move() {
+  function request_move(piece,position) {
     
     
   }

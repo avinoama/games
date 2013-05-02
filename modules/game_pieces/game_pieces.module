@@ -169,10 +169,20 @@ function game_pieces_game_init_load($game, $running_game) {
   //$r = rule_load();
   //$d = rules_element_load("pawn_white_move_conditions","pawn_white_move_conditions");
   $name = "pawn_white_move_conditions";
-  //$component = rules_get_cache('comp_' . $name);
-  //$cache = rules_get_cache();
+/*
+  $component = rules_get_cache();
+  $c = $component["condition_info"]['component_rules_pawn_white_move_conditions'];
+  dpm($c);
+  $c->executeByArgs($args);
+  $e = new RulesEventSet();
+*/
+  
+//dpm($e);
+  
+  //$cache = rules_get_cache("component_rules_pawn_white_move_conditions");
+  //dpm($cache);
   // $d = rules_get_components(FALSE,'condition');//'condition'
-  //$e = rules_get_cache();
+  //$e = rules_get_cache();();
   //TRUE,"ruleset",array()
   //$d["rules_pawn_white_move_condition"];
   //rules_pawn_white_move_condition
