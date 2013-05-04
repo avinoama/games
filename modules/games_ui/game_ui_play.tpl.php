@@ -16,8 +16,8 @@
     <div class="game-header-row-right game-status"> <?php echo $status; ?></div>
   </div>
   <div class="game-header-row game-header-row-2">
-    <div class="game-header-row-middle game-player-name"><?php echo $player_name;?></div>
-    <div class="game-header-row-right game-players">Players <span id="players-count"><?php echo $num_players;?></span></div>
+    <div class="game-header-row-middle game-player-name"><?php //echo $player_name;?></div>
+    <div class="game-header-row-right game-players">Players <span id="players-count"><?php //echo $num_players;?></span></div>
   </div>
   <div class="game-header-row game-header-row-3">
     <div id="game-last-notice" class="game-header-row-middle game-last-notice">&nbsp;</div>

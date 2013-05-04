@@ -379,16 +379,7 @@ function running_game_form_submit_delete(&$form, &$form_state) {
   $form_state['redirect'] = 'admin/structure/game-instances/' . $form_state['running_game']->id . '/delete';
 }
 
-function running_game_participant_create_participant($running_game) {
-  $running_game_participant = array();
-  $running_game_participant['running_game_id'] = $running_game->id;
-  $running_game_participant['bundle'] = 'running_game_participant';
-  //dpm($running_game);
 
-  $running_game_entity = entity_create("running_game_participant", $running_game_participant);
-  $running_game_entity->save();
-  return true;
-}
 
 /**
  * Game type delete form.

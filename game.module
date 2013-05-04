@@ -87,28 +87,7 @@ function game_entity_info() {
       ),
   );
 
-  $return['running_game_participant'] = array(
-      'label' => t('Running Game Participant'),
-      'entity class' => 'RunningGameParticipant',
-      'controller class' => 'RunningGameParticipantController',
-      'base table' => 'running_game_participant',
-      'fieldable' => FALSE,
-      'entity keys' => array(
-          'id' => 'id',
-      ),
-      'bundles' => array(),
-      'load hook' => 'running_game_participant_load',
-      'view modes' => array(
-          'full' => array(
-              'label' => t('Default'),
-              'custom settings' => FALSE,
-          ),
-      ),
-      'label callback' => 'entity_class_label',
-      'uri callback' => 'entity_class_uri',
-      'module' => 'game',
-      'access callback' => 'running_game_participant_access',
-  );
+ 
   $return['running_game_command'] = array(
       'label' => t('Running Game Command'),
       'entity class' => 'RunningGameCommand',
@@ -213,12 +192,13 @@ function game_entity_property_info_alter(&$info) {
       'getter callback' => 'game_current_session',
   );
  */
+  /*
   $info['site']['properties']['current_running_game'] = array(
       'label' => t('Current game played at the moment'),
       'description' => t('the current game running.'),
       'type' => 'running_game',
       'getter callback' => 'game_current_running',
-  );
+  );*/
  /*
   $info['site']['properties']['current_game_id'] = array(
       'label' => t('Current game played at the moment'),
@@ -229,7 +209,7 @@ function game_entity_property_info_alter(&$info) {
 */
   return $info;
 }
-
+/*
 function game_current_session() {
   $session = check_plain($_POST['action']['params']['session']);
   return $session;
@@ -253,7 +233,7 @@ function game_current_id() {
   $entity = $e[$k[0]];
   return $entity->gid;
 }
-
+*/
 /* * *****************************************************************************
  * ******************************** Game API's **********************************
  * **************************************************************************** */
@@ -456,6 +436,11 @@ function game_trigger_info() {
   );
 }
 
+
+/***
+ *  ------------------------------------ dont know if im using this code
+ *  maybe create a class that allowes me to send players message
+ */
 function game_action_info() {
   return array(
       'game_message_action' => array(
@@ -468,8 +453,7 @@ function game_action_info() {
 }
 
 function game_message_action(&$running_game, $context = array()) {
-  //dpm($running_game);
-  //dpm($context);
+
   if ($context['game_id'] == $entity->gid || $context['game_id'] == -1) {
 
     $running_game_command = array();
@@ -528,6 +512,6 @@ function game_message_action_validate($form, $form_state) {
  * @return type 
  */
 function game_message_action_submit($form, $form_state) {
-  dpm($form_state['values']);
+  //dpm($form_state['values']);
   return array('game_id' => $form_state['values']['game_id'], 'message' => $form_state['values']['message']);
 }

@@ -45,7 +45,7 @@ function game_pieces_schema() {
               'default' => '',
           ),
           'position' => array(
-              'description' => 'The poaition of this piece.',
+              'description' => 'The position of this piece, always saved in a one dimetional way, for now.',
               'type' => 'int',
               'not null' => TRUE,
               'default' => '0',
@@ -111,8 +111,17 @@ function _game_piece_default_fields() {
       'field_name' => 'field_pieces',
       'label' => t('Pieces'),
       'type' => 'entityreference',
+      'translatable' => FALSE,
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
       'entity_type' => 'running_game',
+  );
+  $fields[] = array(
+      'field_name' => 'field_position',
+      'label' => t('Position'),
+      'type' => 'number_integer',
+      'translatable' => FALSE,
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'entity_type' => 'piece',
   );
 
   return $fields;

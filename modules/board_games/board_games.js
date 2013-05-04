@@ -1,5 +1,5 @@
 (function ($) {
-  Drupal.behaviors.boardGame = {
+  Drupal.behaviors.BoardGame = {
     attach: function (context, settings) {
       field_matrix = Drupal.settings.RunningGame.instance.field_matrix;
       height = Drupal.settings.RunningGame.game.field_board_height['und'][0].value;
@@ -48,19 +48,19 @@
       $("#game-canvas").html('');
       $("#game-canvas").append(board);
     },
-    board_games_listen_to_click_event: function(params){
+    listen_to_click_event: function(params){
       $(".tile").bind("click",function(){
         board_games_tile_on_click(this)
       });
     },
-    board_games_listen_to_input_changed_event: function(params){
+    listen_to_change_event: function(params){
       $(".tile").bind("keyup",function(event){
         board_games_tile_on_key_up(this,event);
       });
     },
     board_games_tile_set_owner_action: function(params){
-      $("#tile_"+params.tile_id).addClass("owned_"+params.participant_turn).addClass("owned");
-      $("#tile_"+params.tile_id).text(params.participant_turn);
+      $("#tile_"+params.tile_id).addClass("owned_"+params.player_turn).addClass("owned");
+      $("#tile_"+params.tile_id).text(params.player_turn);
     },
     board_games_tile_increment_action: function(params){
       $("#tile_"+params.tile_id).text(params.value);

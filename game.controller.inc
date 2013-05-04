@@ -53,7 +53,7 @@ class RunningGameController extends EntityAPIController {
     $values += array(
         'session' => md5(time() + "" + $user->uid + session_id()),
         'created' => REQUEST_TIME,
-        'participant_turn' => 1,
+        'player_turn' => 1,
         'started' => REQUEST_TIME,
         'uid' => $user->uid,
     );
@@ -62,22 +62,7 @@ class RunningGameController extends EntityAPIController {
 
 }
 
-class RunningGameParticipantController extends EntityAPIController {
 
-  public function create(array $values = array()) {
-    global $user;
-    drupal_session_start();
-
-    $values += array(
-        'participant_session' => session_id(),
-        'participant_name' => "",
-        'joined' => REQUEST_TIME,
-        'alive' => REQUEST_TIME,
-    );
-    return parent::create($values);
-  }
-
-}
 
 class RunningGameCommandController extends EntityAPIController {
 
@@ -86,7 +71,7 @@ class RunningGameCommandController extends EntityAPIController {
     drupal_session_start();
 
     $values += array(
-        'participant_session' => session_id(),
+        'player_session' => session_id(),
         'command_time' => REQUEST_TIME,
     );
     return parent::create($values);
@@ -186,29 +171,10 @@ class RunningGame extends Entity {
 /**
  * RunningGame class.
  */
-class RunningGameParticipant extends Entity {
-
-  protected function defaultLabel() {
-    return $this->participant_session;
-  }
-
-  protected function defaultUri() {
-    return ""; //array('path' => 'play/' . $this->identifier());
-  }
-
-  function isLocked() {
-    return isset($this->status) && empty($this->is_new) && (($this->status & ENTITY_IN_CODE) || ($this->status & ENTITY_FIXED));
-  }
-
-}
-
-/**
- * RunningGame class.
- */
 class RunningGameCommand extends Entity {
 
   protected function defaultLabel() {
-    return $this->participant_session;
+    return $this->player_session;
   }
 
   protected function defaultUri() {

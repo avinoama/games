@@ -9,3 +9,4 @@ dependencies[] = views
 
 files[] = game.controller.inc
 files[] = game.rules.inc
+files[] = game.define.inc

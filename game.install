@@ -219,54 +219,7 @@ function game_schema() {
           )
       ),
   );
-  $schema['running_game_participant'] = array(
-      'description' => 'The base user table to hold all participent of a single instance of a game.',
-      'fields' => array(
-  'id' => array(
-      'type' => 'serial',
-      'not null' => TRUE,
-      'description' => 'Primary Key: Unique game instance ID.',
-  ),
-  'running_game_id' => array(
-      'description' => 'game id that user is playing.',
-      'type' => 'int',
-      'not null' => TRUE,
-  ),
-  'participant_session' => array(
-      'description' => 'The uniqe session of each player.',
-      'type' => 'varchar',
-      'length' => 64,
-      'not null' => TRUE,
-  ),
-  'participant_turn' => array(
-      'description' => 'the unique parameter that determine which turn are you in specific instance of the game',
-      'type' => 'int',
-      'not null' => TRUE,
-      'default' => '0',
-  ),
-  'participant_name' => array(
-      'description' => 'The name of the player.',
-      'type' => 'varchar',
-      'length' => 64,
-      'not null' => TRUE,
-  ),
-  'joined' => array(
-      'description' => 'The Unix timestamp when the game was created.',
-      'type' => 'int',
-      'unsigned' => TRUE,
-      'not null' => TRUE,
-      'default' => 0,
-  ),
-  'alive' => array(
-      'description' => 'The Unix timestamp when the player last ping server.',
-      'type' => 'int',
-      'unsigned' => TRUE,
-      'not null' => TRUE,
-      'default' => 0,
-  ),
-      ) + entity_exportable_schema_fields(),
-      'primary key' => array('id'),
-  );
+
 
   $schema['running_game_command'] = array(
       'description' => 'The base user table to hold all commands of a game.',
@@ -281,7 +234,7 @@ function game_schema() {
               'type' => 'int',
               'not null' => TRUE,
           ),
-          'participant_session' => array(
+          'player_session' => array(
               'description' => 'The uniqe session of each player.',
               'type' => 'varchar',
               'length' => 64,

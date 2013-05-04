@@ -56,27 +56,27 @@ function board_games_game_presave($game) {
 function board_games_running_game_presave($running_game) {
 
   if ($running_game->is_new && $running_game->type == "board_game") {
-    $running_game->field_current_turn['und'][]["value"] = $running_game->participant_turn;
+    $running_game->field_current_turn['und'][]["value"] = $running_game->player_turn;
   }
 }
 
 function board_games_tile_set_owner_action(&$running_game, $context = array()) {
   if ($context['game_id'] == $running_game->gid) {
 
-    $conditions = array("running_game_id" => $running_game->id, 'participant_session' => session_id());
+    $conditions = array("running_game_id" => $running_game->id, 'player_session' => session_id());
 
-    $entity = entity_load("running_game_participant", FALSE, $conditions);
+    $entity = entity_load("running_game_player", FALSE, $conditions);
     $player = $entity[key($entity)];
 
     if ($running_game->field_matrix['und'][$context['params']]['value'] == 0 || empty($running_game->field_matrix['und'][$context['params']]['value'])) {
-      $running_game->field_matrix['und'][$context['params']]['value'] = $player->participant_turn;
+      $running_game->field_matrix['und'][$context['params']]['value'] = $player->player_turn;
 
       if ($running_game->save()) {
-        $params = array("tile_id" => $context['params'], "participant_turn" => $player->participant_turn);
+        $params = array("tile_id" => $context['params'], "player_turn" => $player->player_turn);
         $running_game_command = array();
         $running_game_command['running_game_id'] = $running_game->id;
         $running_game_command['command_id'] = 2;
-        $running_game_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "callback" => array("module" => "boardGame", "fn" => $context['callback'], "params" => $params), "time" => time()));
+        $running_game_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "callback" => array("module" => "BoardGame", "fn" => $context['callback'], "params" => $params), "time" => time()));
         $running_game_command_entity = entity_create("running_game_command", $running_game_command);
         $running_game_command_entity->save();
       } else {
@@ -239,15 +239,15 @@ function board_games_get_player_id() {
   $result = db_query($sql2);
   $running_game = $result->fetchObject();
   //  load current user session data
-  $sql = "SELECT participant_turn FROM {running_game_participant} WHERE running_game_id=':gid' AND participant_session=':ses'";
+  $sql = "SELECT player_turn FROM {running_game_player} WHERE running_game_id=':gid' AND player_session=':ses'";
   //$result  = db_query($sql, array(":gid"=>$running_game->gid,":ses"=>$session));
   $sql2 = str_replace(":gid", $running_game->id, $sql);
   $sql3 = str_replace(":ses", $session, $sql2);
   $result = db_query($sql3);
 
-  $participant = $result->fetchObject();
+  $player = $result->fetchObject();
 
-  return $participant->participant_turn;
+  return $player->player_turn;
 }
 
 function board_games_current_player_turn() {

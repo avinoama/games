@@ -12,28 +12,29 @@ function game_tictactoe_default_rules_configuration() {
   $rules['rules_ticktacktoe_on_game_start'] = rules_import('{ "rules_ticktacktoe_on_game_start" : {
     "LABEL" : "TickTackToe On Game Start",
     "PLUGIN" : "reaction rule",
-    "REQUIRES" : [ "rules", "game" ],
+    "REQUIRES" : [ "rules", "game", "board_games" ],
     "ON" : [ "game_start" ],
     "IF" : [
       { "data_is" : { "data" : [ "game:machine-name" ], "value" : "tic_tac_toe" } }
     ],
     "DO" : [
+      { "rules_start_game" : { "running_game" : [ "running_game" ], "game" : [ "game" ] } },
       { "rules_game_send_message" : {
           "running_game" : [ "running_game" ],
           "message_text" : "Game started, its player1 turn."
         }
-      }
+      },
+      { "rules_tile_lisiten_to_click" : { "running_game" : [ "running_game" ] } }
     ]
   }
 }');
-  $rules['rules_ticktacktoe_checkwinner'] = rules_import('
- { "rules_ticktacktoe_checkwinner" : {
+  $rules['rules_ticktacktoe_checkwinner'] = rules_import('{ "rules_ticktacktoe_checkwinner" : {
     "LABEL" : "TickTackToe CheckWinner",
     "PLUGIN" : "rule set",
     "REQUIRES" : [ "board_games", "game" ],
     "USES VARIABLES" : {
       "player_id" : { "label" : "player id", "type" : "integer" },
-      "game_session" : { "label" : "Game session", "type" : "text" },
+      "game_running" : { "label" : "Running Game", "type" : "running_game" },
       "game_matrix" : { "label" : "Game matrix", "type" : "list\u003Cinteger\u003E" }
     },
     "RULES" : [
@@ -44,12 +45,8 @@ function game_tictactoe_default_rules_configuration() {
             { "board_games_rules_condition_check_matrix" : { "item1" : [ "player-id" ], "item2" : [ "game-matrix:2" ] } }
           ],
           "DO" : [
-            { "rules_game_set_winners" : {
-                "running_game_session" : [ "game-session" ],
-                "player_id" : [ "player-id" ]
-              }
-            },
-            { "rules_game_over" : { "running_game_session" : [ "game-session" ] } }
+            { "rules_game_set_winners" : { "running_game" : [ "game-running" ], "player_id" : [ "player-id" ] } },
+            { "rules_game_over" : { "running_game" : [ "game-running" ] } }
           ],
           "LABEL" : "CheckMatrix row1"
         }
@@ -61,12 +58,8 @@ function game_tictactoe_default_rules_configuration() {
             { "board_games_rules_condition_check_matrix" : { "item1" : [ "player-id" ], "item2" : [ "game-matrix:5" ] } }
           ],
           "DO" : [
-            { "rules_game_set_winners" : {
-                "running_game_session" : [ "game-session" ],
-                "player_id" : [ "player_id" ]
-              }
-            },
-            { "rules_game_over" : { "running_game_session" : [ "game-session" ] } }
+            { "rules_game_set_winners" : { "running_game" : [ "game-running" ], "player_id" : [ "player_id" ] } },
+            { "rules_game_over" : { "running_game" : [ "game-running" ] } }
           ],
           "LABEL" : "CheckMatrix row2"
         }
@@ -78,12 +71,8 @@ function game_tictactoe_default_rules_configuration() {
             { "board_games_rules_condition_check_matrix" : { "item1" : [ "player-id" ], "item2" : [ "game-matrix:8" ] } }
           ],
           "DO" : [
-            { "rules_game_set_winners" : {
-                "running_game_session" : [ "game-session" ],
-                "player_id" : [ "player_id" ]
-              }
-            },
-            { "rules_game_over" : { "running_game_session" : [ "game-session" ] } }
+            { "rules_game_set_winners" : { "running_game" : [ "game-running" ], "player_id" : [ "player_id" ] } },
+            { "rules_game_over" : { "running_game" : [ "game-running" ] } }
           ],
           "LABEL" : "CheckMatrix row3"
         }
@@ -95,12 +84,8 @@ function game_tictactoe_default_rules_configuration() {
             { "board_games_rules_condition_check_matrix" : { "item1" : [ "player-id" ], "item2" : [ "game-matrix:6" ] } }
           ],
           "DO" : [
-            { "rules_game_set_winners" : {
-                "running_game_session" : [ "game-session" ],
-                "player_id" : [ "player_id" ]
-              }
-            },
-            { "rules_game_over" : { "running_game_session" : [ "game-session" ] } }
+            { "rules_game_set_winners" : { "running_game" : [ "game-running" ], "player_id" : [ "player_id" ] } },
+            { "rules_game_over" : { "running_game" : [ "game-running" ] } }
           ],
           "LABEL" : "CheckMatrix col1"
         }
@@ -112,12 +97,8 @@ function game_tictactoe_default_rules_configuration() {
             { "board_games_rules_condition_check_matrix" : { "item1" : [ "player-id" ], "item2" : [ "game-matrix:7" ] } }
           ],
           "DO" : [
-            { "rules_game_set_winners" : {
-                "running_game_session" : [ "game-session" ],
-                "player_id" : [ "player_id" ]
-              }
-            },
-            { "rules_game_over" : { "running_game_session" : [ "game-session" ] } }
+            { "rules_game_set_winners" : { "running_game" : [ "game-running" ], "player_id" : [ "player_id" ] } },
+            { "rules_game_over" : { "running_game" : [ "game-running" ] } }
           ],
           "LABEL" : "CheckMatrix col2"
         }
@@ -129,12 +110,8 @@ function game_tictactoe_default_rules_configuration() {
             { "board_games_rules_condition_check_matrix" : { "item1" : [ "player-id" ], "item2" : [ "game-matrix:8" ] } }
           ],
           "DO" : [
-            { "rules_game_set_winners" : {
-                "running_game_session" : [ "game-session" ],
-                "player_id" : [ "player_id" ]
-              }
-            },
-            { "rules_game_over" : { "running_game_session" : [ "game-session" ] } }
+            { "rules_game_set_winners" : { "running_game" : [ "game-running" ], "player_id" : [ "player_id" ] } },
+            { "rules_game_over" : { "running_game" : [ "game-running" ] } }
           ],
           "LABEL" : "CheckMatrix col3"
         }
@@ -146,12 +123,8 @@ function game_tictactoe_default_rules_configuration() {
             { "board_games_rules_condition_check_matrix" : { "item1" : [ "player-id" ], "item2" : [ "game-matrix:8" ] } }
           ],
           "DO" : [
-            { "rules_game_set_winners" : {
-                "running_game_session" : [ "game-session" ],
-                "player_id" : [ "player_id" ]
-              }
-            },
-            { "rules_game_over" : { "running_game_session" : [ "game-session" ] } }
+            { "rules_game_set_winners" : { "running_game" : [ "game-running" ], "player_id" : [ "player_id" ] } },
+            { "rules_game_over" : { "running_game" : [ "game-running" ] } }
           ],
           "LABEL" : "CheckMatrix diagnal1"
         }
@@ -163,12 +136,8 @@ function game_tictactoe_default_rules_configuration() {
             { "board_games_rules_condition_check_matrix" : { "item1" : [ "player-id" ], "item2" : [ "game-matrix:6" ] } }
           ],
           "DO" : [
-            { "rules_game_set_winners" : {
-                "running_game_session" : [ "game-session" ],
-                "player_id" : [ "player_id" ]
-              }
-            },
-            { "rules_game_over" : { "running_game_session" : [ "game-session" ] } }
+            { "rules_game_set_winners" : { "running_game" : [ "game-running" ], "player_id" : [ "player_id" ] } },
+            { "rules_game_over" : { "running_game" : [ "game-running" ] } }
           ],
           "LABEL" : "CheckMatrix diagnal2"
         }
@@ -183,11 +152,9 @@ function game_tictactoe_default_rules_configuration() {
     "REQUIRES" : [ "rules", "board_games" ],
     "USES VARIABLES" : { "running_game" : { "label" : "Running Game", "type" : "running_game" } },
     "IF" : [
-      { "data_is" : { "data" : [ "running_game:status" ], "op" : "<", "value" : "3" } }
+      { "data_is" : { "data" : [ "running_game:status" ], "op" : "\u003C", "value" : "3" } }
     ],
-    "DO" : [
-      { "rules_game_change_turn" : { "running_game" : [ "running_game:session" ] } }
-    ]
+    "DO" : [ { "rules_game_change_turn" : { "running_game" : [ "running_game" ] } } ]
   }
 }');
 
@@ -214,13 +181,13 @@ function game_tictactoe_default_rules_configuration() {
     ],
     "DO" : [
       { "rules_tile_set_owner" : {
-          "running_game" : [ "running_game:session" ],
+          "running_game" : [ "running_game" ],
           "tile_position" : [ "site:current-tile-clicked" ]
         }
       },
       { "component_rules_ticktacktoe_checkwinner" : {
           "player_id" : [ "site:current-player-id" ],
-          "game_session" : [ "running_game:session" ],
+          "game_running" : [ "running-game" ],
           "game_matrix" : [ "site:current-game-matrix" ]
         }
       },
@@ -228,7 +195,16 @@ function game_tictactoe_default_rules_configuration() {
     ]
   }
 }');
-
+ $rules['rules_ticktacktoe_game_join'] = rules_import('{ "rules_ticktacktoe_game_join" : {
+    "LABEL" : "TickTackToe Game Join",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "game_players" ],
+    "ON" : [ "game_join" ],
+    "DO" : [
+      { "rules_player_join_game" : { "running_game" : [ "running_game" ], "game" : [ "game" ] } }
+    ]
+  }
+}');
 
   return $rules;
 }

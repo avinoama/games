@@ -220,7 +220,7 @@ function game_pieces_game_init_load($game, $running_game) {
     }
   }
 
-  drupal_add_js(array('gamePieces' => array('pieces' => $pieces, "piece_types" => $pieces_type)), 'setting');
+  drupal_add_js(array('GamePieces' => array('pieces' => $pieces, "piece_types" => $pieces_type)), 'setting');
 }
 
 /**
