@@ -1,0 +1,144 @@
+<?php
+
+/**
+ * Board game install file :
+ * Manage the basic interaction between drupal and Board Games.
+ */
+
+/**
+ * @function  Hook_install
+ * when installing board games we want to add default fields and default games that comes with this module
+ */
+function game_players_install() {
+  _game_players_add_default_fields();
+}
+
+function game_players_uninstall() {
+  _game_players_remove_default_fields();
+}
+
+
+/**
+ *
+ */
+function _game_players_remove_default_fields() {
+  // need to fix that to all bundels
+  $bundle = 'board_game';
+
+  $fields = _game_players_default_fields();
+  foreach ($fields as $field) {
+    field_delete_field($field['field_name']);
+  }
+  field_purge_batch(20);
+}
+
+/**
+ *  Game board default fields
+ *  Create fields for Game and GameInstance entities of type board_games
+ *
+ * @return string
+ */
+function _game_players_default_fields() {
+  
+  $game_bundles = entity_get_property_info("game");
+  if (empty($game_bundles)) {
+    $game_bundles = array();
+  }
+  $running_game_bundles = entity_get_property_info("running_game");
+  if (empty($running_game_bundles)) {
+    $running_game_bundles = array();
+  }
+  
+  $fields = array();
+
+  $fields[] = array(
+      'field_name' => 'field_min_num_players',
+      'label' => t('Minmum Number Players'),
+      'type' => 'number_integer',
+      'default_value' => 0,
+      'cardinality' => 1,
+      'entity_type' => 'game',
+      'settings' => array('target_type' => 'text', 'target_bundles' => $game_bundles),
+  );
+  $fields[] = array(
+      'field_name' => 'field_max_num_players',
+      'label' => t('Maximum Number Players'),
+      'type' => 'number_integer',
+      'default_value' => 0,
+      'cardinality' => 1,
+      'entity_type' => 'game',
+      'settings' => array('target_type' => 'text', 'target_bundles' => $game_bundles),
+  );
+
+  $fields[] = array(
+      'field_name' => 'field_players',
+      'label' => t('Players'),
+      'type' => 'entityreference',
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'entity_type' => 'running_game',
+  );
+  $fields[] = array(
+      'field_name' => 'field_current_turn',
+      'label' => t('Current Turn'),
+      'type' => 'number_integer',
+      'default_value' => 1,
+      'cardinality' => 1,
+      'entity_type' => 'running_game',
+      'settings' => array('target_type' => 'text', 'target_bundles' => $running_game_bundles),
+  );
+  return $fields;
+}
+
+function game_players_schema() {
+  $schema = array();
+  $schema['running_game_player'] = array(
+      'description' => 'The base user table to hold all participent of a single instance of a game.',
+      'fields' => array(
+  'id' => array(
+      'type' => 'serial',
+      'not null' => TRUE,
+      'description' => 'Primary Key: Unique game instance ID.',
+  ),
+  'running_game_id' => array(
+      'description' => 'game id that user is playing.',
+      'type' => 'int',
+      'not null' => TRUE,
+  ),
+  'player_session' => array(
+      'description' => 'The uniqe session of each player.',
+      'type' => 'varchar',
+      'length' => 64,
+      'not null' => TRUE,
+  ),
+  'player_turn' => array(
+      'description' => 'the unique parameter that determine which turn are you in specific instance of the game',
+      'type' => 'int',
+      'not null' => TRUE,
+      'default' => '0',
+  ),
+  'player_name' => array(
+      'description' => 'The name of the player.',
+      'type' => 'varchar',
+      'length' => 64,
+      'not null' => TRUE,
+  ),
+  'joined' => array(
+      'description' => 'The Unix timestamp when the game was created.',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+      'default' => 0,
+  ),
+  'alive' => array(
+      'description' => 'The Unix timestamp when the player last ping server.',
+      'type' => 'int',
+      'unsigned' => TRUE,
+      'not null' => TRUE,
+      'default' => 0,
+  ),
+      ) + entity_exportable_schema_fields(),
+      'primary key' => array('id'),
+  );
+
+  return $schema;
+}

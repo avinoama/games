@@ -1,0 +1,16 @@
+name = Game Players
+description = defines a basic data structure for saving players session for a current game.features restrict players and allow base turn games.
+package = Games
+version = VERSION
+core = 7.x
+
+dependencies[] = rules
+dependencies[] = entityreference
+dependencies[] = number
+dependencies[] = list
+dependencies[] = entity
+dependencies[] = views
+dependencies[] = game
+
+
+files[] = game_players.controller.inc

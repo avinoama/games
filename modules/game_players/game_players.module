@@ -1,0 +1,176 @@
+<?php
+
+/**
+ *  Game Players
+ *  is a module that allow micro management of users via rules for each game
+ *
+ * in the game entity adds the ability to limit(min/max) number of players that can participate in each game instance.
+ * via rules you can add more advance functiunality like
+ * "Turn base game"
+ * "Restrict action to current players in current time"
+ * 
+ * 
+ *
+ */
+
+/**
+ * Implements hook_entity_info().
+ */
+function game_players_entity_info() {
+  $return['running_game_player'] = array(
+      'label' => t('Running Game Player'),
+      'entity class' => 'RunningGamePlayer',
+      'controller class' => 'RunningGamePlayerController',
+      'base table' => 'running_game_player',
+      'fieldable' => FALSE,
+      'entity keys' => array(
+          'id' => 'id',
+      ),
+      'bundles' => array(),
+      'load hook' => 'running_game_player_load',
+      'view modes' => array(
+          'full' => array(
+              'label' => t('Default'),
+              'custom settings' => FALSE,
+          ),
+      ),
+      'label callback' => 'entity_class_label',
+      'uri callback' => 'entity_class_uri',
+      'module' => 'game',
+      'access callback' => 'running_game_player_access',
+  );
+  return $return;
+}
+
+function running_game_player_load($id, $reset = FALSE) {
+  $players = running_game_player_load_multiple(array($id), array(), $reset);
+  return reset($players);
+}
+
+function running_game_player_load_multiple($ids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('running_game_player', $ids, $conditions, $reset);
+}
+
+function _game_players_add_default_fields() {
+  $bundle = 'board_game';
+
+  $fields = _game_players_default_fields();
+  foreach ($fields as $field) {
+    $field_info = field_info_field($field['field_name']);
+    if (!$field_info) {
+
+      field_create_field($field);
+
+      $instance = array(
+          'field_name' => $field['field_name'],
+          'label' => $field['label'],
+          'entity_type' => $field['entity_type'],
+          'bundle' => $bundle,
+      );
+      $instance += $field;
+
+      field_create_instance($instance);
+    }
+  }
+}
+
+function running_game_player_create_player($running_game) {
+  $running_game_player = array();
+  $running_game_player['running_game_id'] = $running_game->id;
+  $running_game_player['bundle'] = 'running_game_player';
+
+  $running_game_player_entity = entity_create("running_game_player", $running_game_player);
+  $running_game_player_entity->save();
+  return true;
+}
+
+function game_players_game_init_load($game, $running_game) {
+
+
+  $player_joined_game = false;
+  $query = new EntityFieldQuery;
+  $result = $query
+          ->entityCondition('entity_type', 'running_game_player')
+          ->propertyCondition('running_game_id', $running_game->id)
+          ->execute();
+
+  $players = array();
+  $keys = array();
+
+  if (!empty($result['running_game_player'])) {
+    $keys = array_keys($result['running_game_player']);
+    $players = entity_load("running_game_player", $keys);
+  }
+
+  //  if user is currently register to this game
+  $player_name = "";
+  foreach ($players as $player) {
+    if ($player->player_session == session_id()) {
+      $player_joined_game = true;
+      $player_name = $player->player_name;
+    }
+  }
+
+  $num_players = count($players);
+  if (empty($num_players)) {
+    $num_players = '0';
+  }
+
+
+  drupal_add_js(array('GamePlayers' => array('player_name'=>$player_name,'player_joined_game' => $player_joined_game, "num_players" => $num_players)), 'setting');
+  $path = drupal_get_path('module', 'game_players');
+  drupal_add_js($path . "/game_players.js", 'file');
+}
+
+/**
+ * Hook_game_command
+ * @param type $running_game
+ * @param type $game
+ */
+function game_players_game_command($running_game, $game) {
+
+      /* check id a user is idle for over a minute */
+      $now = time();
+      $query2 = db_select('running_game_player', 'p');
+      $query2->fields('p', array('running_game_id', 'player_session', 'player_name', 'status'))
+              ->condition('p.running_game_id', $running_game->id, '=')
+              ->condition('p.alive', ($now - (PLAYER_MAX_IDLE_TIME)), '<')
+              ->condition("p.status", PLAYER_STATUS_PLAYING, "=")
+              ->orderBy('p.alive', 'ASC');
+
+      $players = $query2->execute();
+
+
+
+
+      $i = 0;
+      foreach ($players as $player) {
+        $query = db_update('running_game_player');
+        $query->fields(array('status' => PLAYER_STATUS_IDLE))
+                ->condition('running_game_id', $running_game->id, '=')
+                ->condition('player_session', $player->player_session, '=')
+                ->execute();
+        //  Add command user is idle
+        /*        $running_game_command = array();
+          $running_game_command['running_game_id'] = $running_game->id;
+          $running_game_command['command_id'] = 1;
+          $running_game_command['command_data'] = drupal_json_encode(array("message" => "user " .$player->player_name . " is IDLE", "time" => time()));
+          $running_game_command_entity = entity_create("running_game_command", $running_game_command);
+
+          //  check if command can occure
+          $running_game_command_entity->save();
+         *
+         */
+      }
+
+      //  $action['time'];
+      //   change user time stamp to now
+
+      $query = db_update('running_game_player');
+      $query->fields(array('alive' => time()))
+              ->condition('running_game_id', $running_game->id, '=')
+              ->condition('player_session', session_id(), '=')
+              ->execute();
+
+
+}
