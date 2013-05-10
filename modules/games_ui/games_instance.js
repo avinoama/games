@@ -26,7 +26,7 @@
     start_game: function() {
       //console.log("game started");
       $(".start-game").fadeOut(500);
-    //Drupal.settings.RunningGame.instance.status=2;
+      //Drupal.settings.RunningGame.instance.status=2;
       
     },
     game_ended: function() {
@@ -42,7 +42,7 @@
       div.addClass("start-game");
       input2 = $("<input>").attr("type","submit").val(Drupal.t("Start Game"));
       input2.bind("click",function(){
-        start_game();
+        _start_game();
       });
       div.append(input2);
       $("#game-canvas").append(div);
@@ -108,6 +108,19 @@
             console.log("module name undefine "+c.module );
           }
         }
+        if(json_data.callbacks) {
+          for(c in json_data.callbacks) {
+            if(Drupal.behaviors[json_data.callbacks[c].module]!=null) {
+              if(Drupal.behaviors[json_data.callbacks[c].module][json_data.callbacks[c].fn]!=null) {
+                Drupal.behaviors[json_data.callbacks[c].module][json_data.callbacks[c].fn](json_data.callbacks[c].params);
+              } else {
+                console.log("function name undefine "+json_data.callbacks[c].fn );
+              }
+            } else {
+              console.log("module name undefine "+json_data.callbacks[c].module );
+            }
+          }
+        }
       }
     }
   }
@@ -134,7 +147,7 @@
     });    
   }
   
-  function start_game() {
+  function _start_game() {
     hook = "game_start";
     params = {};
     Drupal.behaviors.RunningGame.trigger_rule(hook, params);

@@ -46,7 +46,7 @@ function game_ui_instance_ajax_callback($running_game) {
       // are a shifting number of variables
 
       $response = rules_invoke_event_by_args($action['hook'], $action['params']);
-
+      
       if (empty($response)) {
         $response = array();
       }

@@ -128,7 +128,7 @@ function game_players_game_init_load($game, $running_game) {
  * @param type $game
  */
 function game_players_game_command($running_game, $game) {
-
+      dpm("11");
       /* check id a user is idle for over a minute */
       $now = time();
       $query2 = db_select('running_game_player', 'p');

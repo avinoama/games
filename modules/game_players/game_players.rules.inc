@@ -70,6 +70,7 @@ function game_players_rules_action_info() {
       ),
   );
 }
+
 /**
  * rules_player_join_game
  * allow user to join a game.
@@ -78,29 +79,38 @@ function game_players_rules_action_info() {
  * @return type
  */
 function rules_player_join_game($running_game, $game) {
+  $callbacks;
   //  check if user is playing current game
+
   $query = new EntityFieldQuery;
   $result = $query
           ->entityCondition('entity_type', 'running_game_player')
           ->propertyCondition('running_game_id', $running_game->id)
+          ->propertyCondition('player_session', session_id())
+          ->execute();
+  $query = new EntityFieldQuery;
+  $players = $query
+          ->entityCondition('entity_type', 'running_game_player')
+          ->propertyCondition('running_game_id', $running_game->id)
           ->execute();
   //  if user is currently register to this game
-  if (isset($result['running_game_player'][session_id()])) {
-
+  if (isset($result['running_game_player'])) {
     return drupal_json_encode(array("message" => "Already joind game, please be patiant or ask a friend to join.", "players_count" => count($result['running_game_player']), "time" => time()));
     //return null;
   }
   // check if user can join current game
   $game->field_max_num_players;
   $game->field_min_num_players;
-/*
-  if (count($result['running_game_player']) >= $game->field_max_num_players['und'][0]['value'] && $game->field_max_num_players['und'][0]['value'] != -1) {
+  $num_of_players = count($players['running_game_player']);
+
+  if ($num_of_players >= $game->field_max_num_players['und'][0]['value'] && $game->field_max_num_players['und'][0]['value'] != -1) {
+    dpm("Game is already full");
     return drupal_json_encode(array("message" => "Game is already full", "time" => time()));
-    //return null;
+    return null;
   }
-*/
+
   $can_start_game = false;
-  $num_of_players = count($result['running_game_player']);
+
   if (( $num_of_players + 1) >= $game->field_min_num_players['und'][0]['value'] || $game->field_min_num_players['und'][0]['value'] == -1) {
     $can_start_game = true;
   }
@@ -120,37 +130,34 @@ function rules_player_join_game($running_game, $game) {
   $running_game_player_entity = entity_create("running_game_player", $running_game_player);
 
   if ($running_game_player_entity->save()) {
+    $callbacks = array("callbacks" => array(
+            array("fn" => "message", "module" => "RunningGame", "params" => array("user " . $player_name . " has joined the game")),
+            array("fn" => "set_players_count", "module" => "GamePlayers", "params" => ($num_of_players + 1))));
 
-    //  Write to other user that a new user has just joined in
-    $running_game_command = array();
-    $running_game_command['running_game_id'] = $running_game->id;
-    $running_game_command['command_id'] = 1;
-    $running_game_command['command_data'] = drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "callback" => array("fn" => "set_players_count", "module" => "GamePlayers", "params" => ($num_of_players + 1)), "time" => time()));
-    $running_game_command_entity = entity_create("running_game_command", $running_game_command);
+
 
 
     //  check if command can occure
-    if ($running_game_command_entity->save()) {
-      if (count($result['running_game_player']) >= $game->field_max_min_players['und'][0]['value']) {
-        //  allow game to start
-        if ($can_start_game) {
-          $running_game_command2 = array();
-          $running_game_command2['running_game_id'] = $running_game->id;
-          $running_game_command2['command_id'] = 1;
-          $running_game_command2['command_data'] = drupal_json_encode(array("callback" => array("fn" => "show_start_game_button", "module" => "RunningGame", "params" => "1"), "time" => time()));
-          $running_game_command_entity2 = entity_create("running_game_command", $running_game_command2);
-          $running_game_command_entity2->save();
-        }
+      //  allow game to start
+      if ($can_start_game) {
+        $callbacks['callbacks'][] = array("fn" => "show_start_game_button", "module" => "RunningGame", "params" => "1");
       }
-      //echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "time" => time()));
 
-      return array(
-                  array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_player_name", "module" => "RunningGame", "params" => $player_name))),
-                  array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_players_count", "module" => "RunningGame", "params" => ($num_of_players + 1))))
-              );
-    } else {
-      return array("message" => "opps somthing went wrong could not save game", "time" => time());
-    }
+      //echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "time" => time()));
+      //  Write to other user that a new user has just joined in
+
+      /* return array(
+        array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_player_name", "module" => "RunningGame", "params" => $player_name))),
+        array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_players_count", "module" => "RunningGame", "params" => ($num_of_players + 1))))
+        ); */
+
+    $callbacks["time"] = time();
+    $running_game_command = array();
+    $running_game_command['running_game_id'] = $running_game->id;
+    $running_game_command['command_id'] = 1;
+    $running_game_command['command_data'] = drupal_json_encode($callbacks);
+    $running_game_command_entity = entity_create("running_game_command", $running_game_command);
+    $running_game_command_entity->save();
   }
 
   //echo drupal_json_encode($game);
