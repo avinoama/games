@@ -51,7 +51,23 @@ class PieceTypeUIController extends EntityDefaultUIController {
    */
   public function hook_menu() {
     $items = parent::hook_menu();
+    $id_count = count(explode('/', $this->path));
+    $wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%entity_object';
+
+    $items = parent::hook_menu();
     $items[$this->path]['description'] = 'Manage piece types.';
+    $items[$this->path . '/manage/' . $wildcard . '/components'] = array(
+      'title' => t('Configure rules'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('piece_type_component_form', $this->entityType, $id_count + 1),
+      'load arguments' => array($this->entityType),
+      'access callback' => 'entity_access',
+      'access arguments' => array('update', $this->entityType, $id_count + 1),
+      'file' => 'piece_type.admin.inc',
+      'file path' => drupal_get_path('module', 'game_pieces'),
+      'type' => MENU_LOCAL_TASK,
+      'weight' => 2,
+    );
     return $items;
   }
 }

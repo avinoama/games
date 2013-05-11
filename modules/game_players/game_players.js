@@ -5,9 +5,12 @@
 
       player_joined = Drupal.settings.GamePlayers.player_joined_game;
       player_name = Drupal.settings.GamePlayers.player_name;
+
+      build_player_title_header ();
       
       this.set_player_name(player_name);
       this.set_players_count(Drupal.settings.GamePlayers.num_players);
+      
       
       //  if game didnot start yet
       if(Drupal.settings.RunningGame.instance.status==1 && !player_joined) {
@@ -47,8 +50,11 @@
     },
     set_players_count: function($count) {
       $("#players-count").text($count);
-
     }
 
+  }
+  function build_player_title_header () {
+    header = $('<div class="game-header-row game-header-row-2"><div class="game-header-row-middle game-player-name"></div><div class="game-header-row-right game-players">Players <span id="players-count"></span></div></div>');
+    $(".game-header-row-1").after(header);
   }
 })(jQuery);

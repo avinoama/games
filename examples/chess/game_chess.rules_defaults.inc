@@ -251,8 +251,8 @@ function game_chess_default_rules_configuration() {
 
 
 
-  $rules['rules_chess_on_move_piece'] = rules_import('{ "rules_chess_on_move_piece" : {
-    "LABEL" : "Chess on move piece",
+  $rules['rules_chess_on_move_piece'] = rules_import('{ "rules_rules_chess_on_move_piece" : {
+    "LABEL" : "rules chess on move piece",
     "PLUGIN" : "reaction rule",
     "REQUIRES" : [ "game_pieces" ],
     "ON" : [ "piece_move_to_tile" ],
@@ -266,6 +266,74 @@ function game_chess_default_rules_configuration() {
     ]
   }
 }');
+
+  $rules['rules_pawn_white_move_conditions'] = rules_import('{ "rules_pawn_white_move_conditions" : {
+    "LABEL" : "pawn white move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "rules" ],
+    "USES VARIABLES" : {
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "move_to" : { "label" : "move_to", "type" : "integer" }
+    },
+    "OR" : [
+      { "data_is" : {
+          "data" : [ "piece:position" ],
+          "value" : { "select" : "move-to", "num_offset" : { "value" : "8" } }
+        }
+      }
+    ]
+  }
+}');
+
+  $rules['rules_chess_game'] = rules_import('{ "rules_chess_game" : {
+    "LABEL" : "Chess Game",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "game" ],
+    "ON" : [ "game_create_running_instance" ],
+    "DO" : []
+  }
+}');
+
+  $rules['rules_chess_on_join'] = rules_import('{ "rules_chess_on_join" : {
+    "LABEL" : "Chess on join",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "rules", "game_players" ],
+    "ON" : [ "game_join" ],
+    "IF" : [
+      { "data_is" : { "data" : [ "game:machine-name" ], "value" : "chess" } },
+      { "entity_has_field" : { "entity" : [ "game" ], "field" : "field_min_num_players" } },
+      { "entity_has_field" : { "entity" : [ "game" ], "field" : "field_max_num_players" } },
+      { "entity_has_field" : { "entity" : [ "running-game" ], "field" : "field_players" } }
+    ],
+    "DO" : [
+      { "rules_player_join_game" : { "running_game" : [ "running_game" ], "game" : [ "game" ] } }
+    ]
+  }
+}');
+
+  
+  $rules['rules_chess_on_piece_initiate'] = rules_import('{ "rules_chess_on_piece_initiate" : {
+    "LABEL" : "Chess on piece initiate",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "rules", "game_pieces" ],
+    "ON" : [ "piece_initiate" ],
+    "IF" : [
+      { "data_is" : { "data" : [ "game:machine-name" ], "value" : "chess" } },
+      { "NOT data_is" : { "data" : [ "initiator:id" ], "value" : [ "initiated:id" ] } },
+      { "NOT data_is" : { "data" : [ "initiator:uid" ], "value" : [ "initiated:uid" ] } }
+    ],
+    "DO" : [
+      { "piece_move" : {
+          "running_game" : [ "running_game" ],
+          "piece" : [ "initiator" ],
+          "tile_position" : [ "initiated:position" ]
+        }
+      },
+      { "piece_remove" : { "running_game" : [ "running_game" ], "piece" : [ "initiated" ] } }
+    ]
+  }
+}');
+  
   return $rules;
 }
 

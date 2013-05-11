@@ -138,18 +138,18 @@ function rules_player_join_game($running_game, $game) {
 
 
     //  check if command can occure
-      //  allow game to start
-      if ($can_start_game) {
-        $callbacks['callbacks'][] = array("fn" => "show_start_game_button", "module" => "RunningGame", "params" => "1");
-      }
+    //  allow game to start
+    if ($can_start_game) {
+      $callbacks['callbacks'][] = array("fn" => "show_start_game_button", "module" => "RunningGame", "params" => "1");
+    }
 
-      //echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "time" => time()));
-      //  Write to other user that a new user has just joined in
+    //echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "time" => time()));
+    //  Write to other user that a new user has just joined in
 
-      /* return array(
-        array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_player_name", "module" => "RunningGame", "params" => $player_name))),
-        array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_players_count", "module" => "RunningGame", "params" => ($num_of_players + 1))))
-        ); */
+    /* return array(
+      array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_player_name", "module" => "RunningGame", "params" => $player_name))),
+      array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_players_count", "module" => "RunningGame", "params" => ($num_of_players + 1))))
+      ); */
 
     $callbacks["time"] = time();
     $running_game_command = array();
@@ -171,28 +171,38 @@ function rules_player_join_game_validation() {
 }
 
 function rules_game_set_winners($running_game, $player_id) {
-  //dpm("rules_game_set_winners player_id:" . $player_id);
-  // the game can only define a winner once whan game is beaing played
-  if (!empty($running_game)) {
 
-    // load player
-    $conditions = array("running_game_id" => $running_game->id, 'player_turn' => $player_id);
-    $entity = entity_load("running_game_player", FALSE, $conditions);
-    $player = $entity[key($entity)];
-    $player->player_name;
+  // load player
+  $conditions = array("running_game_id" => $running_game->id, 'player_turn' => $player_id);
+  $entity = entity_load("running_game_player", FALSE, $conditions);
+  $player = $entity[key($entity)];
+  $player->player_name;
 
-    //  inform all players game winner
-    $running_game_command = array();
-    $running_game_command['running_game_id'] = $running_game->id;
-    $running_game_command['command_id'] = 1;
-    $running_game_command['command_data'] = drupal_json_encode(array("message" => $player->player_name . " won the game", "time" => time()));
-    $running_game_command_entity = entity_create("running_game_command", $running_game_command);
-    $running_game_command_entity->save();
-  }
 
-  // change game mod to ended inform all other player game ended
+  $callbacks = array("callbacks" => array(array("fn" => "message", "module" => "RunningGame", "params" => array($player->player_name . " won the game"))));
+  $callbacks["time"] = time();
+
+  //  inform all players game winner
+  $running_game_command = array();
+  $running_game_command['running_game_id'] = $running_game->id;
+  $running_game_command['command_id'] = 1;
+  $running_game_command['command_data'] = drupal_json_encode($callbacks);
+  $running_game_command_entity = entity_create("running_game_command", $running_game_command);
+  $running_game_command_entity->save();
 }
 
-function rules_game_set_winners_validation() {
+/**
+ * rules_game_set_winners_validation
+ * check if players exsit in this game
+ * @param type $running_game
+ * @param type $player_id
+ * @return boolean
+ */
+function rules_game_set_winners_validation($running_game, $player_id) {
+  // the game can only define a winner once a game is beaing played
+  if (empty($running_game)) {
+    return false;
+  }
+
   return true;
 }

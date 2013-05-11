@@ -161,6 +161,40 @@ function piece_type_delete_multiple($piece_type_ids) {
   entity_delete_multiple('piece_type', $piece_type_ids);
 }
 
+/**
+ * Loads and returns the condition to a link. If it
+ * doesn't exist, a new one will be created.
+ *
+ * @param $piece_type
+ *    The rules link to which the condition should be loaded.
+ */
+function piece_type_load_condition_set($piece_type) {
+  $condition_set = rules_config_load(piece_type_get_condition_set_name($piece_type));
+  if ($condition_set != FALSE) {
+    return $condition_set;
+  } else {
+    $conditions = rules_or(array(
+    'piece' => array("label" => "Piece", "type" => "piece"),
+    'position' => array("label" => "Position", "type" => "list<integer>")));
+    
+    $conditions->label = 'Rules Movment: ' . $piece_type->label . ' condition';
+    $conditions->save(piece_type_get_condition_set_name($piece_type), 'piece_type');
+    return $conditions;
+  }
+}
+
+/**
+ * Returns the name condition set to a rules link.
+ */
+function piece_type_get_condition_set_name($piece_type) {
+  return 'rules_' . $piece_type->type . '_move_conditions';
+}
+
+/**
+ * Hook_game_init_load()
+ * @param type $game
+ * @param type $running_game
+ */
 function game_pieces_game_init_load($game, $running_game) {
 
   $path = drupal_get_path('module', 'game_pieces');
@@ -169,16 +203,15 @@ function game_pieces_game_init_load($game, $running_game) {
   //$r = rule_load();
   //$d = rules_element_load("pawn_white_move_conditions","pawn_white_move_conditions");
   $name = "pawn_white_move_conditions";
-/*
-  $component = rules_get_cache();
-  $c = $component["condition_info"]['component_rules_pawn_white_move_conditions'];
-  dpm($c);
-  $c->executeByArgs($args);
-  $e = new RulesEventSet();
-*/
-  
+  /*
+    $component = rules_get_cache();
+    $c = $component["condition_info"]['component_rules_pawn_white_move_conditions'];
+    dpm($c);
+    $c->executeByArgs($args);
+    $e = new RulesEventSet();
+   */
+
 //dpm($e);
-  
   //$cache = rules_get_cache("component_rules_pawn_white_move_conditions");
   //dpm($cache);
   // $d = rules_get_components(FALSE,'condition');//'condition'
@@ -193,13 +226,13 @@ function game_pieces_game_init_load($game, $running_game) {
   //$result =db_query("SELECT data FROM {rules_config} WHERE id=".$t->id);
   //$r = reset($result->fetchAll());
   //dpm(unserialize($r->data));
-  //$l = rules_link_load('1');
+  //$l = piece_type_load('1');
   //dpm($l);
   // load entities to pre set the game
-  
+
   $pieces_type = array();
   $pieces = array();
-  
+
   if (property_exists($running_game, "field_pieces")) {
     $ids = array();
     foreach ($running_game->field_pieces as $lang => $val) {
@@ -359,7 +392,7 @@ function _game_pieces_add_default_games() {
 function _game_pieces_add_default_fields() {
   // need to see how to include pieces to different bundle types
   $bundle = 'board_game';
-  
+
   $fields = _game_piece_default_fields();
   foreach ($fields as $field) {
     $field_info = field_info_field($field['field_name']);

@@ -1,6 +1,6 @@
 name = Board Games
 description = allow user to build board games on top of games module.
-package = Games
+package = Game Types
 version = VERSION
 core = 7.x
 

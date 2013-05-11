@@ -11,8 +11,10 @@ function _game_chess_add_default_games() {
     $game->type = $bundle;
     $game->description = "Chess is a two-player strategy board game played on a chessboard, a checkered gameboard with 64 squares arranged in an eight-by-eight grid. It is one of the world's most popular games, played by millions of people worldwide at home, in clubs, online, by correspondence, and in tournaments.";
     $game->machine_name = "chess";
-    $game->field_board_width['und'][]['value'] = 8;
-    $game->field_board_height['und'][]['value'] = 8;
+    $game->field_board_dimensions['und'][]['value'] = 2;
+    $game->field_board_dimension_amount['und'][0]['value'] = 8;
+    $game->field_board_dimension_amount['und'][1]['value'] = 8;
+
     $game->field_min_num_players['und'][]['value'] = 2;
     $game->field_max_num_players['und'][]['value'] = 2;
     $game->field_tile_type['und'][]['value'] = 1;
@@ -87,7 +89,7 @@ function _game_chess_pieces_default_piece_types() {
   );
 
 
-$piece_types[] = array(
+  $piece_types[] = array(
       "label" => "Knight White",
       "symbol" => "♘",
       "type" => "knight_white",
@@ -99,7 +101,7 @@ $piece_types[] = array(
       "type" => "knight_black",
       "description" => ''
   );
-  
+
 
   $piece_types[] = array(
       "label" => "Rook White",

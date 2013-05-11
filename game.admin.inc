@@ -208,29 +208,7 @@ function game_form_submit_delete($form, &$form_state) {
   $form_state['redirect'] = $game_uri['path'] . '/delete';
 }
 
-/**
- * Delete confirmation form.
- */
-function game_delete_form($form, &$form_state, $game) {
-  $form_state['game'] = $game;
-  // Always provide entity id in the same form key as in the entity edit form.
-  $form['game_type_id'] = array('#type' => 'value', '#value' => entity_id('game', $game));
-  $game_uri = entity_uri('game', $game);
-  return confirm_form($form, t('Are you sure you want to delete game %title?', array('%title' => entity_label('game', $game))), $game_uri['path'], t('This action cannot be undone.'), t('Delete'), t('Cancel')
-  );
-}
 
-/**
- * Delete form submit handler.
- */
-function game_delete_form_submit($form, &$form_state) {
-  $game = $form_state['game'];
-  game_delete($game);
-
-  drupal_set_message(t('Game %title deleted.', array('%title' => entity_label('game', $game))));
-
-  $form_state['redirect'] = '<front>';
-}
 
 /* function running_game_admin_add_page() {
   $items = array();

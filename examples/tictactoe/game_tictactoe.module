@@ -8,13 +8,15 @@ function _game_tictactoe_add_default_games() {
 
   $game->title = "TicTacToe";
   $game->type = $bundle;
-  $game->machine_name = "tic_tac_toe";
+  $game->machine_name = "tic-tac-toe";
   $game->description = "Tic-tac-toe (or Noughts and crosses, Xs and Os) is a pencil-and-paper game for two players, X and O, who take turns marking the spaces in a 3×3 grid. The player who succeeds in placing three respective marks in a horizontal, vertical, or diagonal row wins the game.";
-  $game->field_board_width['und'][]['value'] = 3;
-  $game->field_board_height['und'][]['value'] = 3;
+  $game->field_board_dimensions['und'][]['value'] = 2;
+  $game->field_board_dimension_amount['und'][0]['value'] = 3;
+  $game->field_board_dimension_amount['und'][1]['value'] = 3;
   $game->field_min_num_players['und'][]['value'] = 2;
   $game->field_max_num_players['und'][]['value'] = 2;
   $game->field_tile_type['und'][]['value'] = 1;
+  
   game_save($game);
 
 }

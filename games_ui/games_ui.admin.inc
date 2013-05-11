@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Generates the game type editing form.
  */

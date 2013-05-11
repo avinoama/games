@@ -30,6 +30,7 @@ $handler->display->display_options['style_plugin'] = 'table';
 $handler->display->display_options['header']['area']['id'] = 'area';
 $handler->display->display_options['header']['area']['table'] = 'views';
 $handler->display->display_options['header']['area']['field'] = 'area';
+$handler->display->display_options['header']['area']['empty'] = TRUE;
 $handler->display->display_options['header']['area']['content'] = '<a href=/game/add>Create New Game</a>';
 $handler->display->display_options['header']['area']['format'] = 'full_html';
 /* Field: Game: Game ID */
@@ -73,6 +74,7 @@ $handler->display->display_options['path'] = 'games';
 $handler->display->display_options['menu']['type'] = 'normal';
 $handler->display->display_options['menu']['title'] = 'Games';
 $handler->display->display_options['menu']['weight'] = '0';
+
 
 
 

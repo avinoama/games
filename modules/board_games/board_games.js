@@ -2,13 +2,16 @@
   Drupal.behaviors.BoardGame = {
     attach: function (context, settings) {
       field_matrix = Drupal.settings.RunningGame.instance.field_matrix;
-      height = Drupal.settings.RunningGame.game.field_board_height['und'][0].value;
-      width = Drupal.settings.RunningGame.game.field_board_width['und'][0].value;
+      dimensions = Drupal.settings.RunningGame.game.field_board_dimensions['und'][0].value;
+      dimension_amount = Drupal.settings.RunningGame.game.field_board_dimension_amount['und'];
+      
+
       tile_type = Drupal.settings.RunningGame.game.field_tile_type['und'][0].value;
 
       var board,row,column;
       
       board = $("<div/>").addClass("boardInstance").attr("id","game"+Drupal.settings.RunningGame.game.gid);
+      
       if($.isArray(field_matrix['und'])) {
         field_matrix = field_matrix['und'];
       }
@@ -17,34 +20,45 @@
       }
       
       var count=0;
-      for(i=0;i<height;i++) {
-        //row = $("<div/>").addClass("row");
-        
-        if (!$.isArray(field_matrix[i]) && !$.isPlainObject(field_matrix[i])) {
-          field_matrix[i]=new Array();
-        }
-        for(j=0;j<width;j++) {
-          a = Array("","<div/>","<input/>");
-          tile = $(a[tile_type]).addClass("tile").attr("id","tile_"+count);
-          if(tile_type==1) {
-            
-            if(field_matrix[count]!=undefined && field_matrix[count].value>0) {
-              tile.addClass("owned_"+field_matrix[count].value).addClass("owned");
-              tile.text(field_matrix[count].value);
-            } else {
-              tile.html("&nbsp;");
-            }
-          }else if(tile_type==2) {
-            
-            if(field_matrix[count]!=undefined && field_matrix[count].value>0) {
-              tile.val(field_matrix[count].value);
-            }
 
+
+      for(d = 1; d <= dimensions-1; d++) {
+        if(dimension_amount[d] != undefined) {
+          for(i = 0; i < dimension_amount[d].value; i++) {
+            for(j = 0; j < dimension_amount[0].value; j++) {
+
+
+              //console.log(i+" " + j);
+            
+              if (!$.isArray(field_matrix[count]) && !$.isPlainObject(field_matrix[count])) {
+                field_matrix[count]=new Array();
+              }
+              a = Array("","<div/>","<input/>");
+              tile = $(a[tile_type]).addClass("tile").addClass("tile_"+dimensions+"d").addClass("tile_position_" + i  + "_" + j).attr("id","tile_"+count);
+              if(tile_type==1) {
+
+                if(field_matrix[count]!=undefined && field_matrix[count].value>0) {
+                  tile.addClass("owned_"+field_matrix[count].value).addClass("owned");
+                  tile.text(field_matrix[count].value);
+                } else {
+                  tile.html("&nbsp;");
+                }
+              }else if(tile_type==2) {
+
+                if(field_matrix[count]!=undefined && field_matrix[count].value>0) {
+                  tile.val(field_matrix[count].value);
+                }
+
+              }
+            
+              count++;
+              board.append(tile);
+            }
           }
-          count++;
-          board.append(tile);
         }
       }
+     // console.log("count " + count);
+
       $("#game-canvas").html('');
       $("#game-canvas").append(board);
     },
@@ -138,8 +152,8 @@
       dataType :"json",
       type:"post",
       success: function(data) {
-      //  console.log(data);
-      /*
+        //  console.log(data);
+        /*
         for(r in data) {
           //console.log(data[r])
           for(i in data[r])
@@ -150,7 +164,7 @@
               }
             }
         }
-        */
+         */
       },
       error: function(jqXHR, textStatus, errorThrow) {
         console.log(jqXHR+ " " + textStatus + " " +errorThrow );

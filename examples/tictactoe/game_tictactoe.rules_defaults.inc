@@ -15,7 +15,7 @@ function game_tictactoe_default_rules_configuration() {
     "REQUIRES" : [ "rules", "game", "board_games" ],
     "ON" : [ "game_start" ],
     "IF" : [
-      { "data_is" : { "data" : [ "game:machine-name" ], "value" : "tic_tac_toe" } }
+      { "data_is" : { "data" : [ "game:machine-name" ], "value" : "tic-tac-toe" } }
     ],
     "DO" : [
       { "rules_start_game" : { "running_game" : [ "running_game" ], "game" : [ "game" ] } },
@@ -177,7 +177,7 @@ function game_tictactoe_default_rules_configuration() {
         }
       },
       { "data_is" : { "data" : [ "running_game:status" ], "op" : "\u003C", "value" : "3" } },
-      { "data_is" : { "data" : [ "game:machine-name" ], "value" : "tic_tac_toe" } }
+      { "data_is" : { "data" : [ "game:machine-name" ], "value" : "tic-tac-toe" } }
     ],
     "DO" : [
       { "rules_tile_set_owner" : {

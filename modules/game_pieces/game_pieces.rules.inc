@@ -134,7 +134,7 @@ function piece_remove_validation($running_game = null, $piece = null) {
 }
 
 function piece_remove($running_game = null, $piece = null) {
-  
+
   $running_game_command = array();
   $running_game_command['running_game_id'] = $running_game->id;
   $running_game_command['command_id'] = 1;
@@ -158,7 +158,7 @@ function piece_create_validation($running_game = null, $piece_type = null, $tile
   return true;
 }
 
-function piece_create($running_game = null, $piece_type = null, $tile_position = -1, $owend=-1) {
+function piece_create($running_game = null, $piece_type = null, $tile_position = -1, $owend = -1) {
 
   // create piece
   $entity_type = "piece";
@@ -187,21 +187,16 @@ function piece_create($running_game = null, $piece_type = null, $tile_position =
     $running_game_command_entity->save();
   }
 }
-function piece_move_validate($running_game = null, $piece = null, $tile_position = -1) {
-  dpm($piece->type);
-  $components = rules_get_components(FALSE, 'action');
 
-  return false;
-}
+
 function piece_move_validation($running_game = null, $piece = null, $tile_position = -1) {
- // dpm($piece->type);
- // $components = rules_get_components(FALSE, 'action');
-//  dpm();
- // $return = rules_invoke_component('rules_pawn_white_move_conditions',$piece);
-  //dpm($return);
-   //
-return false;
-  //return true;
+
+  if ($tile_position < 0) {
+    return false;
+  }
+
+
+  return true;
 }
 
 /**
@@ -211,6 +206,13 @@ return false;
  * @param type $tile_position
  */
 function piece_move($running_game = null, $piece = null, $tile_position = -1) {
+
+  $c = 'rules_'.$piece->type.'_move_conditions';
+  $return = rules_invoke_component($c, $piece, $tile_position);
+  //dpm($c. " evaluated to ".$return );
+  if (!$return) {
+    return false;
+  }
 
   $piece->position = $tile_position;
 
@@ -225,7 +227,7 @@ function piece_move($running_game = null, $piece = null, $tile_position = -1) {
     $running_game_command_entity = entity_create("running_game_command", $running_game_command);
     $running_game_command_entity->save();
   }
-  return "ok";
+  return true;
 }
 
 /**

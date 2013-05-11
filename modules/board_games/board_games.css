@@ -36,8 +36,8 @@
 .owned_4 {
   background:blue;
 }
-#tic_tac_toe #game-canvas .boardInstance {width:407px;}
-#tic_tac_toe #game-canvas .boardInstance .tile.clicked {background-color: #DCDCDC;}
+#tic-tac-toe #game-canvas .boardInstance {width:407px;}
+#tic-tac-toe #game-canvas .boardInstance .tile.clicked {background-color: #DCDCDC;}
 
 
 #sudoku #game-canvas .boardInstance {width:507px}

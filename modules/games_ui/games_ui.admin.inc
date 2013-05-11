@@ -102,6 +102,7 @@ function game_ui_type_form_delete_confirm_submit($form, &$form_state) {
  * Page to select game Type to add new game.
  */
 function game_ui_admin_add_page() {
+  drupal_set_title(t("Game Add"));
   $items = array();
   foreach (game_types() as $game_type_key => $game_type) {
     $items[] = l(entity_label('game_type', $game_type), 'game/add/' . $game_type_key);
@@ -423,4 +424,27 @@ function game_ui_create_instance($game) {
   // create instance and redirect to that instance to start playing
   //return "11";
   game_ui_instance_create_instance($game);
+}
+/**
+ * Delete confirmation form.
+ */
+function game_delete_form($form, &$form_state, $game) {
+  $form_state['game'] = $game;
+  // Always provide entity id in the same form key as in the entity edit form.
+  $form['game_type_id'] = array('#type' => 'value', '#value' => entity_id('game', $game));
+  $game_uri = entity_uri('game', $game);
+  return confirm_form($form, t('Are you sure you want to delete game %title?', array('%title' => entity_label('game', $game))), $game_uri['path'], t('This action cannot be undone.'), t('Delete'), t('Cancel')
+  );
+}
+
+/**
+ * Delete form submit handler.
+ */
+function game_delete_form_submit($form, &$form_state) {
+  $game = $form_state['game'];
+  game_delete($game);
+
+  drupal_set_message(t('Game %title deleted.', array('%title' => entity_label('game', $game))));
+
+  $form_state['redirect'] = 'games';
 }
