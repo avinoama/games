@@ -21,228 +21,228 @@ function game_chess_default_rules_configuration() {
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_black",
-          "tile_position" : "51",
+          "position" : "2-1",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_black",
-          "tile_position" : "52",
+          "position" : "2-2",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_black",
-          "tile_position" : "53",
+          "position" : "2-3",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_black",
-          "tile_position" : "54",
+          "position" : "2-4",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_black",
-          "tile_position" : "55",
+          "position" : "2-5",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "rook_white",
-          "tile_position" : "0",
+          "position" : "8-1",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "rook_white",
-          "tile_position" : "7",
+          "position" : "8-8",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "rook_black",
-          "tile_position" : "56",
+          "position" : "1-8",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "rook_black",
-          "tile_position" : "63",
+          "position" : "1-1",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "knight_white",
-          "tile_position" : "1",
+          "position" : "8-7",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "knight_white",
-          "tile_position" : "6",
+          "position" : "8-2",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "knight_black",
-          "tile_position" : "57",
+          "position" : "1-2",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "knight_black",
-          "tile_position" : "62",
+          "position" : "1-7",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "bishop_white",
-          "tile_position" : "2",
+          "position" : "8-3",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "bishop_white",
-          "tile_position" : "5",
+          "position" : "8-6",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "bishop_black",
-          "tile_position" : "58",
+          "position" : "1-3",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "bishop_black",
-          "tile_position" : "61",
+          "position" : "1-6",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "king_white",
-          "tile_position" : "4",
+          "position" : "8-4",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "king_black",
-          "tile_position" : "60",
+          "position" : "1-4",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "queen_white",
-          "tile_position" : "3",
+          "position" : "8-5",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "queen_black",
-          "tile_position" : "59",
+          "position" : "1-5",
           "owned" : "2"
         }
       },
-      { "rules_start_game" : { "running_game" : [ "running_game" ], "game" : [ "game" ] } },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_white",
-          "tile_position" : "8",
+          "position" : "7-1",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_white",
-          "tile_position" : "9",
+          "position" : "7-2",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_white",
-          "tile_position" : "10",
+          "position" : "7-3",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_white",
-          "tile_position" : "11",
+          "position" : "7-4",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_white",
-          "tile_position" : "12",
+          "position" : "7-5",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_white",
-          "tile_position" : "13",
+          "position" : "7-6",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_white",
-          "tile_position" : "14",
+          "position" : "7-7",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_white",
-          "tile_position" : "15",
+          "position" : "7-8",
           "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_black",
-          "tile_position" : "48",
+          "position" : "2-6",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_black",
-          "tile_position" : "49",
+          "position" : "2-7",
           "owned" : "2"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "pawn_black",
-          "tile_position" : "50",
+          "position" : "2-8",
           "owned" : "2"
         }
-      }
+      },
+      { "rules_start_game" : { "running_game" : [ "running_game" ], "game" : [ "game" ] } }
     ]
   }
 }');
@@ -251,16 +251,19 @@ function game_chess_default_rules_configuration() {
 
 
 
-  $rules['rules_chess_on_move_piece'] = rules_import('{ "rules_rules_chess_on_move_piece" : {
+  $rules['rules_chess_on_move_piece'] = rules_import('{ "rules_chess_on_move_piece" : {
     "LABEL" : "rules chess on move piece",
     "PLUGIN" : "reaction rule",
     "REQUIRES" : [ "game_pieces" ],
-    "ON" : [ "piece_move_to_tile" ],
+    "ON" : [ "piece_move_to_position" ],
+    "IF" : [
+      { "piece_check_valid_move" : { "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ],
     "DO" : [
       { "piece_move" : {
           "running_game" : [ "running_game" ],
           "piece" : [ "piece" ],
-          "tile_position" : [ "tile_position" ]
+          "position" : [ "position" ]
         }
       }
     ]
@@ -273,7 +276,7 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "rules" ],
     "USES VARIABLES" : {
       "piece" : { "label" : "Piece", "type" : "piece" },
-      "move_to" : { "label" : "move_to", "type" : "integer" }
+      "position" : { "label" : "Position", "type" : "list" }
     },
     "OR" : [
       { "data_is" : {
@@ -320,13 +323,14 @@ function game_chess_default_rules_configuration() {
     "IF" : [
       { "data_is" : { "data" : [ "game:machine-name" ], "value" : "chess" } },
       { "NOT data_is" : { "data" : [ "initiator:id" ], "value" : [ "initiated:id" ] } },
-      { "NOT data_is" : { "data" : [ "initiator:uid" ], "value" : [ "initiated:uid" ] } }
+      { "NOT data_is" : { "data" : [ "initiator:uid" ], "value" : [ "initiated:uid" ] } },
+      { "entity_has_field" : { "entity" : [ "initiated" ], "field" : "field_position" } }
     ],
     "DO" : [
       { "piece_move" : {
           "running_game" : [ "running_game" ],
           "piece" : [ "initiator" ],
-          "tile_position" : [ "initiated:position" ]
+          "position" : [ "initiated:field-position" ]
         }
       },
       { "piece_remove" : { "running_game" : [ "running_game" ], "piece" : [ "initiated" ] } }

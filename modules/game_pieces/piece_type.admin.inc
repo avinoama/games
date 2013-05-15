@@ -6,11 +6,15 @@ function piece_type_form($form, &$form_state, $piece_type, $op = 'edit') {
     $piece_type->label .= ' (cloned)';
     $piece_type->type = '';
   }
-
+  if(property_exists($piece_type, "symbol")){
+    $s = $piece_type->symbol;
+  } else {
+    $s="";
+  }
   $form['symbol'] = array(
       '#title' => t('Symbol'),
       '#type' => 'textfield',
-      '#default_value' => $piece_type->symbol,
+      '#default_value' => $s,
       '#description' => t('The uniqu char of this piece type.'),
       '#required' => TRUE,
       '#size' => 30,

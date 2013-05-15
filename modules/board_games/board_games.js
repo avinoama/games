@@ -24,8 +24,8 @@
 
       for(d = 1; d <= dimensions-1; d++) {
         if(dimension_amount[d] != undefined) {
-          for(i = 0; i < dimension_amount[d].value; i++) {
-            for(j = 0; j < dimension_amount[0].value; j++) {
+          for(i = 1; i <= dimension_amount[d].value; i++) {
+            for(j = 1; j <= dimension_amount[0].value; j++) {
 
 
               //console.log(i+" " + j);
@@ -34,7 +34,10 @@
                 field_matrix[count]=new Array();
               }
               a = Array("","<div/>","<input/>");
-              tile = $(a[tile_type]).addClass("tile").addClass("tile_"+dimensions+"d").addClass("tile_position_" + i  + "_" + j).attr("id","tile_"+count);
+              tile = $(a[tile_type]).addClass("tile")
+              .addClass("tile_"+dimensions+"d")
+              .addClass("position_" + i  + "_" + j)
+              .attr("id","tile_"+count);
               if(tile_type==1) {
 
                 if(field_matrix[count]!=undefined && field_matrix[count].value>0) {

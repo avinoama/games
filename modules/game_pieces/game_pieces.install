@@ -5,8 +5,6 @@
  */
 function game_pieces_install() {
   _game_pieces_add_default_fields();
-  _game_pieces_add_default_piece_types();
-  _game_pieces_add_default_games();
 }
 
 /**
@@ -43,12 +41,6 @@ function game_pieces_schema() {
               'length' => 255,
               'not null' => TRUE,
               'default' => '',
-          ),
-          'position' => array(
-              'description' => 'The position of this piece, always saved in a one dimetional way, for now.',
-              'type' => 'int',
-              'not null' => TRUE,
-              'default' => '0',
           ),
           'uid' => array(
               'description' => 'ID of participent that is assigned with this piece. if null assigned to all.',
@@ -107,6 +99,7 @@ function game_pieces_schema() {
 
 function _game_piece_default_fields() {
   $fields = array();
+  
   $fields[] = array(
       'field_name' => 'field_pieces',
       'label' => t('Pieces'),
@@ -114,14 +107,6 @@ function _game_piece_default_fields() {
       'translatable' => FALSE,
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
       'entity_type' => 'running_game',
-  );
-  $fields[] = array(
-      'field_name' => 'field_position',
-      'label' => t('Position'),
-      'type' => 'number_integer',
-      'translatable' => FALSE,
-      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-      'entity_type' => 'piece',
   );
 
   return $fields;

@@ -55,31 +55,22 @@ function game_pieces_entity_info() {
       'entity class' => 'pieceType',
       'controller class' => 'PieceTypeController',
       'base table' => 'piece_type',
-      'fieldable' => FALSE,
+      'bundle of' => 'piece',
+      'fieldable' => TRUE,
+      'exportable' => TRUE,
       'entity keys' => array(
           'id' => 'id',
           'name' => 'type',
           'label' => 'label',
       ),
-      'bundle of' => 'piece',
-      'exportable' => TRUE,
-      'bundles' => array(),
-      'load hook' => 'piece_type_load',
-      'view modes' => array(
-          'full' => array(
-              'label' => t('pieces type'),
-              'custom settings' => FALSE,
-          ),
-      ),
-      // Enable the entity API's admin UI.
+      'module' => 'game_pieces',
       'admin ui' => array(
           'path' => 'admin/structure/piece-types',
           'file' => 'piece_type.admin.inc',
           'controller class' => 'PieceTypeUIController',
       ),
-      'label callback' => 'entity_class_label',
-      'uri callback' => 'entity_class_uri',
-      'module' => 'game_pieces',
+      //'label callback' => 'entity_class_label',
+      //'uri callback' => 'entity_class_uri',
       'access callback' => 'game_pieces_access',
   );
   return $return;
@@ -174,9 +165,10 @@ function piece_type_load_condition_set($piece_type) {
     return $condition_set;
   } else {
     $conditions = rules_or(array(
-    'piece' => array("label" => "Piece", "type" => "piece"),
-    'position' => array("label" => "Position", "type" => "list<integer>")));
-    
+        'piece' => array("label" => "Piece", "type" => "piece"),
+        'position' => array("label" => "Position", "type" => "list")));
+    //<integer>
+
     $conditions->label = 'Rules Movment: ' . $piece_type->label . ' condition';
     $conditions->save(piece_type_get_condition_set_name($piece_type), 'piece_type');
     return $conditions;
@@ -200,35 +192,8 @@ function game_pieces_game_init_load($game, $running_game) {
   $path = drupal_get_path('module', 'game_pieces');
   drupal_add_js($path . "/game_pieces.js", 'file');
   drupal_add_css($path . "/game_pieces.css", 'file');
-  //$r = rule_load();
-  //$d = rules_element_load("pawn_white_move_conditions","pawn_white_move_conditions");
-  $name = "pawn_white_move_conditions";
-  /*
-    $component = rules_get_cache();
-    $c = $component["condition_info"]['component_rules_pawn_white_move_conditions'];
-    dpm($c);
-    $c->executeByArgs($args);
-    $e = new RulesEventSet();
-   */
-
-//dpm($e);
-  //$cache = rules_get_cache("component_rules_pawn_white_move_conditions");
-  //dpm($cache);
-  // $d = rules_get_components(FALSE,'condition');//'condition'
-  //$e = rules_get_cache();();
-  //TRUE,"ruleset",array()
-  //$d["rules_pawn_white_move_condition"];
-  //rules_pawn_white_move_condition
-  //$t = $d["rules_pawn_white_move_condition"];
-  //$f = entity_load("rules_config",array($t->id));
-  //$f = rules_config_load($t->id);
-  //dpm($f);
-  //$result =db_query("SELECT data FROM {rules_config} WHERE id=".$t->id);
-  //$r = reset($result->fetchAll());
-  //dpm(unserialize($r->data));
-  //$l = piece_type_load('1');
-  //dpm($l);
-  // load entities to pre set the game
+  //
+  //  need to add local validations for movment rules
 
   $pieces_type = array();
   $pieces = array();
@@ -252,7 +217,6 @@ function game_pieces_game_init_load($game, $running_game) {
       }
     }
   }
-
   drupal_add_js(array('GamePieces' => array('pieces' => $pieces, "piece_types" => $pieces_type)), 'setting');
 }
 
@@ -296,13 +260,14 @@ function game_pieces_permission() {
  */
 function game_pieces_access($op, $piece, $account = NULL, $entity_type = NULL) {
   global $user;
-
+  return user_access('administer piece entities');
   if (!isset($account)) {
     $account = $user;
   }
 
   switch ($op) {
     case 'create':
+    case 'delete':
     case 'update':
       return user_access('administer piece entities', $account)
               || user_access('create piece entities', $account);
@@ -372,22 +337,7 @@ function _game_pieces_add_default_piece_types() {
   }
 }
 
-/**
- *
- * @return array
- */
-function _game_pieces_default_piece_types() {
-  $piece_types = array();
 
-  return $piece_types;
-}
-
-/**
- *  
- */
-function _game_pieces_add_default_games() {
-
-}
 
 function _game_pieces_add_default_fields() {
   // need to see how to include pieces to different bundle types
@@ -411,6 +361,68 @@ function _game_pieces_add_default_fields() {
       field_create_instance($instance);
     }
   }
+}
+
+/**
+ * Hook piece type creation
+ * @param type $piece
+ */
+function game_pieces_piece_type_insert($piece_type) {
+  _game_pieces_add_default_fields_for_bundle($piece_type->type);
+}
+
+function _game_pieces_add_default_fields_for_bundle($bundle) {
+  $entity_type = "piece";
+  $fields = _game_piece_type_default_fields();
+
+  foreach ($fields as $field) {
+    if ($field['entity_type'] == $entity_type) {
+      if (!($field_info = field_info_field($field['field_name']))) {
+        $field = field_create_field($field);
+      }
+      $instances = field_info_instances(null, $field["field_name"]);
+      $instance = array(
+          'field_name' => $field['field_name'],
+          'entity_type' => $entity_type,
+          'bundle' => $bundle,
+      );
+      $instance += $field;
+      if (!isset($instances[$entity_type][$bundle])) {
+        field_create_instance($instance);
+      } else {
+        if (!isset($instances[$entity_type][$bundle][$field["field_name"]])) {
+          field_create_instance($instance);
+        }
+      }
+    }
+  }
+}
+/**
+ * For all uiu_service bundle set default fields
+ */
+function game_pieces_add_default_fields_for_all_bundles() {
+
+  $piece_types = entity_load("piece_type");
+
+  if(!empty($piece_types)) {
+    foreach($piece_types as $piece_type) {
+      _game_pieces_add_default_fields_for_bundle($piece_type->type);
+    }
+  }
+}
+function _game_piece_type_default_fields() {
+  $fields = array();
+
+  $fields[] = array(
+      'field_name' => 'field_position',
+      'label' => t('Position'),
+      'type' => 'number_integer',
+      'translatable' => FALSE,
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'entity_type' => 'piece',
+  );
+
+  return $fields;
 }
 
 /**

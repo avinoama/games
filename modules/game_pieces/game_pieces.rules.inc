@@ -1,5 +1,27 @@
 <?php
 
+function game_pieces_rules_condition_info() {
+  return array(
+      'piece_check_valid_move' => array(
+          'group' => 'game',
+          'label' => t('Piece check valide move'),
+          'arguments' => array(
+              'piece' => array(
+                  'type' => 'piece',
+                  'label' => 'piece',
+                  'optional' => FALSE,
+              ),
+              'position' => array(
+                  'type' => 'list<integer>',
+                  'label' => 'Position',
+                  'optional' => FALSE,
+              )
+          ),
+          'module' => 'game_pieces',
+      ),
+  );
+}
+
 function game_pieces_rules_action_info() {
 
   return array(
@@ -16,9 +38,9 @@ function game_pieces_rules_action_info() {
                   'label' => 'piece',
                   'optional' => FALSE,
               ),
-              'tile_position' => array(
-                  'type' => 'integer',
-                  'label' => 'tile_position',
+              'position' => array(
+                  'type' => 'list<integer>',
+                  'label' => 'position',
                   'optional' => FALSE,
               )
           ),
@@ -88,10 +110,15 @@ function game_pieces_rules_action_info() {
                   'descritpion' => "Machine name of piece type",
                   'options list' => "get_all_piece_types",
               ),
-              'tile_position' => array(
-                  'type' => 'integer',
-                  'label' => 'tile_position',
-                  'optional' => FALSE,
+              'element' => array(
+                  'type' => 'text',
+                  'label' => 'element',
+                  'optional' => TRUE,
+              ),
+              'position' => array(
+                  'type' => 'text',
+                  'label' => 'position',
+                  'optional' => TRUE,
               ),
               'owned' => array(
                   'type' => 'integer',
@@ -148,17 +175,14 @@ function piece_remove($running_game = null, $piece = null) {
  * function piece_create_validation() {
  * @return boolean
  */
-function piece_create_validation($running_game = null, $piece_type = null, $tile_position = -1) {
+function piece_create_validation($running_game = null, $piece_type = null, $position = -1) {
   if (property_exists($running_game, "field_pieces")) {
-    return false;
-  }
-  if ($tile_position < 0) {
     return false;
   }
   return true;
 }
 
-function piece_create($running_game = null, $piece_type = null, $tile_position = -1, $owend = -1) {
+function piece_create($running_game = null, $piece_type = null, $element = "", $position = "", $owend = -1) {
 
   // create piece
   $entity_type = "piece";
@@ -168,13 +192,20 @@ function piece_create($running_game = null, $piece_type = null, $tile_position =
 
   $piece->label = $piece_type_entity->symbol;
   $piece->type = $piece_type;
-  $piece->position = $tile_position;
   $piece->uid = $owend;
+  $positions = explode("-", $position);
+  if (!empty($position)) {
+    //dpm($position);
+    foreach ($positions as $val) {
+
+      $piece->field_position[LANGUAGE_NONE][]['value'] = $val;
+    }
+  }
 
   piece_save($piece);
 
   // put it in running game
-  $running_game->field_pieces["und"][]["target_id"] = $piece->id;
+  $running_game->field_pieces[LANGUAGE_NONE][]["target_id"] = $piece->id;
 
 
   // notify exsting users
@@ -182,16 +213,22 @@ function piece_create($running_game = null, $piece_type = null, $tile_position =
     $running_game_command = array();
     $running_game_command['running_game_id'] = $running_game->id;
     $running_game_command['command_id'] = 1;
-    $running_game_command['command_data'] = drupal_json_encode(array("callback" => array("module" => "GamePieces", "fn" => "create_piece", "params" => array("tile_position" => $tile_position, "piece" => $piece, "piece_type" => $piece_type)), "time" => time()));
+    $running_game_command['command_data'] = drupal_json_encode(array("callback" =>
+        array("module" => "GamePieces",
+            "fn" => "create_piece",
+            "params" => array("position" => $position,
+                'element' => $element,
+                "piece" => $piece,
+                "piece_type" => $piece_type)),
+        "time" => time()));
     $running_game_command_entity = entity_create("running_game_command", $running_game_command);
     $running_game_command_entity->save();
   }
 }
 
+function piece_move_validation($running_game = null, $piece = null, $position = -1) {
 
-function piece_move_validation($running_game = null, $piece = null, $tile_position = -1) {
-
-  if ($tile_position < 0) {
+  if ($position < 0) {
     return false;
   }
 
@@ -203,18 +240,16 @@ function piece_move_validation($running_game = null, $piece = null, $tile_positi
  *
  * @param type $running_game
  * @param type $piece
- * @param type $tile_position
+ * @param type $position
  */
-function piece_move($running_game = null, $piece = null, $tile_position = -1) {
-
-  $c = 'rules_'.$piece->type.'_move_conditions';
-  $return = rules_invoke_component($c, $piece, $tile_position);
-  //dpm($c. " evaluated to ".$return );
-  if (!$return) {
-    return false;
+function piece_move($running_game = null, $piece = null, $position = array()) {
+  $piece->field_position[LANGUAGE_NONE] = array();
+  $i=0;
+  foreach ($position as $val) {
+    $piece->field_position[LANGUAGE_NONE][$i] = array('value'=>$val);
+    $i++;
   }
 
-  $piece->position = $tile_position;
 
   if ($piece->save()) {
     $running_game_command = array();
@@ -223,10 +258,38 @@ function piece_move($running_game = null, $piece = null, $tile_position = -1) {
     $running_game_command['command_data'] = drupal_json_encode(
             array("callback" =>
                 array("module" => "GamePieces", "fn" => "move_piece", "params" =>
-                    array("tile_position" => $tile_position, "piece" => $piece)), "time" => time()));
+                    array("position" => $position, "piece" => $piece)), "time" => time()));
     $running_game_command_entity = entity_create("running_game_command", $running_game_command);
     $running_game_command_entity->save();
   }
+  return true;
+}
+
+/**
+ *
+ * @param type $piece
+ * @param type $position
+ * @return boolean
+ */
+function piece_check_valid_move($piece = null, $position = array()) {
+
+  $c = 'rules_' . $piece->type . '_move_conditions';
+  $return = rules_invoke_component($c, $piece, $position);
+
+  if (!$return) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ *
+ * @param type $piece
+ * @param type $position
+ * @return boolean
+ */
+function piece_check_valid_initiation_move($piece = null, $position = array()) {
+
   return true;
 }
 
@@ -236,8 +299,8 @@ function piece_move($running_game = null, $piece = null, $tile_position = -1) {
  */
 function game_pieces_rules_event_info() {
   $items = array(
-      'piece_move_to_tile' => array(
-          'label' => t('Piece Move'),
+      'piece_move_to_position' => array(
+          'label' => t('Piece Move to Position'),
           'group' => t('Game Rules'),
           'variables' => array(
               'piece' => array(
@@ -245,9 +308,9 @@ function game_pieces_rules_event_info() {
                   'label' => 'piece',
                   'optional' => FALSE,
               ),
-              'tile_position' => array(
-                  'type' => 'integer',
-                  'label' => t('Tile position'),
+              'position' => array(
+                  'type' => 'list<integer>',
+                  'label' => t('position'),
               ),
               'running_game' => array(
                   'type' => 'running_game',
