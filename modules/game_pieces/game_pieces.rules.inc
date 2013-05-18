@@ -182,7 +182,7 @@ function piece_create_validation($running_game = null, $piece_type = null, $posi
   return true;
 }
 
-function piece_create($running_game = null, $piece_type = null, $element = "", $position = "", $owend = -1) {
+function piece_create($running_game = null, $piece_type = null, $element = '', $position = '', $owend = -1) {
 
   // create piece
   $entity_type = "piece";

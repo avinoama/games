@@ -77,6 +77,7 @@ function _board_games_default_fields() {
     );
    *
    */
+  /*
   $fields[] = array(
       'field_name' => 'field_board_dimensions',
       'label' => t('Board Dimensions'),
@@ -86,13 +87,15 @@ function _board_games_default_fields() {
       'cardinality' => '1',
       'entity_type' => 'game',
   );
+   * 
+   */
   $fields[] = array(
       'field_name' => 'field_board_dimension_amount',
       'label' => t('Board Dimension Amount'),
       'description' => "For each dimension extra dimention you will need to add amount of tiles",
       'type' => 'number_integer',
       'default_value' => 1,
-      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'cardinality' => 2,// only support 2d
       'entity_type' => 'game',
   );
 

@@ -2,9 +2,9 @@
   Drupal.behaviors.BoardGame = {
     attach: function (context, settings) {
       field_matrix = Drupal.settings.RunningGame.instance.field_matrix;
-      dimensions = Drupal.settings.RunningGame.game.field_board_dimensions['und'][0].value;
+
       dimension_amount = Drupal.settings.RunningGame.game.field_board_dimension_amount['und'];
-      
+      dimensions = Drupal.settings.RunningGame.game.field_board_dimension_amount['und'].length;
 
       tile_type = Drupal.settings.RunningGame.game.field_tile_type['und'][0].value;
 

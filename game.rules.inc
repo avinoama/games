@@ -129,8 +129,11 @@ function game_rules_action_info() {
 }
 
 function rules_start_game($running_game, $game) {
-  //  change game status
   
+
+  // invoke a game started
+  
+  // need to be moved to game players module after building the invokement
   $query = db_select('running_game_player', 'p')->fields('p')->condition('running_game_id', $running_game->id, '=');
   $players = $query->execute();
 
@@ -146,16 +149,19 @@ function rules_start_game($running_game, $game) {
     $i++;
   }
 
+
+  //  Start game
+  //  change game status
+  $running_game->started = REQUEST_TIME;
+  $running_game->status = GAME_STATUS_STARTED;
+  $running_game->save();
+  // notifiy users
   $running_game_command = array();
   $running_game_command['running_game_id'] = $running_game->id;
   $running_game_command['command_id'] = 1;
   $running_game_command['command_data'] = drupal_json_encode(array("callback" => array("fn" => "start_game", "module" => "RunningGame", "params" => "1")));
   $running_game_command_entity = entity_create("running_game_command", $running_game_command);
   $running_game_command_entity->save();
-  //  Start game
-  $running_game->started = REQUEST_TIME;
-  $running_game->status = GAME_STATUS_STARTED;
-  $running_game->save();
 }
 
 function rules_start_game_validation($running_game, $game) {

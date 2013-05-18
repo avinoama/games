@@ -51,7 +51,7 @@ function game_players_rules_action_info() {
           ),
       ),
       'rules_player_join_game' => array(
-          'label' => t('Game Join Game'),
+          'label' => t('Player Join Game'),
           'parameter' => array(
               'running_game' => array(
                   'type' => 'running_game',

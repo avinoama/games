@@ -146,6 +146,91 @@ function game_tictactoe_default_rules_configuration() {
   }
 }');
 
+
+
+
+  $rules['rules_tictactoe_checkwinner_2_addition'] = rules_import('{ "rules_tictactoe_checkwinner_2_addition" : {
+    "LABEL" : "TickTackToe CheckWinner 2 addition",
+    "PLUGIN" : "rule",
+    "REQUIRES" : [ "board_games", "game_players", "game" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "RunningGame", "type" : "running_game" },
+      "player_id" : { "label" : "PlayerID", "type" : "integer" }
+    },
+    "IF" : [
+      { "OR" : [
+          { "board_games_rules_condition_check_row_equal" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "position" : "1",
+              "equal_to" : [ "player-id" ]
+            }
+          },
+          { "board_games_rules_condition_check_row_equal" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "position" : "2",
+              "equal_to" : [ "player-id" ]
+            }
+          },
+          { "board_games_rules_condition_check_row_equal" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "position" : "3",
+              "equal_to" : [ "player-id" ]
+            }
+          },
+          { "board_games_rules_condition_check_column_equal" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "position" : "1",
+              "equal_to" : [ "player-id" ]
+            }
+          },
+          { "board_games_rules_condition_check_column_equal" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "position" : "2",
+              "equal_to" : [ "player-id" ]
+            }
+          },
+          { "board_games_rules_condition_check_column_equal" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "position" : "3",
+              "equal_to" : [ "player-id" ]
+            }
+          },
+          { "board_games_rules_condition_check_diagonal_equal" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "position" : "1-1",
+              "position_diagonal_type" : "0",
+              "equal_to" : [ "player-id" ]
+            }
+          },
+          { "board_games_rules_condition_check_diagonal_equal" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "position" : "1-3",
+              "position_diagonal_type" : "1",
+              "equal_to" : [ "player-id" ]
+            }
+          }
+        ]
+      }
+    ],
+    "DO" : [
+      { "rules_game_set_winners" : { "running_game" : [ "running_game" ], "player_id" : [ "player_id" ] } },
+      { "rules_game_over" : { "running_game" : [ "running_game" ] } }
+    ]
+  }
+}');
+
+
+
+
   $rules['rules_ticktacktoe_switchplayer'] = rules_import('{ "rules_ticktacktoe_switchplayer" : {
     "LABEL" : "TickTackToe SwitchPlayer",
     "PLUGIN" : "rule",
@@ -198,8 +283,11 @@ function game_tictactoe_default_rules_configuration() {
  $rules['rules_ticktacktoe_game_join'] = rules_import('{ "rules_ticktacktoe_game_join" : {
     "LABEL" : "TickTackToe Game Join",
     "PLUGIN" : "reaction rule",
-    "REQUIRES" : [ "game_players" ],
+    "REQUIRES" : [ "rules", "game_players" ],
     "ON" : [ "game_join" ],
+    "IF" : [
+      { "data_is" : { "data" : [ "game:machine-name" ], "value" : "tic-tac-toe" } }
+    ],
     "DO" : [
       { "rules_player_join_game" : { "running_game" : [ "running_game" ], "game" : [ "game" ] } }
     ]
