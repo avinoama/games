@@ -2,10 +2,12 @@
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
+ * vars
+ * $game
+ * $game_instance
+ * 
  */
-//dpm($game);
-//dpm($game_instance);
-//dpm(get_defined_vars());
+
 ?>
 <div id="<?php echo $game->machine_name?>" class="game">
 

@@ -79,6 +79,7 @@ function game_players_rules_action_info() {
  * @return type
  */
 function rules_player_join_game($running_game, $game) {
+  //$game_response = static_game_response();
   $callbacks;
   //  check if user is playing current game
 
@@ -146,10 +147,7 @@ function rules_player_join_game($running_game, $game) {
     //echo drupal_json_encode(array("message" => "user " . $player_name . " has joined the game", "time" => time()));
     //  Write to other user that a new user has just joined in
 
-    /* return array(
-      array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_player_name", "module" => "RunningGame", "params" => $player_name))),
-      array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_players_count", "module" => "RunningGame", "params" => ($num_of_players + 1))))
-      ); */
+
 
     $callbacks["time"] = time();
     $running_game_command = array();
@@ -158,6 +156,11 @@ function rules_player_join_game($running_game, $game) {
     $running_game_command['command_data'] = drupal_json_encode($callbacks);
     $running_game_command_entity = entity_create("running_game_command", $running_game_command);
     $running_game_command_entity->save();
+
+    $_SESSION['game_response'] = array(
+        array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_player_name", "module" => "GamePlayers", "params" => $player_name))),
+        array("command_id" => -1, "command_data" => array("callback" => array("fn" => "set_players_count", "module" => "GamePlayers", "params" => ($num_of_players + 1))))
+    );
   }
 
   //echo drupal_json_encode($game);

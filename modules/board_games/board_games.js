@@ -26,10 +26,7 @@
         if(dimension_amount[d] != undefined) {
           for(i = 1; i <= dimension_amount[d].value; i++) {
             for(j = 1; j <= dimension_amount[0].value; j++) {
-
-
-              //console.log(i+" " + j);
-            
+              
               if (!$.isArray(field_matrix[count]) && !$.isPlainObject(field_matrix[count])) {
                 field_matrix[count]=new Array();
               }

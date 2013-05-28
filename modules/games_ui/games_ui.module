@@ -186,5 +186,5 @@ function games_ui_view() {
  * $view->attachment_before and $view->attachment_after.
  */
 function game_ui_views_pre_view(&$view, &$display_id, &$args) {
-  dpm($view);
+  //dpm($view);
 }

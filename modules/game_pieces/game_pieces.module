@@ -398,7 +398,7 @@ function _game_pieces_add_default_fields_for_bundle($bundle) {
   }
 }
 /**
- * For all uiu_service bundle set default fields
+ * For all game_pieces bundle set default fields
  */
 function game_pieces_add_default_fields_for_all_bundles() {
 

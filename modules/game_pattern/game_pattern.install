@@ -1,0 +1,87 @@
+<?php
+
+/**
+ *
+ */
+function game_pattern_install() {
+  _game_patterns_add_pattern_types();
+}
+
+/**
+ * Implements hook_schema().
+ *
+ * Defines the database tables used by this module.
+ * Remember that the easiest way to create the code for hook_schema is with
+ * the @link http://drupal.org/project/schema schema module @endlink
+ *
+ * @see hook_schema()
+ * @ingroup dbtng_example
+ */
+function game_pattern_schema() {
+  $schema = array();
+
+  $schema['game_pattern'] = array(
+      'description' => 'Store base information for a game_pattern.',
+      'fields' => array(
+          'id' => array(
+              'type' => 'serial',
+              'not null' => TRUE,
+              'description' => 'Primary Key: game_pattern ID.',
+          ),
+          'label' => array(
+              'description' => 'The label of the game_pattern.',
+              'type' => 'varchar',
+              'length' => 255,
+              'not null' => TRUE,
+              'default' => '',
+          ),
+          'machine_name' => array(
+              'description' => 'The machine-readable name of this pattern.',
+              'type' => 'varchar',
+              'length' => 32,
+              'not null' => TRUE,
+          ),
+          'type' => array(
+              'description' => 'The type (bundle) of this game_pattern.',
+              'type' => 'varchar',
+              'length' => 255,
+              'not null' => TRUE,
+              'default' => '',
+          ),
+      ),
+      'primary key' => array('id'),
+      'indexes' => array(
+          'name' => array('label'),
+      ),
+  );
+
+  $schema['game_pattern_type'] = array(
+      'description' => 'Stores information about all defined game_pattern types.',
+      'fields' => array(
+  'id' => array(
+      'type' => 'serial',
+      'not null' => TRUE,
+      'description' => 'Primary Key: Unique game_pattern type ID.',
+  ),
+  'label' => array(
+      'description' => 'The human-readable name of this type.',
+      'type' => 'varchar',
+      'length' => 255,
+      'not null' => TRUE,
+      'default' => '',
+  ),
+  'type' => array(
+      'description' => 'The machine-readable name of this type.',
+      'type' => 'varchar',
+      'length' => 32,
+      'not null' => TRUE,
+  ),
+      ) + entity_exportable_schema_fields(),
+      'primary key' => array('id'),
+      'unique keys' => array(
+          'type' => array('type'),
+      ),
+  );
+  return $schema;
+}
+

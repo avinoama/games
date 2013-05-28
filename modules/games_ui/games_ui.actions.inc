@@ -10,6 +10,9 @@
 function game_ui_instance_ajax_callback($running_game) {
   drupal_session_start();
   global $user;
+  $_SESSION['game_response'] = array();
+  //$game_response = static_game_response();
+
   //ajax_get_form() function will be the drupal way of doing it
   $_SESSION["anonymous-tracker"] = time();
 
@@ -44,13 +47,14 @@ function game_ui_instance_ajax_callback($running_game) {
       // use rules_invoke_event_by_args() to call the event with all the variables
       // collected in an associative array – which is particularly useful if there
       // are a shifting number of variables
-
+      // 
       $response = rules_invoke_event_by_args($action['hook'], $action['params']);
-      
+      $game_response = $_SESSION['game_response'];
       if (empty($response)) {
         $response = array();
       }
-      echo drupal_json_encode($response);
+      //echo $response;
+      echo drupal_json_encode($game_response);
       return;
 
       //echo drupal_json_encode(array("Error" => $_POST, "time" => time()));

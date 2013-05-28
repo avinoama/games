@@ -1,0 +1,370 @@
+<?php
+
+/**
+ * Implements hook_entity_info().
+ */
+function game_pattern_entity_info() {
+  $return = array(
+      'game_pattern' => array(
+          'label' => t('Game Pattern'),
+          'entity class' => 'GamePattern',
+          'controller class' => 'GamePatternController',
+          'base table' => 'game_pattern',
+          'fieldable' => TRUE,
+          'entity keys' => array(
+              'id' => 'id',
+              'bundle' => 'type',
+          ),
+          'bundle keys' => array(
+              'bundle' => 'type',
+          ),
+          'bundles' => array(),
+          'load hook' => 'game_pattern_load',
+          'view modes' => array(
+              'full' => array(
+                  'label' => t('Default'),
+                  'custom settings' => FALSE,
+              ),
+          ),
+          'label callback' => 'entity_class_label',
+          'uri callback' => 'entity_class_uri',
+          'module' => 'game_pattern',
+          'access callback' => 'game_pattern_access',
+      ),
+  );
+  $return['game_pattern_type'] = array(
+      'label' => t('Game Pattern Type'),
+      'entity class' => 'GamePatternType',
+      'controller class' => 'GamePatternTypeController',
+      'base table' => 'game_pattern_type',
+      'fieldable' => FALSE,
+      'bundle of' => 'game_pattern',
+      'exportable' => TRUE,
+      'entity keys' => array(
+          'id' => 'id',
+          'name' => 'type',
+          'label' => 'label',
+      ),
+      'module' => 'game_pattern',
+      // Enable the entity API's admin UI.
+      'admin ui' => array(
+          'path' => 'admin/structure/game-patterns',
+          'file' => 'game_pattern.admin.inc',
+          'controller class' => 'GamePatternTypeUIController',
+      ),
+      'access callback' => 'game_pattern_access',
+  );
+  return $return;
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function game_pattern_entity_info_alter(&$entity_info) {
+  foreach (game_pattern_types() as $type => $info) {
+    $entity_info['game_pattern']['bundles'][$type] = array(
+        'label' => $info->label,
+        'admin' => array(
+            'path' => 'admin/structure/game-patterns/manage/%game_pattern_type',
+            'real path' => 'admin/structure/game-patterns/manage/' . $type,
+            'bundle argument' => 4,
+        ),
+    );
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function game_pattern_menu() {
+  $items = array();
+  $items['pattern/add'] = array(
+      'title' => 'Add Pattern',
+      'page callback' => 'game_pattern_admin_add_page',
+      'access arguments' => array('administer game_pattern entities'),
+      'file' => 'game_pattern.admin.inc',
+      'type' => MENU_LOCAL_ACTION,
+      'tab_parent' => 'task',
+      'tab_root' => 'task',
+  );
+
+  $task_uri = 'pattern/%pattern';
+  $task_uri_argument_position = 1;
+
+  $items[$task_uri] = array(
+      'title callback' => 'entity_label',
+      'title arguments' => array('game_pattern', $task_uri_argument_position),
+      'page callback' => 'game_pattern_view',
+      'page arguments' => array($task_uri_argument_position),
+      'access callback' => 'entity_access',
+      'access arguments' => array('view', 'game_pattern', $task_uri_argument_position),
+      'file' => 'game_pattern.pages.inc',
+  );
+
+  $items[$task_uri . '/view'] = array(
+      'title' => 'View',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => -10,
+  );
+
+  $items[$task_uri . '/delete'] = array(
+      'title' => 'Delete task',
+      'title callback' => 'game_pattern_label',
+      'title arguments' => array($task_uri_argument_position),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('game_pattern_delete_form', $task_uri_argument_position),
+      'access callback' => 'entity_access',
+      'access arguments' => array('edit', 'game_pattern', $task_uri_argument_position),
+      'file' => 'game_pattern.admin.inc',
+  );
+
+  $items[$task_uri . '/edit'] = array(
+      'title' => 'Edit',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('pattern_ui_form', $task_uri_argument_position),
+      'access callback' => 'entity_access',
+      'access arguments' => array('edit', 'game_pattern', $task_uri_argument_position),
+      'file' => 'game_pattern.admin.inc',
+      'type' => MENU_LOCAL_TASK,
+      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
+
+  foreach (game_pattern_types() as $type => $info) {
+    $items['pattern/add/' . $type] = array(
+        'title' => 'Add task',
+        'page callback' => 'game_pattern_add',
+        'page arguments' => array(2),
+        'access callback' => 'entity_access',
+        'access arguments' => array('create', 'game_pattern', $type),
+        'file' => 'game_pattern.admin.inc',
+    );
+  }
+
+  $items['admin/structure/task-types/%game_pattern_type/delete'] = array(
+      'title' => 'Delete',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('game_pattern_type_form_delete_confirm', 4),
+      'access arguments' => array('administer game_pattern types'),
+      'weight' => 1,
+      'type' => MENU_NORMAL_ITEM,
+      'file' => 'game_pattern.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Access callback for Task.
+ */
+function game_pattern_access($op, $task, $account = NULL, $entity_type = NULL) {
+  global $user;
+  if (!isset($account)) {
+    $account = $user;
+  }
+  switch ($op) {
+    case 'create':
+      return user_access('administer game_pattern entities', $account)
+              || user_access('create game_pattern entities', $account);
+    case 'view':
+      return user_access('administer game_pattern entities', $account)
+              || user_access('view game_pattern entities', $account);
+    case 'edit':
+    case 'update':
+    case 'delete':
+      return user_access('administer game_pattern entities')
+              || user_access('edit any game_pattern entities')
+              || (user_access('edit own game_pattern entities') && ($task->uid == $account->uid));
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function game_pattern_permission() {
+  $permissions = array(
+      'administer game_pattern types' => array(
+          'title' => t('Administer task types'),
+          'description' => t('Allows users to configure task types and their fields.'),
+          'restrict access' => TRUE,
+      ),
+      'create game_pattern entities' => array(
+          'title' => t('Create tasks'),
+          'description' => t('Allows users to create tasks.'),
+          'restrict access' => TRUE,
+      ),
+      'view game_pattern entities' => array(
+          'title' => t('View tasks'),
+          'description' => t('Allows users to view tasks.'),
+          'restrict access' => TRUE,
+      ),
+      'edit any game_pattern entities' => array(
+          'title' => t('Edit any tasks'),
+          'description' => t('Allows users to edit any tasks.'),
+          'restrict access' => TRUE,
+      ),
+      'edit own game_pattern entities' => array(
+          'title' => t('Edit own tasks'),
+          'description' => t('Allows users to edit own tasks.'),
+          'restrict access' => TRUE,
+      ),
+  );
+  return $permissions;
+}
+
+/**
+ * Load a task.
+ */
+function game_pattern_load($id = array(), $reset = FALSE) {
+  $pattern = game_pattern_load_multiple(array($id), array(), $reset);
+  return reset($pattern);
+}
+
+/**
+ * Load multiple tasks based on certain conditions.
+ */
+function game_pattern_load_multiple($ids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('game_pattern', $ids, $conditions, $reset);
+}
+
+/**
+ * Save task.
+ */
+function game_pattern_save($pattern) {
+  entity_save('game_pattern', $pattern);
+}
+
+/**
+ * Delete single task.
+ */
+function game_pattern_delete($pattern) {
+  entity_delete('game_pattern', entity_id('game_pattern', $pattern));
+}
+
+/**
+ * Delete multiple tasks.
+ */
+function game_pattern_delete_multiple($ids) {
+  entity_delete_multiple('game_pattern', $ids);
+}
+
+/**
+ * Load task Type.
+ */
+function game_pattern_type_load($pattern_type = NULL) {
+  return game_pattern_types($pattern_type);
+}
+
+/**
+ * List of task Types.
+ */
+function game_pattern_types($type_name = NULL) {
+  $types = entity_load_multiple_by_name('game_pattern_type', isset($type_name) ? array($type_name) : FALSE);
+  return isset($type_name) ? reset($types) : $types;
+}
+
+/**
+ * Save task type entity.
+ */
+function game_pattern_type_save($pattern_type) {
+  entity_save('game_pattern_type', $pattern_type);
+}
+
+/**
+ * Delete single case type.
+ */
+function game_pattern_type_delete($pattern_type) {
+  entity_delete('game_pattern_type', entity_id('game_pattern_type', $pattern_type));
+}
+
+/**
+ * Delete multiple case types.
+ */
+function game_pattern_type_delete_multiple($task_type_ids) {
+  entity_delete_multiple('game_pattern_type', $task_type_ids);
+}
+
+function _game_pattern_add_default_fields_for_bundle($bundle) {
+  $entity_type = "game_pattern";
+  $fields = _game_pattern_type_default_fields();
+
+  foreach ($fields as $field) {
+    if ($field['entity_type'] == $entity_type) {
+      if (!($field_info = field_info_field($field['field_name']))) {
+        $field = field_create_field($field);
+      }
+      $instances = field_info_instances(null, $field["field_name"]);
+      $instance = array(
+          'field_name' => $field['field_name'],
+          'entity_type' => $entity_type,
+          'bundle' => $bundle,
+      );
+      $instance += $field;
+      if (!isset($instances[$entity_type][$bundle])) {
+        field_create_instance($instance);
+      } else {
+        if (!isset($instances[$entity_type][$bundle][$field["field_name"]])) {
+          field_create_instance($instance);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Hook game_pattern type creation
+ * @param type $piece
+ */
+function game_pattern_game_pattern_type_insert($pattern_type) {
+  _game_pattern_add_default_fields_for_bundle($pattern_type->type);
+}
+
+/**
+ * For all game_pieces bundle set default fields
+ */
+function game_pattern_add_default_fields_for_all_bundles() {
+
+  $piece_types = entity_load("piece_type");
+
+  if (!empty($piece_types)) {
+    foreach ($piece_types as $piece_type) {
+      _game_pattern_add_default_fields_for_bundle($piece_type->type);
+    }
+  }
+}
+
+function _game_pattern_type_default_fields() {
+  $fields = array();
+
+  $fields[] = array(
+      'field_name' => 'field_pattern',
+      'label' => t('offset_patterns'),
+      'type' => 'text',
+      'translatable' => FALSE,
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'entity_type' => 'game_pattern',
+  );
+
+  return $fields;
+}
+
+function _game_patterns_add_pattern_types() {
+  $entity_type = "game_pattern_type";
+
+  $pattern_type = entity_create($entity_type, array());
+  $pattern_type->label = "Board Pattern";
+  $pattern_type->type = "board_pattern";
+
+  game_pattern_type_save($pattern_type);
+
+  $pattern_type2 = entity_create($entity_type, array());
+  $pattern_type2->label = "Move Pattern";
+  $pattern_type2->type = "move_pattern";
+
+  game_pattern_type_save($pattern_type2);
+}
+function game_pattern_views_api() {
+  return array(
+      'api' => 3,
+      'path' => drupal_get_path('module', 'game_pattern'),
+  );
+}
