@@ -396,18 +396,7 @@ function running_game_delete_multiple($running_game_ids) {
   entity_delete_multiple('running_game', $running_game_ids);
 }
 
-/**
- * Implements hook_views_api().
- */
-/*
-  function game_views_api() {
-  return array(
-  'api' => 3,
-  'path' => drupal_get_path('module', 'game'),
-  );
-  }
- * 
- */
+
 
 function game_trigger_info() {
   return array(

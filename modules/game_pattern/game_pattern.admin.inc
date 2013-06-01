@@ -154,7 +154,7 @@ function pattern_ui_form($form, &$form_state, $pattern) {
   drupal_add_js($path . "/game_pattern.js", 'file');
   drupal_add_css($path . "/game_pattern.css");
   drupal_add_js(array('pattern' => $pattern), 'setting');
-  
+
   $form_state['pattern'] = $pattern;
 
   $form['label'] = array(
@@ -268,5 +268,26 @@ function pattern_ui_form_submit_delete($form, &$form_state) {
   $pattern = $form_state['pattern'];
   $game_pattern_uri = entity_uri('game_pattern', $pattern);
   $form_state['redirect'] = $game_pattern_uri['path'] . '/delete';
+}
+
+function game_pattern_delete_form($form, &$form_state, $game_pattern) {
+  $form_state['game_pattern'] = $game_pattern;
+  // Always provide entity id in the same form key as in the entity edit form.
+  $form['game_pattern_id'] = array('#type' => 'value', '#value' => entity_id('game_pattern', $game_pattern));
+  return confirm_form($form, t('Are you sure you want to delete pattern %title?',
+          array('%title' => entity_label('game_pattern', $game_pattern))),
+          'pattern/' . entity_id('game_pattern', $game_pattern),
+          t('This action cannot be undone.'), t('Delete'), t('Cancel'));
+}
+
+function game_pattern_delete_form_submit($form, &$form_state) {
+  $game_pattern = $form_state['game_pattern'];
+
+  game_pattern_delete($game_pattern);
+
+  watchdog('game_type', '@type: deleted %title.', array('@type' => $game_pattern->type, '%title' => $game_pattern->label));
+  drupal_set_message(t('@type %title has been deleted.', array('@type' => $game_pattern->type, '%title' => $game_pattern->label)));
+
+  $form_state['redirect'] = 'patterns';
 }
 

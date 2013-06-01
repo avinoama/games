@@ -162,11 +162,10 @@ function games_ui_preprocess_page(&$vars) {
 function startsWith($haystack, $needle) {
   return !strncmp($haystack, $needle, strlen($needle));
 }
-
+/*
 function games_ui_view() {
   $gid = arg(1);
   $game = game_load($gid);
-  //dpm($game);
   $string = "";
   foreach ($game as $key => $field) {
     if (startsWith($key, "field")) {
@@ -176,15 +175,4 @@ function games_ui_view() {
     }
   }
   return "title : " . $game->title . "<br>description:" . $game->description . "<br>" . $string;
-}
-
-/**
- * This hook is called at the very beginning of views processing,
- * before anything is done.
- *
- * Adding output to the view can be accomplished by placing text on
- * $view->attachment_before and $view->attachment_after.
- */
-function game_ui_views_pre_view(&$view, &$display_id, &$args) {
-  //dpm($view);
-}
+}*/

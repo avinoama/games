@@ -228,7 +228,54 @@ function game_tictactoe_default_rules_configuration() {
   }
 }');
 
-
+$rules['rules_tictactoe_checkwinner_3_addition'] = rules_import('{ "rules_ticktacktoe_checkwinner_3_addition" : {
+    "LABEL" : "TickTackToe CheckWinner 3 addition",
+    "PLUGIN" : "rule",
+    "REQUIRES" : [ "board_games", "game_players", "game" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "RunningGame", "type" : "running_game" },
+      "player_id" : { "label" : "PlayerID", "type" : "integer" }
+    },
+    "IF" : [
+      { "OR" : [
+          { "board_games_check_pattern" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "pattern" : "1",
+              "equal_to" : [ "player-id" ]
+            }
+          },
+          { "board_games_check_pattern" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "pattern" : "2",
+              "equal_to" : [ "player-id" ]
+            }
+          },
+          { "board_games_check_pattern" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "pattern" : "3",
+              "equal_to" : [ "player-id" ]
+            }
+          },
+          { "board_games_check_pattern" : {
+              "running_game" : [ "running_game" ],
+              "game" : [ "game" ],
+              "pattern" : "4",
+              "equal_to" : [ "player-id" ]
+            }
+          }
+        ]
+      }
+    ],
+    "DO" : [
+      { "rules_game_set_winners" : { "running_game" : [ "running_game" ], "player_id" : [ "player_id" ] } },
+      { "rules_game_over" : { "running_game" : [ "running_game" ] } }
+    ]
+  }
+}');
 
 
   $rules['rules_ticktacktoe_switchplayer'] = rules_import('{ "rules_ticktacktoe_switchplayer" : {

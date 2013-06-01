@@ -8,5 +8,6 @@ dependencies[] = entity
 dependencies[] = views
 dependencies[] = game
 dependencies[] = board_games
+dependencies[] = game_pattern
 
 files[] = game_tictacttoe.rules.inc

@@ -7,7 +7,7 @@ class GamePattern extends Entity {
     return $this->label;
   }
   protected function defaultUri() {
-    return array('path' => 'game/pattern/' . $this->identifier());
+    return array('path' => 'pattern/' . $this->identifier());
   }
 }
 

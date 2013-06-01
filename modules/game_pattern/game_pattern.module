@@ -84,46 +84,46 @@ function game_pattern_menu() {
       'access arguments' => array('administer game_pattern entities'),
       'file' => 'game_pattern.admin.inc',
       'type' => MENU_LOCAL_ACTION,
-      'tab_parent' => 'task',
-      'tab_root' => 'task',
+      'tab_parent' => 'pattern',
+      'tab_root' => 'pattern',
   );
 
-  $task_uri = 'pattern/%pattern';
-  $task_uri_argument_position = 1;
+  $pattern_uri = 'pattern/%game_pattern';
+  $pattern_uri_argument_position = 1;
 
-  $items[$task_uri] = array(
+  $items[$pattern_uri] = array(
       'title callback' => 'entity_label',
-      'title arguments' => array('game_pattern', $task_uri_argument_position),
+      'title arguments' => array('game_pattern', $pattern_uri_argument_position),
       'page callback' => 'game_pattern_view',
-      'page arguments' => array($task_uri_argument_position),
+      'page arguments' => array($pattern_uri_argument_position),
       'access callback' => 'entity_access',
-      'access arguments' => array('view', 'game_pattern', $task_uri_argument_position),
+      'access arguments' => array('view', 'game_pattern', $pattern_uri_argument_position),
       'file' => 'game_pattern.pages.inc',
   );
 
-  $items[$task_uri . '/view'] = array(
+  $items[$pattern_uri . '/view'] = array(
       'title' => 'View',
       'type' => MENU_DEFAULT_LOCAL_TASK,
       'weight' => -10,
   );
 
-  $items[$task_uri . '/delete'] = array(
-      'title' => 'Delete task',
+  $items[$pattern_uri . '/delete'] = array(
+      'title' => 'Delete pattern',
       'title callback' => 'game_pattern_label',
-      'title arguments' => array($task_uri_argument_position),
+      'title arguments' => array($pattern_uri_argument_position),
       'page callback' => 'drupal_get_form',
-      'page arguments' => array('game_pattern_delete_form', $task_uri_argument_position),
+      'page arguments' => array('game_pattern_delete_form', $pattern_uri_argument_position),
       'access callback' => 'entity_access',
-      'access arguments' => array('edit', 'game_pattern', $task_uri_argument_position),
+      'access arguments' => array('edit', 'game_pattern', $pattern_uri_argument_position),
       'file' => 'game_pattern.admin.inc',
   );
 
-  $items[$task_uri . '/edit'] = array(
+  $items[$pattern_uri . '/edit'] = array(
       'title' => 'Edit',
       'page callback' => 'drupal_get_form',
-      'page arguments' => array('pattern_ui_form', $task_uri_argument_position),
+      'page arguments' => array('pattern_ui_form', $pattern_uri_argument_position),
       'access callback' => 'entity_access',
-      'access arguments' => array('edit', 'game_pattern', $task_uri_argument_position),
+      'access arguments' => array('edit', 'game_pattern', $pattern_uri_argument_position),
       'file' => 'game_pattern.admin.inc',
       'type' => MENU_LOCAL_TASK,
       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
@@ -131,7 +131,7 @@ function game_pattern_menu() {
 
   foreach (game_pattern_types() as $type => $info) {
     $items['pattern/add/' . $type] = array(
-        'title' => 'Add task',
+        'title' => 'Add pattern',
         'page callback' => 'game_pattern_add',
         'page arguments' => array(2),
         'access callback' => 'entity_access',
@@ -140,7 +140,7 @@ function game_pattern_menu() {
     );
   }
 
-  $items['admin/structure/task-types/%game_pattern_type/delete'] = array(
+  $items['admin/structure/pattern-types/%game_pattern_type/delete'] = array(
       'title' => 'Delete',
       'page callback' => 'drupal_get_form',
       'page arguments' => array('game_pattern_type_form_delete_confirm', 4),
@@ -154,9 +154,9 @@ function game_pattern_menu() {
 }
 
 /**
- * Access callback for Task.
+ * Access callback for pattern.
  */
-function game_pattern_access($op, $task, $account = NULL, $entity_type = NULL) {
+function game_pattern_access($op, $pattern, $account = NULL, $entity_type = NULL) {
   global $user;
   if (!isset($account)) {
     $account = $user;
@@ -173,7 +173,7 @@ function game_pattern_access($op, $task, $account = NULL, $entity_type = NULL) {
     case 'delete':
       return user_access('administer game_pattern entities')
               || user_access('edit any game_pattern entities')
-              || (user_access('edit own game_pattern entities') && ($task->uid == $account->uid));
+              || (user_access('edit own game_pattern entities') && ($pattern->uid == $account->uid));
   }
 }
 
@@ -183,28 +183,28 @@ function game_pattern_access($op, $task, $account = NULL, $entity_type = NULL) {
 function game_pattern_permission() {
   $permissions = array(
       'administer game_pattern types' => array(
-          'title' => t('Administer task types'),
-          'description' => t('Allows users to configure task types and their fields.'),
+          'title' => t('Administer pattern types'),
+          'description' => t('Allows users to configure pattern types and their fields.'),
           'restrict access' => TRUE,
       ),
       'create game_pattern entities' => array(
-          'title' => t('Create tasks'),
-          'description' => t('Allows users to create tasks.'),
+          'title' => t('Create patterns'),
+          'description' => t('Allows users to create patterns.'),
           'restrict access' => TRUE,
       ),
       'view game_pattern entities' => array(
-          'title' => t('View tasks'),
-          'description' => t('Allows users to view tasks.'),
+          'title' => t('View patterns'),
+          'description' => t('Allows users to view patterns.'),
           'restrict access' => TRUE,
       ),
       'edit any game_pattern entities' => array(
-          'title' => t('Edit any tasks'),
-          'description' => t('Allows users to edit any tasks.'),
+          'title' => t('Edit any patterns'),
+          'description' => t('Allows users to edit any patterns.'),
           'restrict access' => TRUE,
       ),
       'edit own game_pattern entities' => array(
-          'title' => t('Edit own tasks'),
-          'description' => t('Allows users to edit own tasks.'),
+          'title' => t('Edit own patterns'),
+          'description' => t('Allows users to edit own patterns.'),
           'restrict access' => TRUE,
       ),
   );
@@ -212,7 +212,7 @@ function game_pattern_permission() {
 }
 
 /**
- * Load a task.
+ * Load a pattern.
  */
 function game_pattern_load($id = array(), $reset = FALSE) {
   $pattern = game_pattern_load_multiple(array($id), array(), $reset);
@@ -220,42 +220,42 @@ function game_pattern_load($id = array(), $reset = FALSE) {
 }
 
 /**
- * Load multiple tasks based on certain conditions.
+ * Load multiple patterns based on certain conditions.
  */
 function game_pattern_load_multiple($ids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('game_pattern', $ids, $conditions, $reset);
 }
 
 /**
- * Save task.
+ * Save pattern.
  */
 function game_pattern_save($pattern) {
   entity_save('game_pattern', $pattern);
 }
 
 /**
- * Delete single task.
+ * Delete single pattern.
  */
 function game_pattern_delete($pattern) {
   entity_delete('game_pattern', entity_id('game_pattern', $pattern));
 }
 
 /**
- * Delete multiple tasks.
+ * Delete multiple patterns.
  */
 function game_pattern_delete_multiple($ids) {
   entity_delete_multiple('game_pattern', $ids);
 }
 
 /**
- * Load task Type.
+ * Load pattern Type.
  */
 function game_pattern_type_load($pattern_type = NULL) {
   return game_pattern_types($pattern_type);
 }
 
 /**
- * List of task Types.
+ * List of pattern Types.
  */
 function game_pattern_types($type_name = NULL) {
   $types = entity_load_multiple_by_name('game_pattern_type', isset($type_name) ? array($type_name) : FALSE);
@@ -263,7 +263,7 @@ function game_pattern_types($type_name = NULL) {
 }
 
 /**
- * Save task type entity.
+ * Save pattern type entity.
  */
 function game_pattern_type_save($pattern_type) {
   entity_save('game_pattern_type', $pattern_type);
@@ -279,8 +279,8 @@ function game_pattern_type_delete($pattern_type) {
 /**
  * Delete multiple case types.
  */
-function game_pattern_type_delete_multiple($task_type_ids) {
-  entity_delete_multiple('game_pattern_type', $task_type_ids);
+function game_pattern_type_delete_multiple($pattern_type_ids) {
+  entity_delete_multiple('game_pattern_type', $pattern_type_ids);
 }
 
 function _game_pattern_add_default_fields_for_bundle($bundle) {
@@ -331,7 +331,10 @@ function game_pattern_add_default_fields_for_all_bundles() {
     }
   }
 }
-
+/**
+ *
+ * @return type
+ */
 function _game_pattern_type_default_fields() {
   $fields = array();
 
@@ -346,7 +349,9 @@ function _game_pattern_type_default_fields() {
 
   return $fields;
 }
-
+/**
+ *
+ */
 function _game_patterns_add_pattern_types() {
   $entity_type = "game_pattern_type";
 
@@ -362,6 +367,10 @@ function _game_patterns_add_pattern_types() {
 
   game_pattern_type_save($pattern_type2);
 }
+/**
+ * Hook_views_api
+ * @return type
+ */
 function game_pattern_views_api() {
   return array(
       'api' => 3,

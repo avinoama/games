@@ -6,6 +6,7 @@
  */
 function game_tictactoe_install() {
   _game_tictactoe_add_default_games();
+  _game_add_default_patterns();
 }
 function game_tictactoe_uninstall() {
   _game_tictactoe_remove_default_games();

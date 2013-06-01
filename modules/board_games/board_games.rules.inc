@@ -5,7 +5,7 @@
  * @return type
  */
 function board_games_rules_condition_info() {
-  return array(
+  $conditions = array(
       'board_games_rules_condition_check_row_equal' => array(
           'group' => 'game',
           'label' => t('Board check row'),
@@ -121,13 +121,215 @@ function board_games_rules_condition_info() {
           'module' => 'board_games',
       ),
   );
+
+  if (module_exists("game_pattern")) {
+    $conditions['board_games_check_pattern'] = array(
+        'group' => 'game',
+        'label' => t('Board Check Pattern'),
+        'arguments' => array(
+            'running_game' => array(
+                'type' => 'running_game',
+                'label' => 'running_game',
+                'optional' => FALSE,
+            ),
+            'game' => array(
+                'type' => 'game',
+                'label' => 'game',
+                'optional' => FALSE,
+            ),
+            'pattern' => array(
+                'type' => 'integer',
+                'label' => 'Pattern',
+                'options list' => 'get_all_board_patterns',
+                'optional' => FALSE,
+                'description' => '',
+            ),
+            'equal_to' => array(
+                'type' => 'integer',
+                'label' => 'equal to',
+                'description' => 'the number you want to check the diagonal for.',
+                'optional' => FALSE,
+            ),
+        ),
+        'module' => 'board_games',
+    );
+  }
+  return $conditions;
 }
 
+/**
+ *
+ * @param type $item1
+ * @param type $item2
+ * @param type $options
+ * @return boolean
+ */
 function board_games_rules_condition_check_matrix($item1 = 0, $item2 = 0, $options) {
   if ($item1 == $item2) {
     return TRUE;
   }
   return FALSE;
+}
+
+/**
+ *
+ * @param type $running_game
+ * @param type $game
+ * @param type $pattern
+ * @param type $equal_to
+ * @return boolean
+ */
+function board_games_check_pattern($running_game = null, $game = null, $pattern = 0, $equal_to = 0) {
+  if (!property_exists($game, "field_board_dimension_amount")) {
+    return FALSE;
+  }
+  if (!property_exists($running_game, "field_matrix")) {
+    return FALSE;
+  }
+  $pattern = game_pattern_load($pattern);
+  if (empty($pattern)) {
+    return FALSE;
+  }
+  if (property_exists($pattern, "field_pattern")) {
+    $patterns = $pattern->field_pattern[LANGUAGE_NONE];
+  }
+
+  $dimension = $game->field_board_dimension_amount[LANGUAGE_NONE];
+  if (count($dimension) != 2) {
+    return FALSE;
+  }
+  $re = array();
+  foreach ($patterns as $key => $p) {
+    // change board unchange elements
+    // top left is always the start position
+    $var = str_replace(array('left', 'right', 'top', 'bottom'), array(1, $dimension[0]['value'], 1, $dimension[1]['value']), $p['value']);
+    $re[$key] = _eval_single_pattern($var, $running_game->field_matrix[LANGUAGE_NONE], $dimension, $equal_to);
+  }
+
+  $result = FALSE;
+  if (count($re) > 0) {
+    $result = TRUE;
+  }
+  // if all patterns match return true
+  foreach ($re as $r) {
+    if (empty($r)) {
+      $result = FALSE;
+    }
+  }
+
+  return $result;
+}
+
+/**
+ * 
+ * @param type $var
+ * @param type $matrix
+ * @param type $dimension
+ * @param type $equal_to
+ * @return boolean \
+ */
+function _eval_single_pattern($string_pattern, &$matrix, $dimension, $equal_to = 0) {
+  // create a json object
+  $pattern = drupal_json_decode($string_pattern);
+  // calculate start and end
+  if (empty($pattern)) {
+    return FALSE;
+  }
+  if (!empty($pattern['start']) && !empty($pattern['end'])) {
+    for ($x = 1; $x <= $dimension[0]['value']; $x++) {
+      for ($y = 1; $y <= $dimension[1]['value']; $y++) {
+        $var = str_replace(array('px', 'py'), array($x, $y), $string_pattern);
+        $pattern = drupal_json_decode($var);
+        evaluate_pattern($pattern);
+        if ($pattern['start']['x'] <= 0 || $pattern['start']['y'] <= 0) {
+          continue;
+        }
+        // move to one dimension
+        $did_found_pattern = TRUE;
+        for ($i = $pattern['start']['x']; $i <= $pattern['end']['x']; $i++) {
+          for ($j = $pattern['start']['y']; $j <= $pattern['end']['y']; $j++) {
+            $point = array($i, $j);
+            $p = _convert_to_one_dimension_opposite($point, $dimension[0]['value']);
+            if ($matrix[$p]['value'] != $equal_to) {
+              $did_found_pattern = FALSE;
+            }
+          }
+        }
+        if ($did_found_pattern) {
+          return TRUE;
+        }
+      }
+    }
+  } else if (!empty($pattern['start'])) {
+    if (!empty($pattern['start']['repeat'])) {
+      for ($i = 0; $i < $pattern['start']['repeat']; $i++) {
+        $x = $pattern['start']['x'] + ($pattern['start']['offsetx'] * $i);
+        $y = $pattern['start']['y'] + ($pattern['start']['offsety'] * $i);
+        $point = array($x, $y);
+        $p = _convert_to_one_dimension_opposite($point, $dimension[0]['value']);
+        if ($matrix[$p]['value'] != $equal_to) {
+          return FALSE;
+        }
+      }
+      return TRUE;
+    } else {
+      $x = $pattern['start']['x'];
+      $y = $pattern['start']['y'];
+      $point = array($x, $y);
+      $p = _convert_to_one_dimension_opposite($point, $dimension[0]['value']);
+      if ($matrix[$p]['value'] == $equal_to) {
+        return TRUE;
+      }
+    }
+  } else if (!empty($pattern['end'])) {
+    $x = $pattern['end']['x'];
+    $y = $pattern['end']['y'];
+    $point = array($x, $y);
+    $p = _convert_to_one_dimension_opposite($point, $dimension[0]['value']);
+    if ($matrix[$p]['value'] == $equal_to) {
+      return TRUE;
+    }
+  }
+  // checked entire matrix and didnt found pattern
+  return FALSE;
+}
+
+/**
+ *
+ * @param type $pattern
+ */
+function evaluate_pattern(&$pattern) {
+
+  if (!is_numeric($pattern['start']['x'])) {
+    $pattern['start']['x'] = eval($pattern['start']['x']);
+  }
+  if (!is_numeric($pattern['start']['y'])) {
+    $pattern['start']['y'] = eval($pattern['start']['y']);
+  }
+  if (!is_numeric($pattern['end']['x'])) {
+    $pattern['end']['x'] = eval($pattern['end']['x']);
+  }
+  if (!is_numeric($pattern['end']['y'])) {
+    $pattern['end']['y'] = eval($pattern['end']['y']);
+  }
+}
+
+/**
+ *
+ * @return Entity type "game_pattern"
+ */
+function get_all_board_patterns() {
+  $entity_type = "game_pattern";
+  $ids = FALSE;
+  $conditions = array("type" => "board_pattern");
+  $e = entity_load($entity_type, $ids, $conditions);
+  $re = array();
+
+  foreach ($e as $key => $entity) {
+    $re[$entity->id] = $entity->label;
+  }
+
+  return $re;
 }
 
 /**
@@ -251,7 +453,7 @@ function board_games_rules_condition_check_diagonal_equal($running_game = null, 
   if ($dimension_count == 2 && count($positions) == 2) {
     switch ($position_type) {
       case 0:// 'Top Left'
-        $count = $positions[0]-1;
+        $count = $positions[0] - 1;
         for ($i = 0; $i < $dimensions[0]['value']; $i++) {
           $p = ($psd + $i) + ($dimensions[1]['value'] * $count);
           if (!isset($matrix[$p])) {
@@ -265,7 +467,7 @@ function board_games_rules_condition_check_diagonal_equal($running_game = null, 
         return TRUE;
         break;
       case 1:// 'Top Right'
-        $count = $positions[0]-1;
+        $count = $positions[0] - 1;
         for ($i = 0; $i < $dimensions[0]['value']; $i++) {
           $p = ($psd - $i) + ($dimensions[1]['value'] * $count);
           if ($p < 0) {
@@ -296,6 +498,10 @@ function board_games_rules_condition_check_diagonal_equal($running_game = null, 
 
 function _convert_to_one_dimension($position, $dimension) {
   return (($position[0] - 1) * $dimension) + ($position[1] - 1);
+}
+
+function _convert_to_one_dimension_opposite($position, $dimension) {
+  return (($position[1] - 1) * $dimension) + ($position[0] - 1);
 }
 
 function _convert_to_two_dimension($position, $dimension) {
@@ -836,4 +1042,3 @@ function board_games_rules_event_info() {
 
   return $items;
 }
-

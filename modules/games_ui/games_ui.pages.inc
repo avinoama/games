@@ -3,7 +3,6 @@
 /**
  * Game view callback.
  */
-//$id = entity_id('game', $game);
 function game_ui_view($game) {
   drupal_set_title(entity_label('game', $game));
   return entity_view('game', array(entity_id('game', $game) => $game), 'full');;
