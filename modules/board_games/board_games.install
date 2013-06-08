@@ -56,39 +56,7 @@ function _board_games_default_fields() {
 
   $fields = array();
 
-  //  Fields for game entity
-  // moved for 2 dimention to n dimention
-  /*
-    $fields[] = array(
-    'field_name' => 'field_board_width',
-    'label' => t('Board Width'),
-    'type' => 'number_integer',
-    'default_value' => 0,
-    'cardinality' => '1',
-    'entity_type' => 'game',
-    );
-    $fields[] = array(
-    'field_name' => 'field_board_height',
-    'label' => t('Board Height'),
-    'type' => 'number_integer',
-    'default_value' => 0,
-    'cardinality' => '1',
-    'entity_type' => 'game',
-    );
-   *
-   */
-  /*
-  $fields[] = array(
-      'field_name' => 'field_board_dimensions',
-      'label' => t('Board Dimensions'),
-      'type' => 'number_integer',
-      'description' => "Usally 1d, 2d or 3d as numeric value",
-      'default_value' => 1,
-      'cardinality' => '1',
-      'entity_type' => 'game',
-  );
-   * 
-   */
+ 
   $fields[] = array(
       'field_name' => 'field_board_dimension_amount',
       'label' => t('Board Dimension Amount'),
@@ -99,46 +67,6 @@ function _board_games_default_fields() {
       'entity_type' => 'game',
   );
 
-
-// decupled this fields as players module
-  /*
-    $fields[] = array(
-    'field_name' => 'field_min_num_players',
-    'label' => t('Minmum Number Players'),
-    'type' => 'number_integer',
-    'default_value' => 0,
-    'cardinality' => 1,
-    'entity_type' => 'game',
-    'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
-    );
-    $fields[] = array(
-    'field_name' => 'field_max_num_players',
-    'label' => t('Maximum Number Players'),
-    'type' => 'number_integer',
-    'default_value' => 0,
-    'cardinality' => 1,
-    'entity_type' => 'game',
-    'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
-    );
-    $fields[] = array(
-    'field_name' => 'field_players',
-    'label' => t('Players'),
-    'type' => 'entityreference',
-    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-    'entity_type' => 'running_game',
-    );
-    $fields[] = array(
-    'field_name' => 'field_current_turn',
-    'label' => t('Current Turn'),
-    'type' => 'number_integer',
-    'default_value' => 1,
-    'cardinality' => 1,
-    'entity_type' => 'running_game',
-    'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
-    );
-   *
-   *
-   */
   $fields[] = array(
       'field_name' => 'field_tile_type',
       'label' => t('Tile Type'),

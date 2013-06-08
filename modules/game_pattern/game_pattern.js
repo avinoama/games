@@ -3,6 +3,8 @@
     attach: function (context, settings) {
       board_sizes=[3,5,7];
       Drupal.behaviors.GamePattern.init(5);
+      refresh_inputs();
+      
     },
     init : function (current_board_size) {
       Drupal.settings.current_board_size = current_board_size;
@@ -11,10 +13,14 @@
       if($(".board_pattern").empty()) {
         create_board(current_board_size,current_board_mid);
       }
-
-      var p  = Drupal.settings.pattern.field_pattern;
-      for(i in p['und']) {
-        temp = p['und'][i]['value']
+      if(Drupal.settings.pattern.field_pattern==undefined) {
+        Drupal.settings.pattern.field_pattern = new Array();
+        Drupal.settings.pattern.field_pattern['und']= new Array();
+      }
+      var p  = Drupal.settings.pattern.field_pattern['und'];
+      Drupal.settings.patterns=[];
+      for(i in p) {
+        temp = p[i]['value']
         .replace(/px/gi,current_board_mid)
         .replace(/py/gi,current_board_mid)
         .replace(/left/gi,1)
@@ -26,11 +32,12 @@
         eval_single_pattern(pattern);
 
       }
-      
+      console.log(Drupal.settings.patterns);
     }
   }
   function eval_single_pattern(pattern) {
     if(pattern!=null) {
+      Drupal.settings.patterns.push(pattern);
       if(pattern.start!= null && pattern.end!= null) {
         pattern.start.x = eval(pattern.start.x);
         pattern.start.y = eval(pattern.start.y);
@@ -47,6 +54,7 @@
         pattern.start.y = eval(pattern.start.y);
         if(pattern.start.repeat!=null) {
           for (i=0;i<=pattern.start.repeat;i++) {
+            //alert(i);
             $(".position_" + (pattern.start.x + (pattern.start.offsetx* i)) + "_" + (pattern.start.y + (pattern.start.offsety* i))).addClass("selected");
           }
         } else {
@@ -88,23 +96,22 @@
     var right_buttons = $("<div/>").addClass("right_buttons buttons");
     var left_buttons = $("<div/>").addClass("left_buttons buttons");
 
-    b = $("<button/>").html('↙').addClass("diagnal_button");
+    b = $("<button/>").html('↙').addClass("diagnal_button").attr("id",'1').attr("value","urtbl").bind("click",handle_button_click);
     right_buttons.append(b);
-    b = $("<button/>").html('↘').addClass("diagnal_button");
+    b = $("<button/>").html('↘').addClass("diagnal_button").attr("id",'2').attr("value","ultbr").bind("click",handle_button_click);
     left_buttons.append(b);
 
     for(y=1;y<= current_board_size;y++) {
 
-      b = $("<button/>").html('←').addClass("nerrow_button");
+      b = $("<button/>").html('←').addClass("nerrow_button").attr("id",y).attr("value","rtl").bind("click",handle_button_click);
       right_buttons.append(b);
-      b = $("<button/>").html('→').addClass("nerrow_button");
+      b = $("<button/>").html('→').addClass("nerrow_button").attr("id",y).attr("value","ltr").bind("click",handle_button_click);
       left_buttons.append(b);
       for(x=1;x<= current_board_size;x++) {
         if(y==1) {
-          b = $("<button/>").html('↑').addClass("wide_button");
+          b = $("<button/>").html('↑').addClass("wide_button").attr("id",x).attr("value","btu").bind("click",handle_button_click);
           bottom_buttons.append(b);
-          b = $("<button/>").html('↓').addClass("wide_button");
-          console.log(b);
+          b = $("<button/>").html('↓').addClass("wide_button").attr("id",x).attr("value","utb").bind("click",handle_button_click);
           top_buttons.append(b);
         }
         tile = $("<div/>")
@@ -137,15 +144,39 @@
       }
       
     }
-    b = $("<button/>").html('↖').addClass("diagnal_button");
+    b = $("<button/>").html('↖').addClass("diagnal_button").attr("id",'3').attr("value","brtul").bind("click",handle_button_click);
     right_buttons.append(b);
-    b = $("<button/>").html('↗').addClass("diagnal_button");
+    b = $("<button/>").html('↗').addClass("diagnal_button").attr("id",'4').attr("value","bltur").bind("click",handle_button_click);
     left_buttons.append(b);
 
     board.width((tile_size*(current_board_size))+20);
     board.height((tile_size*(current_board_size))+20);
     board.append(top_buttons).append(bottom_buttons).append(right_buttons).append(left_buttons);
     $("#edit-field-pattern").prepend(board).prepend(controller);
+  }
+  function handle_button_click(e) {
+    e.preventDefault();
+    console.log(e);
+    var b= $(e.currentTarget);
+    middle = $(".tile.middle");
+    middle_id = middle.attr("id").replace("tile_");
+    var middle_position = get_position($(middle).attr("class"));
+
+    switch (b.val()) {
+      case 'ltr':
+        id = b.attr("id");
+        middle_position[1];
+        row= middle_position[1]- id;
+        pattern = '{"start":{"x": "left","y": "py+@row"},"end":{"x": "right","y": "py+@row"}}';
+        pattern = pattern.replace(/@row/gi, row );
+        
+        Drupal.settings.pattern.field_pattern['und'].push({
+          "value":pattern
+        });
+
+        refresh_inputs();
+        break;
+    }
   }
   function handle_tile_click(e) {
     //check_if_pattern_selected
@@ -159,16 +190,19 @@
   function _tile_unselect(tile) {
     console.log("tile_unselect");
     tile.removeClass("selected");
+    
   }
   function _tile_select(tile) {
+    
     tile_id = $(tile).attr("id").replace("tile_");
     tile_position = get_position($(tile).attr("class"));
-    console.log(tile_position);
+    
     middle = $(".tile.middle");
     middle_id = middle.attr("id").replace("tile_");
     middle_position = get_position($(middle).attr("class"));
-    console.log(middle_position);
-    pattern = '{"start":{"x": "px","offsetx":"@offsetx","y": "py","offsety":"@offsety","repeat":1}}';
+    
+    //pattern = '{"start":{"x": "px","offsetx":"@offsetx","y": "py","offsety":"@offsety","repeat":1}}';
+    pattern = '{"start":{"x": "px+@offsetx","y": "py+@offsety"}}';
     
     pattern = pattern.replace("@offsetx", tile_position[0] - middle_position[0] );
     pattern = pattern.replace("@offsety", tile_position[1] - middle_position[1] );
@@ -176,9 +210,20 @@
     Drupal.settings.pattern.field_pattern['und'].push({
       "value":pattern
     });
-    console.log(Drupal.settings.pattern.field_pattern['und']);
+
+    
+
+    $('[name="field_pattern_add_more"]').mousedown();
     tile.addClass("selected");
   }
+
+  function refresh_inputs(){
+    var inputs = $("#field-pattern-values .draggable input");
+    for (i in Drupal.settings.pattern.field_pattern['und']) {
+      $(inputs[i]).val(Drupal.settings.pattern.field_pattern['und'][i]['value']);
+    }
+  }
+
   function get_position(tile_class) {
     console.log("get_position" + " "+ tile_class);
     start=tile_class.indexOf("position_");

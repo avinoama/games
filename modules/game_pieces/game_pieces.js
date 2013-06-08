@@ -26,7 +26,7 @@
     },
     create_piece: function(params){
       piece = $("<div/>");
-      piece.text(params.piece.label).addClass("piece")
+      $(piece).text(params.piece.label).addClass("piece")
       .addClass(params.piece.type)
       .addClass(params.piece.id)
       .attr("id","piece_"+params.piece.id).hide();

@@ -56,7 +56,7 @@ function game_pieces_entity_info() {
       'controller class' => 'PieceTypeController',
       'base table' => 'piece_type',
       'bundle of' => 'piece',
-      'fieldable' => TRUE,
+      'fieldable' => FALSE,
       'exportable' => TRUE,
       'entity keys' => array(
           'id' => 'id',
@@ -74,6 +74,22 @@ function game_pieces_entity_info() {
       'access callback' => 'game_pieces_access',
   );
   return $return;
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function game_pieces_entity_info_alter(&$entity_info) {
+  foreach (piece_types() as $type => $info) {
+    $entity_info['piece']['bundles'][$type] = array(
+        'label' => $info->label,
+        'admin' => array(
+            'path' => 'admin/structure/piece-types/manage/%piece_type',
+            'real path' => 'admin/structure/piece-types/manage/' . $type,
+            'bundle argument' => 4,
+        ),
+    );
+  }
 }
 
 /**
@@ -282,7 +298,8 @@ function game_pieces_access($op, $piece, $account = NULL, $entity_type = NULL) {
 }
 
 function game_pieces_menu() {
-  $piece_uri = "piece_type/%piece";
+
+  $piece_uri = "piece_type/%piece_type";
   $piece_uri_argument_position = 1;
   $items = array();
 
@@ -326,24 +343,14 @@ function game_pieces_menu() {
   return $items;
 }
 
-function _game_pieces_add_default_piece_types() {
-  $entity_type = "piece_type";
-  foreach (_game_pieces_default_piece_types() as $piece) {
-    $e = entity_load($entity_type, FALSE, array("type" => $piece['type']));
-    if (empty($e)) {
-      $p = entity_create($entity_type, $piece);
-      piece_save($p);
-    }
-  }
-}
-
-
-
-function _game_pieces_add_default_fields() {
+/**
+ *
+ */
+function _game_pieces_running_game_add_default_fields() {
   // need to see how to include pieces to different bundle types
   $bundle = 'board_game';
 
-  $fields = _game_piece_default_fields();
+  $fields = _game_pieces_running_game_default_fields();
   foreach ($fields as $field) {
     $field_info = field_info_field($field['field_name']);
     if (!$field_info) {
@@ -362,14 +369,35 @@ function _game_pieces_add_default_fields() {
     }
   }
 }
+/**
+ *  
+ * @return Array
+ */
+function _game_pieces_running_game_default_fields() {
+  $fields = array();
+
+  $fields[] = array(
+      'field_name' => 'field_pieces',
+      'label' => t('Pieces'),
+      'type' => 'entityreference',
+      'translatable' => FALSE,
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'entity_type' => 'running_game',
+  );
+
+
+  return $fields;
+}
 
 /**
  * Hook piece type creation
  * @param type $piece
  */
+/*
 function game_pieces_piece_type_insert($piece_type) {
   _game_pieces_add_default_fields_for_bundle($piece_type->type);
 }
+
 
 function _game_pieces_add_default_fields_for_bundle($bundle) {
   $entity_type = "piece";
@@ -397,20 +425,23 @@ function _game_pieces_add_default_fields_for_bundle($bundle) {
     }
   }
 }
+*/
 /**
  * For all game_pieces bundle set default fields
  */
+/*
 function game_pieces_add_default_fields_for_all_bundles() {
 
   $piece_types = entity_load("piece_type");
 
-  if(!empty($piece_types)) {
-    foreach($piece_types as $piece_type) {
+  if (!empty($piece_types)) {
+    foreach ($piece_types as $piece_type) {
       _game_pieces_add_default_fields_for_bundle($piece_type->type);
     }
   }
 }
-function _game_piece_type_default_fields() {
+*/
+function _game_piece_default_fields() {
   $fields = array();
 
   $fields[] = array(
@@ -421,8 +452,45 @@ function _game_piece_type_default_fields() {
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
       'entity_type' => 'piece',
   );
-
+  
   return $fields;
+}
+
+
+
+function _game_piece_add_default_fields_for_bundle($bundle) {
+  $entity_type = "piece";
+  $fields = _game_piece_default_fields();
+
+  foreach ($fields as $field) {
+    if ($field['entity_type'] == $entity_type) {
+      if (!($field_info = field_info_field($field['field_name']))) {
+        $field = field_create_field($field);
+      }
+      $instances = field_info_instances(null, $field["field_name"]);
+      $instance = array(
+          'field_name' => $field['field_name'],
+          'entity_type' => $entity_type,
+          'bundle' => $bundle,
+      );
+      $instance += $field;
+      if (!isset($instances[$entity_type][$bundle])) {
+        field_create_instance($instance);
+      } else {
+        if (!isset($instances[$entity_type][$bundle][$field["field_name"]])) {
+          field_create_instance($instance);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Hook game_pattern type creation
+ * @param type $piece
+ */
+function game_pieces_piece_type_insert($piece_type) {
+  _game_piece_add_default_fields_for_bundle($piece_type->type);
 }
 
 /**

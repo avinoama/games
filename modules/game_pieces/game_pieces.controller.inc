@@ -61,8 +61,7 @@ class PieceTypeUIController extends EntityDefaultUIController {
     $items = parent::hook_menu();
     $id_count = count(explode('/', $this->path));
     $wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%entity_object';
-
-
+    
     
     $items[$this->path]['description'] = 'Manage piece types.';
     $items[$this->path . '/manage/' . $wildcard . '/components'] = array(

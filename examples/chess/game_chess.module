@@ -23,6 +23,17 @@ function _game_chess_add_default_games() {
   }
 }
 
+function _game_chess_add_default_patterns() {
+  $entity_type = "game_pattern";
+ /* foreach (_game_chess_pieces_default_patterns() as $pattern) {
+    $e = entity_load($entity_type, FALSE, array("machine_name" => $pattern['machine_name']));
+    if (empty($e)) {
+      $p = entity_create($entity_type, $pattern);
+      game_pattern_save($p);
+    }
+  }*/
+}
+
 function _game_chess_add_default_piece_types() {
   $entity_type = "piece_type";
   foreach (_game_chess_pieces_default_piece_types() as $piece) {
@@ -36,6 +47,7 @@ function _game_chess_add_default_piece_types() {
 
 function _game_chess_pieces_default_piece_types() {
   $piece_types = array();
+
   $piece_types[] = array(
       "label" => "Pawn White",
       "symbol" => "♙",
@@ -119,4 +131,18 @@ function _game_chess_pieces_default_piece_types() {
 
 
   return $piece_types;
+}
+
+function _game_chess_pieces_default_patterns() {
+  $patterns = array();
+
+  $patterns[] = array(
+      "label" => "Pawn White Initiate",
+      "machine_name" => "pawn-white-initiate",
+      "bundle" => "pawn-white-initiate",
+      'field_patterns' => array('{"start":{"x": "px+1","y": "py+1"}}', '{"start":{"x": "px-1","y": "py+1"}}')
+  );
+
+
+  return $patterns;
 }

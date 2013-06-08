@@ -12,5 +12,6 @@ dependencies[] = list
 dependencies[] = entity
 dependencies[] = views
 dependencies[] = game
+dependencies[] = game_pattern
 
 files[] = game_pieces.controller.inc

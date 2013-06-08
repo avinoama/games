@@ -24,8 +24,8 @@
 
       for(d = 1; d <= dimensions-1; d++) {
         if(dimension_amount[d] != undefined) {
-          for(i = 1; i <= dimension_amount[d].value; i++) {
-            for(j = 1; j <= dimension_amount[0].value; j++) {
+          for(y = 1; y <= dimension_amount[d].value; y++) {
+            for(x = 1; x <= dimension_amount[0].value; x++) {
               
               if (!$.isArray(field_matrix[count]) && !$.isPlainObject(field_matrix[count])) {
                 field_matrix[count]=new Array();
@@ -33,7 +33,7 @@
               a = Array("","<div/>","<input/>");
               tile = $(a[tile_type]).addClass("tile")
               .addClass("tile_"+dimensions+"d")
-              .addClass("position_" + i  + "_" + j)
+              .addClass("position_" + x  + "_" + y)
               .attr("id","tile_"+count);
               if(tile_type==1) {
 

@@ -377,3 +377,7 @@ function game_pattern_views_api() {
       'path' => drupal_get_path('module', 'game_pattern'),
   );
 }
+function piece_type_insert() {
+  
+  
+}

@@ -6,10 +6,10 @@ function piece_type_form($form, &$form_state, $piece_type, $op = 'edit') {
     $piece_type->label .= ' (cloned)';
     $piece_type->type = '';
   }
-  if(property_exists($piece_type, "symbol")){
+  if (property_exists($piece_type, "symbol")) {
     $s = $piece_type->symbol;
   } else {
-    $s="";
+    $s = "";
   }
   $form['symbol'] = array(
       '#title' => t('Symbol'),
@@ -41,6 +41,21 @@ function piece_type_form($form, &$form_state, $piece_type, $op = 'edit') {
       ),
       '#description' => t('A unique machine-readable name for this piece type. It must only contain lowercase letters, numbers, and underscores.'),
   );
+  $patterns = get_patterns_for_board_form();
+  $form['move_pattern'] = array(
+      '#title' => t('Move Pattern'),
+      '#type' => 'select',
+      '#default_value' => isset($piece_type->move_pattern) ? $piece_type->move_pattern : '',
+      '#options' => $patterns,
+      '#description' => t('pattern that makes the player move by specipic movement pattern'),
+  );
+  $form['initiate_pattern'] = array(
+      '#title' => t('Initiate Pattern'),
+      '#type' => 'select',
+      '#default_value' => isset($piece_type->initiate_pattern) ? $piece_type->initiate_pattern : '',
+      '#options' => $patterns,
+      '#description' => t('pattern that allows the player to initiate another player by specipic pattern'),
+  );
 
   $form['description'] = array(
       '#type' => 'textarea',
@@ -64,11 +79,26 @@ function piece_type_form($form, &$form_state, $piece_type, $op = 'edit') {
         '#submit' => array('piece_type_form_submit_delete')
     );
   }
-  return $form;
 
-  
+  dpm($piece_type);
+  return $form;
 }
 
+function get_patterns_for_board_form() {
+  $entity_type = 'game_pattern';
+  $ids = FALSE;
+  $conditions = array();//array('type' => 'board_pattern');
+  $e = entity_load($entity_type, $ids, $conditions);
+  $re = array();
+
+  foreach ($e as $key => $entity) {
+    if ($entity->type == "move_pattern") {
+      $re[$entity->id] = $entity->label;
+    }
+  }
+
+  return $re;
+}
 
 /**
  * Submit handler for creating/editing piece_type.
@@ -111,7 +141,6 @@ function piece_type_form_delete_confirm_submit($form, &$form_state) {
   $form_state['redirect'] = 'admin/structure/piece-types';
 }
 
-
 /**
  * Form function for the rules link components.
  */
@@ -126,39 +155,37 @@ function piece_type_component_form($form, $form_state, $entity_type, $piece_type
   $form['condition_set']['help']['#title'] = t('Movment conditions');
   $form['condition_set']['help']['#type'] = 'item';
   //$form['condition_set']['help']['#markup'] = t('The access conditions can additionally to <a href="!url">%link</a> specify, when to show the rules links.', array('%link' => t('the permissions'), '!url' => url('admin/people/permissions', array('fragment' => 'module-piece_type'))));
-
-
   // Since we never want to negate the result, we can hide the form.
   unset($form['condition_set']['negate']);
   $form['condition_set']['#tree'] = TRUE;
 
-/*
-  $rule_set = piece_type_load_rules_set($piece_type);
-  $rule_set->form($form['rule_set'], $form_state, array('show settings' => TRUE));
+  /*
+    $rule_set = piece_type_load_rules_set($piece_type);
+    $rule_set->form($form['rule_set'], $form_state, array('show settings' => TRUE));
 
-  $form['rule_set']['elements']['#caption'] = '';
-  $form['rule_set']['#tree'] = TRUE;
+    $form['rule_set']['elements']['#caption'] = '';
+    $form['rule_set']['#tree'] = TRUE;
 
-  $form['rule_set']['help']['#title'] = t('Reactions');
-  $form['rule_set']['help']['#type'] = 'item';
-  $form['rule_set']['help']['#markup'] = t('To output a system message, simply use the "Show a message on the site" action in one of your rules. Javascript links will replace the link with the text from the system message.');
+    $form['rule_set']['help']['#title'] = t('Reactions');
+    $form['rule_set']['help']['#type'] = 'item';
+    $form['rule_set']['help']['#markup'] = t('To output a system message, simply use the "Show a message on the site" action in one of your rules. Javascript links will replace the link with the text from the system message.');
 
 
-  $form['rule_set']['settings']['vars']['#description'] .= '<br/>' . t('Please also note that Rules Link only checks if there are enough variables available, but not if the entities could be loaded. You will have to check that your self in your components.');
-  $form['rule_set']['settings']['label']['#access'] = FALSE;
-  $form['rule_set']['settings']['name']['#type'] = 'value';
-  $form['rule_set']['settings']['tags']['#access'] = FALSE;
-  $form['rule_set']['settings']['vars']['items'][$piece_type->entity_type]['#disabled'] = TRUE;
-*/
+    $form['rule_set']['settings']['vars']['#description'] .= '<br/>' . t('Please also note that Rules Link only checks if there are enough variables available, but not if the entities could be loaded. You will have to check that your self in your components.');
+    $form['rule_set']['settings']['label']['#access'] = FALSE;
+    $form['rule_set']['settings']['name']['#type'] = 'value';
+    $form['rule_set']['settings']['tags']['#access'] = FALSE;
+    $form['rule_set']['settings']['vars']['items'][$piece_type->entity_type]['#disabled'] = TRUE;
+   */
   $form_state['piece_type_condition_set'] = $condition;
   //$form_state['piece_type_rules_set'] = $rule_set;
 
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save Rules Link'),
-    '#weight' => 40,
+      '#type' => 'submit',
+      '#value' => t('Save Rules Link'),
+      '#weight' => 40,
   );
   return $form;
 }

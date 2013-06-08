@@ -4,7 +4,7 @@
  *
  */
 function game_pieces_install() {
-  _game_pieces_add_default_fields();
+  _game_pieces_running_game_add_default_fields();
 }
 
 /**
@@ -81,6 +81,16 @@ function game_pieces_schema() {
       'length' => 32,
       'not null' => TRUE,
   ),
+  'move_pattern' => array(
+      'description' => 'a pattern that makes the player move by specipic movement pattern',
+      'type' => 'int',
+      'not null' => FALSE,
+  ),
+  'initiate_pattern' => array(
+      'description' => 'a pattern that allows the player to initiate another player by specipic pattern',
+      'type' => 'int',
+      'not null' => FALSE,
+  ),
   'description' => array(
       'description' => 'A brief description of this piece type.',
       'type' => 'text',
@@ -97,17 +107,3 @@ function game_pieces_schema() {
   return $schema;
 }
 
-function _game_piece_default_fields() {
-  $fields = array();
-  
-  $fields[] = array(
-      'field_name' => 'field_pieces',
-      'label' => t('Pieces'),
-      'type' => 'entityreference',
-      'translatable' => FALSE,
-      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-      'entity_type' => 'running_game',
-  );
-
-  return $fields;
-}
