@@ -1,5 +1,11 @@
 <?php
 
+function game_chess_menu() {
+  $items = array();
+  
+  return $items;
+}
+
 function _game_chess_add_default_games() {
   $entity_type = "game";
   $bundle = 'board_game';
@@ -25,13 +31,15 @@ function _game_chess_add_default_games() {
 
 function _game_chess_add_default_patterns() {
   $entity_type = "game_pattern";
- /* foreach (_game_chess_pieces_default_patterns() as $pattern) {
+  $patterns = _game_chess_pieces_default_patterns();
+  foreach ($patterns as $pattern) {
     $e = entity_load($entity_type, FALSE, array("machine_name" => $pattern['machine_name']));
     if (empty($e)) {
       $p = entity_create($entity_type, $pattern);
       game_pattern_save($p);
     }
-  }*/
+  }
+  return"1";
 }
 
 function _game_chess_add_default_piece_types() {
@@ -135,12 +143,23 @@ function _game_chess_pieces_default_piece_types() {
 
 function _game_chess_pieces_default_patterns() {
   $patterns = array();
+  $tmp = '{"start":{"x": "px","y": "py+1"}}';
 
+  $patterns[] = array(
+      'label' => 'Pawn White Move',
+      'machine_name' => 'pawn-white-move',
+      'type' => 'move_pattern',
+      'field_pattern' => array(LANGUAGE_NONE => array(0 => array('value' => $tmp)))
+  );
+  $tmp = array(
+      0 => array('value' => '{"start":{"x": "px+1","y": "py-1"}}'),
+      1 => array('value' => '{"start":{"x": "px-1","y": "py-1"}}'));
+  
   $patterns[] = array(
       "label" => "Pawn White Initiate",
       "machine_name" => "pawn-white-initiate",
-      "bundle" => "pawn-white-initiate",
-      'field_patterns' => array('{"start":{"x": "px+1","y": "py+1"}}', '{"start":{"x": "px-1","y": "py+1"}}')
+      "type" => "move_pattern",
+      'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
 
 
