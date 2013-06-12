@@ -667,6 +667,10 @@ function board_games_rules_action_info() {
  * @param type $running_game
  */
 function rules_tile_lisiten_to_click($running_game) {
+  
+  $running_game->field_board_status[LANGUAGE_NONE][0]['value']="lisiten_to_click";
+  running_game_save($running_game);
+  
   $running_game_command = array();
   $running_game_command['running_game_id'] = $running_game->id;
   $running_game_command['command_id'] = 1;
@@ -685,6 +689,10 @@ function rules_tile_lisiten_to_click_validation($running_game) {
  * @param type $running_game
  */
 function rules_tile_lisiten_to_change($running_game) {
+
+  $running_game->field_board_status[LANGUAGE_NONE][0]['value']="lisiten_to_change";
+  running_game_save($running_game);
+  
   $running_game_command = array();
   $running_game_command['running_game_id'] = $running_game->id;
   $running_game_command['command_id'] = 1;

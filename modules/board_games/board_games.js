@@ -2,12 +2,17 @@
   Drupal.behaviors.BoardGame = {
     attach: function (context, settings) {
       field_matrix = Drupal.settings.RunningGame.instance.field_matrix;
-
+      console.log(Drupal.settings.RunningGame.instance.field_board_status);
+      if(Drupal.settings.RunningGame.instance.field_board_status['und'] !=undefined) {
+        status = Drupal.settings.RunningGame.instance.field_board_status['und'][0]['value'];
+      }
       dimension_amount = Drupal.settings.RunningGame.game.field_board_dimension_amount['und'];
       dimensions = Drupal.settings.RunningGame.game.field_board_dimension_amount['und'].length;
 
       tile_type = Drupal.settings.RunningGame.game.field_tile_type['und'][0].value;
 
+      
+      
       var board,row,column;
       
       board = $("<div/>").addClass("boardInstance").attr("id","game"+Drupal.settings.RunningGame.game.gid);
@@ -35,18 +40,29 @@
               .addClass("tile_"+dimensions+"d")
               .addClass("position_" + x  + "_" + y)
               .attr("id","tile_"+count);
+              
               if(tile_type==1) {
-
                 if(field_matrix[count]!=undefined && field_matrix[count].value>0) {
                   tile.addClass("owned_"+field_matrix[count].value).addClass("owned");
                   tile.text(field_matrix[count].value);
                 } else {
                   tile.html("&nbsp;");
                 }
-              }else if(tile_type==2) {
+                if(status=='lisiten_to_click') {
+                  $(tile).bind("click",function(){
+                    board_games_tile_on_click(this)
+                  });
+                }
 
+              } else if (tile_type==2) {
+                  
                 if(field_matrix[count]!=undefined && field_matrix[count].value>0) {
                   tile.val(field_matrix[count].value);
+                }
+                if(status=='lisiten_to_change') {
+                  $(tile).bind("keyup",function(event){
+                    board_games_tile_on_key_up(this,event);
+                  });
                 }
 
               }
@@ -57,7 +73,7 @@
           }
         }
       }
-     // console.log("count " + count);
+      // console.log("count " + count);
 
       $("#game-canvas").html('');
       $("#game-canvas").append(board);
@@ -90,7 +106,7 @@
       }
     },
     board_game_set_tile_in_matrix:function(params) {
-      _board_game_set_tile(params.tile_position,params.tile_value);
+      _board_game_set_tile(params.tile_position, params.tile_value);
     }
   }
   
@@ -152,10 +168,8 @@
       dataType :"json",
       type:"post",
       success: function(data) {
-        //  console.log(data);
-        /*
-        for(r in data) {
-          //console.log(data[r])
+        console.log(data);
+      /*for(r in data) {
           for(i in data[r])
             if(data[r][i]!=null){
               if(data[r][i].callback) {
@@ -163,8 +177,7 @@
                 Drupal.behaviors[c.module][c.fn](c.params);
               }
             }
-        }
-         */
+        }*/
       },
       error: function(jqXHR, textStatus, errorThrow) {
         console.log(jqXHR+ " " + textStatus + " " +errorThrow );

@@ -221,21 +221,32 @@ function game_sudoku_default_rules_configuration() {
   }
 }');
 
+  $rules['rules_sudoko_game_join'] = rules_import('{ "rules_sudoko_game_join" : {
+    "LABEL" : "Sudoko Game Join",
+    "PLUGIN" : "reaction rule",
+    "REQUIRES" : [ "rules", "game_players" ],
+    "ON" : [ "game_join" ],
+    "IF" : [
+      { "data_is" : { "data" : [ "game:machine-name" ], "value" : "sudoku" } }
+    ],
+    "DO" : [
+      { "rules_player_join_game" : { "running_game" : [ "running_game" ], "game" : [ "game" ] } }
+    ]
+  }
+}');
+
   $rules['rules_sudoku_on_game_start'] = rules_import('{ "rules_sudoku_on_game_start" : {
     "LABEL" : "Sudoku On Game Start",
     "PLUGIN" : "reaction rule",
-    "REQUIRES" : [ "rules", "game" ],
+    "REQUIRES" : [ "rules", "board_games", "game" ],
     "ON" : [ "game_start" ],
     "IF" : [
       { "data_is" : { "data" : [ "game:machine-name" ], "value" : "sudoku" } }
     ],
     "DO" : [
-      { "rules_game_send_message" : {
-          "running_game" : [ "running_game" ],
-          "message_text" : "game started yipikaye motherfucker"
-        }
-      },
-      { "component_rules_sudoku_build_board" : { "running_game" : [ "running_game" ] } }
+      { "component_rules_sudoku_build_board" : { "running_game" : [ "running_game" ] } },
+      { "rules_tile_lisiten_to_change" : { "running_game" : [ "running_game" ] } },
+      { "rules_start_game" : { "running_game" : [ "running_game" ], "game" : [ "game" ] } }
     ]
   }
 }');

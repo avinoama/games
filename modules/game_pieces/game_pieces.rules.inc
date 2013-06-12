@@ -323,8 +323,9 @@ function piece_check_move_pattern($piece, $position) {
   if (!property_exists($piece_type, "move_pattern")) {
     return false;
   }
-  $id = $piece_type->move_pattern;
-  $patterns = game_pattern_load($id);
+  $machine_name = $piece_type->move_pattern;
+  $patterns = game_pattern_load_by_machine_name($machine_name);
+  //$patterns = game_pattern_load($id);
   if (empty($patterns)) {
     return false;
   }

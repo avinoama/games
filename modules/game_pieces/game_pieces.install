@@ -83,12 +83,14 @@ function game_pieces_schema() {
   ),
   'move_pattern' => array(
       'description' => 'a pattern that makes the player move by specipic movement pattern',
-      'type' => 'int',
+      'type' => 'varchar',
+      'length' => 32,
       'not null' => FALSE,
   ),
   'initiate_pattern' => array(
       'description' => 'a pattern that allows the player to initiate another player by specipic pattern',
-      'type' => 'int',
+      'type' => 'varchar',
+      'length' => 32,
       'not null' => FALSE,
   ),
   'description' => array(

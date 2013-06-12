@@ -100,6 +100,16 @@ function _board_games_default_fields() {
       'entity_type' => 'running_game',
       'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
   );
-
+  
+  $fields[] = array(
+      'field_name' => 'field_board_status',
+      'label' => t('Board Status'),
+      'type' => 'text',
+      'default_value' => 0,
+      'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+      'entity_type' => 'running_game',
+      'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle)),
+  );
+  
   return $fields;
 }

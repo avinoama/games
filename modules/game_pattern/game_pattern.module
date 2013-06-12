@@ -210,7 +210,10 @@ function game_pattern_permission() {
   );
   return $permissions;
 }
-
+function game_pattern_load_by_machine_name($machine_name='') {
+  $conditions=array('machine_name'=>$machine_name);
+  return reset(entity_load('game_pattern', FALSE, $conditions, FALSE));
+}
 /**
  * Load a pattern.
  */

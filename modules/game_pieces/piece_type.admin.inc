@@ -93,7 +93,7 @@ function get_patterns_for_board_form() {
 
   foreach ($e as $key => $entity) {
     if ($entity->type == "move_pattern") {
-      $re[$entity->id] = $entity->label;
+      $re[$entity->machine_name] = $entity->label;
     }
   }
 
