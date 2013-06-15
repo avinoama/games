@@ -257,7 +257,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "ON" : [ "piece_move_to_position" ],
     "IF" : [
-      { "piece_check_valid_move" : { "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_valid_move" : {
+          "game" : [ "game" ],
+          "piece" : [ "piece" ],
+          "position" : [ "position" ]
+        }
+      }
     ],
     "DO" : [
       { "piece_move" : {
@@ -275,14 +280,179 @@ function game_chess_default_rules_configuration() {
     "PLUGIN" : "or",
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
+
+  $rules['rules_pawn_black_move_conditions'] = rules_import('{ "rules_pawn_black_move_conditions" : {
+    "LABEL" : "pawn black move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "game_pieces" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
+    },
+    "OR" : [
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ]
+  }
+}');
+
+  $rules['rules_king_white_move_conditions'] = rules_import('{ "rules_king_white_move_conditions" : {
+    "LABEL" : "king white move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "game_pieces" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
+    },
+    "OR" : [
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ]
+  }
+}');
+
+  $rules['rules_king_black_move_conditions'] = rules_import('{ "rules_king_black_move_conditions" : {
+    "LABEL" : "king black move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "game_pieces" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
+    },
+    "OR" : [
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ]
+  }
+}');
+
+  $rules['rules_queen_white_move_conditions'] = rules_import('{ "rules_queen_white_move_conditions" : {
+    "LABEL" : "queen white move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "game_pieces" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
+    },
+    "OR" : [
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ]
+  }
+}');
+  $rules['rules_queen_black_move_conditions'] = rules_import('{ "rules_queen_black_move_conditions" : {
+    "LABEL" : "queen black move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "game_pieces" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
+    },
+    "OR" : [
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ]
+  }
+}');
+//----------------------------------
+  $rules['rules_bishop_white_move_conditions'] = rules_import('{ "rules_bishop_white_move_conditions" : {
+    "LABEL" : "bishop white move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "game_pieces" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
+    },
+    "OR" : [
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ]
+  }
+}');
+  $rules['rules_bishop_black_move_conditions'] = rules_import('{ "rules_bishop_black_move_conditions" : {
+    "LABEL" : "bishop black move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "game_pieces" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
+    },
+    "OR" : [
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ]
+  }
+}');
+//----------------------------------
+  $rules['rules_rook_white_move_conditions'] = rules_import('{ "rules_rook_white_move_conditions" : {
+    "LABEL" : "rook white move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "game_pieces" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
+    },
+    "OR" : [
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ]
+  }
+}');
+  $rules['rules_rook_black_move_conditions'] = rules_import('{ "rules_rook_black_move_conditions" : {
+    "LABEL" : "rook black move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "game_pieces" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
+    },
+    "OR" : [
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ]
+  }
+}');
+
+//---------------------------
+  $rules['rules_knight_white_move_conditions'] = rules_import('{ "rules_knight_white_move_conditions" : {
+    "LABEL" : "knight white move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "game_pieces" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
+    },
+    "OR" : [
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ]
+  }
+}');
+
+  $rules['rules_knight_black_move_conditions'] = rules_import('{ "rules_knight_black_move_conditions" : {
+    "LABEL" : "knight black move conditions",
+    "PLUGIN" : "or",
+    "REQUIRES" : [ "game_pieces" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "piece" : { "label" : "Piece", "type" : "piece" },
+      "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
+    },
+    "OR" : [
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+    ]
+  }
+}');
+
 
   $rules['rules_chess_game'] = rules_import('{ "rules_chess_game" : {
     "LABEL" : "Chess Game",
@@ -310,7 +480,7 @@ function game_chess_default_rules_configuration() {
   }
 }');
 
-  
+
   $rules['rules_chess_on_piece_initiate'] = rules_import('{ "rules_chess_on_piece_initiate" : {
     "LABEL" : "Chess on piece initiate",
     "PLUGIN" : "reaction rule",
@@ -333,7 +503,7 @@ function game_chess_default_rules_configuration() {
     ]
   }
 }');
-  
+
   return $rules;
 }
 

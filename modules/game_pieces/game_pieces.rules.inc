@@ -6,6 +6,11 @@ function game_pieces_rules_condition_info() {
           'group' => 'Piece',
           'label' => t('Piece check valide move'),
           'arguments' => array(
+              'game' => array(
+                  'type' => 'game',
+                  'label' => 'game',
+                  'optional' => FALSE,
+              ),
               'piece' => array(
                   'type' => 'piece',
                   'label' => 'piece',
@@ -23,6 +28,11 @@ function game_pieces_rules_condition_info() {
           'group' => 'Piece',
           'label' => t('Piece check move pattern'),
           'arguments' => array(
+              'game' => array(
+                  'type' => 'game',
+                  'label' => 'game',
+                  'optional' => FALSE,
+              ),
               'piece' => array(
                   'type' => 'piece',
                   'label' => 'piece',
@@ -303,10 +313,10 @@ function piece_move($running_game = null, $piece = null, $position = array()) {
  * @param type $position
  * @return boolean
  */
-function piece_check_valid_move($piece = null, $position = array()) {
+function piece_check_valid_move($game = null, $piece = null, $position = array()) {
 
   $c = 'rules_' . $piece->type . '_move_conditions';
-  $return = rules_invoke_component($c, $piece, $position);
+  $return = rules_invoke_component($c, $game, $piece, $position);
 
   if (!$return) {
     return false;
@@ -318,7 +328,7 @@ function piece_check_initiate_pattern($initiator, $initiated) {
 
 }
 
-function piece_check_move_pattern($piece, $position) {
+function piece_check_move_pattern($game = null, $piece, $position) {
   $piece_type = piece_types($piece->type);
   if (!property_exists($piece_type, "move_pattern")) {
     return false;
@@ -330,9 +340,16 @@ function piece_check_move_pattern($piece, $position) {
     return false;
   }
   foreach ($patterns->field_pattern[LANGUAGE_NONE] as $key => $var) {
-    
+
     $var['value'] = str_replace("px", $piece->field_position[LANGUAGE_NONE][0]['value'], $var['value']);
     $var['value'] = str_replace("py", $piece->field_position[LANGUAGE_NONE][1]['value'], $var['value']);
+    if (!empty($game) && property_exists($game, 'field_board_dimension_amount')) {
+
+      $var['value'] = str_replace("left", '1', $var['value']);
+      $var['value'] = str_replace("right", $game->field_board_dimension_amount[LANGUAGE_NONE][0]['value'], $var['value']);
+      $var['value'] = str_replace("top", '1', $var['value']);
+      $var['value'] = str_replace("bottom", $game->field_board_dimension_amount[LANGUAGE_NONE][1]['value'], $var['value']);
+    }
 
     $pattern = drupal_json_decode($var['value']);
 
@@ -340,26 +357,48 @@ function piece_check_move_pattern($piece, $position) {
       // error json didnot eval correct
       return false;
     }
-    if (isset($pattern['start'])) {
-      game_piece_evaluate_pattern($pattern);
-      $x = $pattern['start']['x'];
-      $y = $pattern['start']['y'];
-      if ($x == $position[0]
-              && $y == $position[1]) {
-        return TRUE;
+    
+    game_piece_evaluate_pattern($pattern);
+
+    if (isset($pattern['start']) && isset($pattern['end'])) {
+      for ($x = $pattern['start']['x']; $x <= $pattern['end']['x']; $x++) {
+        for ($y = $pattern['start']['y']; $y <= $pattern['end']['y']; $y++) {
+          if ($x == $position[0] && $y == $position[1]) {
+            return TRUE;
+          }
+        }
+      }
+    } else if (isset($pattern['start'])) {
+      
+
+      if (isset($pattern['start']['repeat'])) {
+        for ($i = 0; $i <= $pattern['start']['repeat']; $i++) {
+          $x = ($pattern['start']['x'] + ($pattern ['start']['offsetx'] * $i));
+          $y = ($pattern['start']['y'] + ($pattern['start']['offsety'] * $i));
+          if ($x == $position[0] && $y == $position[1]) {
+            return TRUE;
+          }
+        }
+      } else {
+        $x = $pattern['start']['x'];
+        $y = $pattern['start']['y'];
+        if ($x == $position[0] && $y == $position[1]) {
+          return TRUE;
+        }
       }
     }
   }
 
   return FALSE;
 }
+
 function game_piece_evaluate_pattern(&$pattern) {
 
   if (!is_numeric($pattern['start']['x']) && !empty($pattern['start']['x'])) {
     //$pattern['start']['x'] = eval("return (".$pattern['start']['x'].");");
     $pattern['start']['x'] = calculate_string($pattern['start']['x']);
   }
-  if (!is_numeric($pattern['start']['y'])  && !empty($pattern['start']['y'])) {
+  if (!is_numeric($pattern['start']['y']) && !empty($pattern['start']['y'])) {
     //$pattern['start']['y'] = eval("return (".$pattern['start']['y'].");");
     $pattern['start']['y'] = calculate_string($pattern['start']['y']);
   }
@@ -372,13 +411,15 @@ function game_piece_evaluate_pattern(&$pattern) {
     $pattern['end']['y'] = calculate_string($pattern['end']['y']);
   }
 }
-function calculate_string( $mathString )    {
-    $mathString = trim($mathString);     // trim white spaces
-    $mathString = ereg_replace ('[^0-9\+-\*\/\(\) ]', '', $mathString);    // remove any non-numbers chars; exception for math operators
 
-    $compute = create_function("", "return (" . $mathString . ");" );
-    return 0 + $compute();
+function calculate_string($mathString) {
+  $mathString = trim($mathString);     // trim white spaces
+  $mathString = ereg_replace('[^0-9\+-\*\/\(\) ]', '', $mathString);    // remove any non-numbers chars; exception for math operators
+
+  $compute = create_function("", "return (" . $mathString . ");");
+  return 0 + $compute();
 }
+
 /**
  * Hook_rules_event_info
  * @return array

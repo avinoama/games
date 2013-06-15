@@ -61,91 +61,105 @@ function _game_chess_pieces_default_piece_types() {
   $piece_types = array();
 
   $piece_types[] = array(
-      "label" => "Pawn White",
-      "symbol" => "♙",
-      "type" => "pawn_white",
+      'label' => 'Pawn White',
+      'symbol' => '♙',
+      'type' => 'pawn_white',
       'move_pattern' => 'pawn-white-move',
       'initiate_pattern' => 'pawn-white-initiate',
-      "description" => "The pawn (♙♟) is the most numerous and in most circumstances the weakest piece in the game of chess, historically representing infantry or, more particularly, armed peasants or pikemen.[citation needed]. In chess, each player begins the game with eight pawns, one on each square of the rank immediately in front of the other pieces."
+      'description' => 'The pawn (♙♟) is the most numerous and in most circumstances the weakest piece in the game of chess, historically representing infantry or, more particularly, armed peasants or pikemen.[citation needed]. In chess, each player begins the game with eight pawns, one on each square of the rank immediately in front of the other pieces.'
   );
   $piece_types[] = array(
-      "label" => "Pawn Black",
-      "symbol" => "♟",
-      "type" => "pawn_black",
+      'label' => 'Pawn Black',
+      'symbol' => '♟',
+      'type' => 'pawn_black',
       'move_pattern' => 'pawn-black-move',
       'initiate_pattern' => 'pawn-black-initiate',
-      "description" => "The pawn (♙♟) is the most numerous and in most circumstances the weakest piece in the game of chess, historically representing infantry or, more particularly, armed peasants or pikemen.[citation needed]. In chess, each player begins the game with eight pawns, one on each square of the rank immediately in front of the other pieces."
+      'description' => 'The pawn (♙♟) is the most numerous and in most circumstances the weakest piece in the game of chess, historically representing infantry or, more particularly, armed peasants or pikemen.[citation needed]. In chess, each player begins the game with eight pawns, one on each square of the rank immediately in front of the other pieces.'
   );
   $piece_types[] = array(
-      "label" => "King White",
-      "symbol" => "♔",
-      "type" => "king_white",
-      'move_pattern' => 'king-move',
-      'initiate_pattern' => 'king-move',
-      "description" => "In chess, the king (♔, ♚) is the most important piece. The object of the game is to trap the opponent's king so that its escape is not possible (checkmate)."
+      'label' => 'King White',
+      'symbol' => '♔',
+      'type' => 'king_white',
+      'move_pattern' => 'king-move-initiate',
+      'initiate_pattern' => 'king-move-initiate',
+      'description' => "In chess, the king (♔, ♚) is the most important piece. The object of the game is to trap the opponent's king so that its escape is not possible (checkmate)."
   );
   $piece_types[] = array(
-      "label" => "King Black",
-      "symbol" => "♚",
-      "type" => "king_black",
-      'move_pattern' => 'king-move',
-      'initiate_pattern' => 'king-move',
-      "description" => "In chess, the king (♔, ♚) is the most important piece. The object of the game is to trap the opponent's king so that its escape is not possible (checkmate)."
-  );
-
-  $piece_types[] = array(
-      "label" => "Queen White",
-      "symbol" => "♕",
-      "type" => "queen_white",
-      "description" => "The queen (♕,♛) is the most powerful piece in the game of chess, able to move any number of squares vertically, horizontally, or diagonally"
+      'label' => 'King Black',
+      'symbol' => '♚',
+      'type' => 'king_black',
+      'move_pattern' => 'king-move-initiate',
+      'initiate_pattern' => 'king-move-initiate',
+      'description' => "In chess, the king (♔, ♚) is the most important piece. The object of the game is to trap the opponent's king so that its escape is not possible (checkmate)."
   );
   $piece_types[] = array(
-      "label" => "Queen Black",
-      "symbol" => "♛",
-      "type" => "queen_black",
-      "description" => "The queen (♕,♛) is the most powerful piece in the game of chess, able to move any number of squares vertically, horizontally, or diagonally"
-  );
-
-
-  $piece_types[] = array(
-      "label" => "Bishop White",
-      "symbol" => "♗",
-      "type" => "bishop_white",
-      "description" => 'A bishop (♗,♝) is a piece in the board game of chess. Each player begins the game with two bishops.'
+      'label' => 'Queen White',
+      'symbol' => '♕',
+      'type' => 'queen_white',
+      'move_pattern' => 'queen-move-initiate',
+      'initiate_pattern' => 'queen-move-initiate',
+      'description' => 'The queen (♕,♛) is the most powerful piece in the game of chess, able to move any number of squares vertically, horizontally, or diagonally'
   );
   $piece_types[] = array(
-      "label" => "Bishop Black",
-      "symbol" => "♝",
-      "type" => "bishop_black",
-      "description" => 'A bishop (♗,♝) is a piece in the board game of chess. Each player begins the game with two bishops.'
+      'label' => 'Queen Black',
+      'symbol' => '♛',
+      'type' => 'queen_black',
+      'move_pattern' => 'queen-move-initiate',
+      'initiate_pattern' => 'queen-move-initiate',
+      'description' => 'The queen (♕,♛) is the most powerful piece in the game of chess, able to move any number of squares vertically, horizontally, or diagonally'
   );
-
-
+  //bishop-move-initiate
   $piece_types[] = array(
-      "label" => "Knight White",
-      "symbol" => "♘",
-      "type" => "knight_white",
-      "description" => ''
+      'label' => 'Bishop White',
+      'symbol' => '♗',
+      'type' => 'bishop_white',
+      'move_pattern' => 'bishop-move-initiate',
+      'initiate_pattern' => 'bishop-move-initiate',
+      'description' => 'A bishop (♗,♝) is a piece in the board game of chess. Each player begins the game with two bishops.'
   );
   $piece_types[] = array(
-      "label" => "Knight Black",
-      "symbol" => "♞",
-      "type" => "knight_black",
-      "description" => ''
+      'label' => 'Bishop Black',
+      'symbol' => '♝',
+      'type' => 'bishop_black',
+      'move_pattern' => 'bishop-move-initiate',
+      'initiate_pattern' => 'bishop-move-initiate',
+      'description' => 'A bishop (♗,♝) is a piece in the board game of chess. Each player begins the game with two bishops.'
   );
 
 
   $piece_types[] = array(
-      "label" => "Rook White",
-      "symbol" => "♖",
-      "type" => "rook_white",
-      "description" => 'A rook (♖ ♜ borrowed from Persian رخ rokh, Sanskrit रथ rath, "chariot") is a piece in the strategy board game of chess.'
+      'label' => 'Knight White',
+      'symbol' => '♘',
+      'type' => 'knight_white',
+      'move_pattern' => 'knight-move-initiate',
+      'initiate_pattern' => 'knight-move-initiate',
+      'description' => ''
   );
   $piece_types[] = array(
-      "label" => "Rook Black",
-      "symbol" => "♜",
-      "type" => "rook_black",
-      "description" => 'A rook (♖ ♜ borrowed from Persian رخ rokh, Sanskrit रथ rath, "chariot") is a piece in the strategy board game of chess.'
+      'label' => 'Knight Black',
+      'symbol' => '♞',
+      'type' => 'knight_black',
+      'move_pattern' => 'knight-move-initiate',
+      'initiate_pattern' => 'knight-move-initiate',
+      'description' => ''
+  );
+
+
+  $piece_types[] = array(
+      'label' => 'Rook White',
+      'symbol' => '♖',
+      'type' => 'rook_white',
+      'move_pattern' => 'rook-move-initiate',
+      'initiate_pattern' => 'rook-move-initiate',
+      'description' => 'A rook (♖ ♜ borrowed from Persian رخ rokh, Sanskrit रथ rath, "chariot") is a piece in the strategy board game of chess.'
+  );
+  $piece_types[] = array(
+      'label' => 'Rook Black',
+      'symbol' => '♜',
+      'type' => 'rook_black',
+      'move_pattern' => 'rook-move-initiate',
+      'initiate_pattern' => 'rook-move-initiate',
+      'description' => 'A rook (♖ ♜ borrowed from Persian رخ rokh, Sanskrit रथ rath, "chariot") is a piece in the strategy board game of chess.'
   );
 
 
@@ -176,7 +190,6 @@ function _game_chess_pieces_default_patterns() {
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
 //----------------------------------------------------------------------
-//----------------------------------------------------------------------
   $tmp = '{"start":{"x": "px","y": "py+1"}}';
   $patterns[] = array(
       'label' => 'Pawn Black Move',
@@ -204,14 +217,78 @@ function _game_chess_pieces_default_patterns() {
       5 => array('value' => '{"start":{"x": "px+1","y": "py"}}'),
       6 => array('value' => '{"start":{"x": "px","y": "py-1"}}'),
       7 => array('value' => '{"start":{"x": "px","y": "py+1"}}')
-      );
+  );
   $patterns[] = array(
       "label" => "King move Initiate",
-      "machine_name" => "king-move",
+      "machine_name" => "king-move-initiate",
       "type" => "move_pattern",
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
 //----------------------------------------------------------------------
+
+  $tmp = array(
+      0 => array('value' => '{"start":{"x": "px+1","y": "py"},"end":{"x": "right","y": "py"}}'),
+      1 => array('value' => '{"start":{"x": "left","y": "py"},"end":{"x": "px-1","y": "py"}}'),
+      2 => array('value' => '{"start":{"x": "px","y": "top"},"end":{"x": "px","y": "py-1"}}'),
+      3 => array('value' => '{"start":{"x": "px","y": "py+1"},"end":{"x": "px","y": "bottom"}}'),
+      4 => array('value' => '{"start":{"x": "px","offsetx":"1","y": "py","offsety":"-1","repeat":"right"}}'),
+      5 => array('value' => '{"start":{"x": "px","offsetx":"-1","y": "py","offsety":"-1","repeat":"right"}}'),
+      6 => array('value' => '{"start":{"x": "px","offsetx":"-1","y": "py","offsety":"1","repeat":"bottom"}}'),
+      7 => array('value' => '{"start":{"x": "px","offsetx":"1","y": "py","offsety":"1","repeat":"bottom"}}')
+  );
+  $patterns[] = array(
+      'label' => 'Queen move Initiate',
+      'machine_name' => 'queen-move-initiate',
+      'type' => 'move_pattern',
+      'field_pattern' => array(LANGUAGE_NONE => $tmp)
+  );
+//----------------------------------------------------------------------
+
+  $tmp = array(
+      0 => array('value' => '{"start":{"x": "px","offsetx":"1","y": "py","offsety":"-1","repeat":"right"}}'),
+      1 => array('value' => '{"start":{"x": "px","offsetx":"-1","y": "py","offsety":"-1","repeat":"right"}}'),
+      2 => array('value' => '{"start":{"x": "px","offsetx":"-1","y": "py","offsety":"1","repeat":"bottom"}}'),
+      3 => array('value' => '{"start":{"x": "px","offsetx":"1","y": "py","offsety":"1","repeat":"bottom"}}')
+  );
+  $patterns[] = array(
+      'label' => 'Bishop move Initiate',
+      'machine_name' => 'bishop-move-initiate',
+      'type' => 'move_pattern',
+      'field_pattern' => array(LANGUAGE_NONE => $tmp)
+  );
+//----------------------------------------------------------------------
+
+  $tmp = array(
+      0 => array('value' => '{"start":{"x": "px+1","y": "py+2"}}'),
+      1 => array('value' => '{"start":{"x": "px+1","y": "py-2"}}'),
+      2 => array('value' => '{"start":{"x": "px-1","y": "py+2"}}'),
+      3 => array('value' => '{"start":{"x": "px-1","y": "py-2"}}'),
+      4 => array('value' => '{"start":{"x": "px+2","y": "py+1"}}'),
+      5 => array('value' => '{"start":{"x": "px+2","y": "py-1"}}'),
+      6 => array('value' => '{"start":{"x": "px-2","y": "py+1"}}'),
+      7 => array('value' => '{"start":{"x": "px-2","y": "py-1"}}')
+  );
+  $patterns[] = array(
+      'label' => 'Knight move Initiate',
+      'machine_name' => 'knight-move-initiate',
+      'type' => 'move_pattern',
+      'field_pattern' => array(LANGUAGE_NONE => $tmp)
+  );
+
+//----------------------------------------------------------------------
+
+  $tmp = array(
+      0 => array('value' => '{"start":{"x": "px+1","y": "py"},"end":{"x": "right","y": "py"}}'),
+      1 => array('value' => '{"start":{"x": "left","y": "py"},"end":{"x": "px-1","y": "py"}}'),
+      2 => array('value' => '{"start":{"x": "px","y": "top"},"end":{"x": "px","y": "py-1"}}'),
+      3 => array('value' => '{"start":{"x": "px","y": "py+1"},"end":{"x": "px","y": "bottom"}}')
+  );
+  $patterns[] = array(
+      'label' => 'Rook move Initiate',
+      'machine_name' => 'rook-move-initiate',
+      'type' => 'move_pattern',
+      'field_pattern' => array(LANGUAGE_NONE => $tmp)
+  );
 
 
 
