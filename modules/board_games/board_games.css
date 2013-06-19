@@ -23,6 +23,9 @@
   text-align :center;
   font-size:30px;
 }
+.boardInstance .tile.selected {
+  background:red;
+}
 .owned_1 {
   background: greenyellow;
 

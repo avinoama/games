@@ -29,46 +29,46 @@
         .replace(/bottom/gi,current_board_size);
 
         pattern = $.parseJSON(temp);
-        eval_single_pattern(pattern);
+        this.eval_single_pattern(pattern);
 
       }
-      console.log(Drupal.settings.patterns);
-    }
-  }
-  function eval_single_pattern(pattern) {
-    if(pattern!=null) {
-      Drupal.settings.patterns.push(pattern);
-      if(pattern.start!= null && pattern.end!= null) {
-        pattern.start.x = eval(pattern.start.x);
-        pattern.start.y = eval(pattern.start.y);
-        pattern.end.x = eval(pattern.end.x);
-        pattern.end.y = eval(pattern.end.y);
-        for(i=pattern.start.x;i<=pattern.end.x;i++) {
-          for(j=pattern.start.y;j<=pattern.end.y;j++) {
-            $(".position_" + i  + "_" + j).addClass("selected");
+    },
+    eval_single_pattern: function (pattern) {
+      if(pattern!=null) {
+        Drupal.settings.patterns.push(pattern);
+        if(pattern.start!= null && pattern.end!= null) {
+          pattern.start.x = eval(pattern.start.x);
+          pattern.start.y = eval(pattern.start.y);
+          pattern.end.x = eval(pattern.end.x);
+          pattern.end.y = eval(pattern.end.y);
+          for(i=pattern.start.x;i<=pattern.end.x;i++) {
+            for(j=pattern.start.y;j<=pattern.end.y;j++) {
+              $(".position_" + i  + "_" + j).addClass("selected");
+            }
           }
         }
-      }
-      else if(pattern.start!= null) {
-        pattern.start.x = eval(pattern.start.x);
-        pattern.start.y = eval(pattern.start.y);
-        if(pattern.start.repeat!=null) {
-          for (i=0;i<=pattern.start.repeat;i++) {
-            //alert(i);
-            $(".position_" + (pattern.start.x + (pattern.start.offsetx* i)) + "_" + (pattern.start.y + (pattern.start.offsety* i))).addClass("selected");
+        else if(pattern.start!= null) {
+          pattern.start.x = eval(pattern.start.x);
+          pattern.start.y = eval(pattern.start.y);
+          if(pattern.start.repeat!=null) {
+            for (i=0;i<=pattern.start.repeat;i++) {
+              //alert(i);
+              $(".position_" + (pattern.start.x + (pattern.start.offsetx* i)) + "_" + (pattern.start.y + (pattern.start.offsety* i))).addClass("selected");
+            }
+          } else {
+            $(".position_" + pattern.start.x  + "_" + pattern.start.y).addClass("selected");
           }
-        } else {
-          $(".position_" + pattern.start.x  + "_" + pattern.start.y).addClass("selected");
         }
-      }
-      else if(pattern.end!= null) {
-            
-        pattern.end.x = eval(pattern.end.x);
-        pattern.end.y = eval(pattern.end.y);
-        $(".position_" + pattern.end.x  + "_" + pattern.end.y).addClass("selected");
+        else if(pattern.end!= null) {
+
+          pattern.end.x = eval(pattern.end.x);
+          pattern.end.y = eval(pattern.end.y);
+          $(".position_" + pattern.end.x  + "_" + pattern.end.y).addClass("selected");
+        }
       }
     }
   }
+
   function create_board(current_board_size,current_board_mid) {
     $('.board_pattern').remove();
     $('.pattern_controller').remove();
@@ -257,9 +257,5 @@
       $(this).removeClass("top-arrow");
       $(this).removeClass("right-arrow");
     }
-  //var mousePos = {'x': e.layerX, 'y': e.layerY};
-  //console.log(divPos);
-  //console.log(mouseX + " " + mouseY);
-  //console.log(mousePos);
   }
 })(jQuery);
