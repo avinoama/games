@@ -343,14 +343,45 @@ function _game_pattern_type_default_fields() {
 
   $fields[] = array(
       'field_name' => 'field_pattern',
-      'label' => t('offset_patterns'),
+      'label' => t('offset patterns'),
       'type' => 'text',
       'translatable' => FALSE,
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
       'entity_type' => 'game_pattern',
   );
+  
+  $fields[] = array(
+      'field_name' => 'field_over_piece',
+      'label' => t('over piece'),
+      'type' => 'list_integer',
+      'default_value' => 1,
+      'cardinality' => 1,
+      'entity_type' => 'game_pattern',
+      'indexes' => array(
+          'value' => array(
+              0 => 'value',
+          ),
+      ),
+      'required'=>TRUE,
+      'module' => 'list',
+      'settings' => array('target_type' => 'text', 'target_bundles' => array(), 'allowed_values_function' => '_game_pattern_boolean_options'),
+      'widget' => array(
+          'active' => 1,
+          'module' => 'options',
+          'settings' => array(),
+          'type' => 'options_select',
+          'weight' => '5',
+      ),
+  );
 
   return $fields;
+}
+function _game_pattern_boolean_options() {
+    $options = array(
+      0 => 'FALSE',
+      1 => 'TRUE',
+  );
+  return $options;
 }
 /**
  *

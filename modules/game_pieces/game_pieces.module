@@ -223,17 +223,24 @@ function game_pieces_game_init_load($game, $running_game) {
     }
 
     $pieces = piece_load_multiple($ids);
+    $patterns = array();
     foreach ($pieces as $p) {
       if (!isset($pieces_type[$p->type])) {
-        $e = reset(entity_load("piece_type", FALSE, array("type" => $p->type)));
-        if (!empty($e)) {
-          $pieces_type[$p->type] = $e;
-          $p->type . "_move_conditions";
+        $piece_type = reset(entity_load('piece_type', FALSE, array('type' => $p->type)));
+        //
+        if (!empty($piece_type)) {
+          $pieces_type[$p->type] = $piece_type;
+          if (property_exists($piece_type, 'move_pattern')) {
+            if (!isset($patterns[$piece_type->move_pattern])) {
+              $patterns[$piece_type->move_pattern] = game_pattern_load_by_machine_name($piece_type->move_pattern);
+            }
+          }
+          // $p->type . "_move_conditions";
         }
       }
     }
   }
-  drupal_add_js(array('GamePieces' => array('pieces' => $pieces, "piece_types" => $pieces_type)), 'setting');
+  drupal_add_js(array('GamePieces' => array('pieces' => $pieces, 'piece_types' => $pieces_type,'patterns'=>$patterns)), 'setting');
 }
 
 /**
@@ -369,6 +376,7 @@ function _game_pieces_running_game_add_default_fields() {
     }
   }
 }
+
 /**
  *  
  * @return Array
@@ -394,53 +402,54 @@ function _game_pieces_running_game_default_fields() {
  * @param type $piece
  */
 /*
-function game_pieces_piece_type_insert($piece_type) {
+  function game_pieces_piece_type_insert($piece_type) {
   _game_pieces_add_default_fields_for_bundle($piece_type->type);
-}
+  }
 
 
-function _game_pieces_add_default_fields_for_bundle($bundle) {
+  function _game_pieces_add_default_fields_for_bundle($bundle) {
   $entity_type = "piece";
   $fields = _game_piece_type_default_fields();
 
   foreach ($fields as $field) {
-    if ($field['entity_type'] == $entity_type) {
-      if (!($field_info = field_info_field($field['field_name']))) {
-        $field = field_create_field($field);
-      }
-      $instances = field_info_instances(null, $field["field_name"]);
-      $instance = array(
-          'field_name' => $field['field_name'],
-          'entity_type' => $entity_type,
-          'bundle' => $bundle,
-      );
-      $instance += $field;
-      if (!isset($instances[$entity_type][$bundle])) {
-        field_create_instance($instance);
-      } else {
-        if (!isset($instances[$entity_type][$bundle][$field["field_name"]])) {
-          field_create_instance($instance);
-        }
-      }
-    }
+  if ($field['entity_type'] == $entity_type) {
+  if (!($field_info = field_info_field($field['field_name']))) {
+  $field = field_create_field($field);
   }
-}
-*/
+  $instances = field_info_instances(null, $field["field_name"]);
+  $instance = array(
+  'field_name' => $field['field_name'],
+  'entity_type' => $entity_type,
+  'bundle' => $bundle,
+  );
+  $instance += $field;
+  if (!isset($instances[$entity_type][$bundle])) {
+  field_create_instance($instance);
+  } else {
+  if (!isset($instances[$entity_type][$bundle][$field["field_name"]])) {
+  field_create_instance($instance);
+  }
+  }
+  }
+  }
+  }
+ */
+
 /**
  * For all game_pieces bundle set default fields
  */
 /*
-function game_pieces_add_default_fields_for_all_bundles() {
+  function game_pieces_add_default_fields_for_all_bundles() {
 
   $piece_types = entity_load("piece_type");
 
   if (!empty($piece_types)) {
-    foreach ($piece_types as $piece_type) {
-      _game_pieces_add_default_fields_for_bundle($piece_type->type);
-    }
+  foreach ($piece_types as $piece_type) {
+  _game_pieces_add_default_fields_for_bundle($piece_type->type);
   }
-}
-*/
+  }
+  }
+ */
 function _game_piece_default_fields() {
   $fields = array();
 
@@ -452,11 +461,9 @@ function _game_piece_default_fields() {
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
       'entity_type' => 'piece',
   );
-  
+
   return $fields;
 }
-
-
 
 function _game_piece_add_default_fields_for_bundle($bundle) {
   $entity_type = "piece";

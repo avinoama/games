@@ -50,6 +50,16 @@ function game_pieces_rules_condition_info() {
           'group' => 'Piece',
           'label' => t('Piece check initiate pattern'),
           'arguments' => array(
+              'running_game' => array(
+                  'type' => 'running_game',
+                  'label' => 'running_game',
+                  'optional' => FALSE,
+              ),
+              'game' => array(
+                  'type' => 'game',
+                  'label' => 'game',
+                  'optional' => FALSE,
+              ),
               'initiator' => array(
                   'type' => 'piece',
                   'label' => 'piece',
@@ -206,12 +216,14 @@ function piece_remove_validation($running_game = null, $piece = null) {
 
 function piece_remove($running_game = null, $piece = null) {
 
+  
   $running_game_command = array();
   $running_game_command['running_game_id'] = $running_game->id;
   $running_game_command['command_id'] = 1;
   $running_game_command['command_data'] = drupal_json_encode(array("callback" => array("module" => "GamePieces", "fn" => "remove_piece", "params" => array("piece" => $piece)), "time" => time()));
   $running_game_command_entity = entity_create("running_game_command", $running_game_command);
   $running_game_command_entity->save();
+
   piece_delete($piece);
 }
 
@@ -357,7 +369,7 @@ function piece_check_move_pattern($game = null, $piece, $position) {
       // error json didnot eval correct
       return false;
     }
-    
+
     game_piece_evaluate_pattern($pattern);
 
     if (isset($pattern['start']) && isset($pattern['end'])) {
@@ -369,7 +381,7 @@ function piece_check_move_pattern($game = null, $piece, $position) {
         }
       }
     } else if (isset($pattern['start'])) {
-      
+
 
       if (isset($pattern['start']['repeat'])) {
         for ($i = 0; $i <= $pattern['start']['repeat']; $i++) {

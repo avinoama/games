@@ -80,6 +80,7 @@ function _board_games_default_fields() {
           ),
       ),
       'module' => 'list',
+      'required'=>TRUE,
       'settings' => array('target_type' => 'text', 'target_bundles' => array($bundle), 'allowed_values_function' => '_board_games_allowed_tile_type_options_list'),
       'widget' => array(
           'active' => 1,

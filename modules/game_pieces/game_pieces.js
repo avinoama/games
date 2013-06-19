@@ -3,7 +3,8 @@
     attach: function (context, settings) {
       pieces = Drupal.settings.GamePieces.pieces;
       piece_types = Drupal.settings.GamePieces.piece_types;
-      
+      patterns = Drupal.settings.GamePieces.patterns;
+      console.log(Drupal.settings.GamePieces);
 
       pieces_holder = $("<div/>").attr("id","pieces_holder").css("position","relative");
 
@@ -78,10 +79,11 @@
   function mark_piece(piece) {
     $(".piece").removeClass("selected");
     $(piece).addClass("selected");
+     show_current_piece_pattern(piece);
   }
   function piece_end_tap(e) {
-    if(Drupal.behaviors.GamePieces.current != undefined) {
-      elem = document.elementFromPoint(e.clientX, e.clientY);
+    elem = document.elementFromPoint(e.clientX, e.clientY);
+    if(Drupal.behaviors.GamePieces.current != undefined) {  
       if(($(elem).attr("id")).indexOf("tile")>=0) {
         position = piece_get_position(elem);
         trigger_piece_move_to_position(Drupal.behaviors.GamePieces.current, position);
@@ -91,8 +93,21 @@
       }
       Drupal.behaviors.GamePieces.current = undefined;
       $(".piece").removeClass("selected");
+    } else {
+     
     }
     
+  }
+  function show_current_piece_pattern(piece) {
+    //alert("11");
+    id = piece.id.replace("piece_","");
+    pieces = Drupal.settings.GamePieces.pieces;
+    piece_types = Drupal.settings.GamePieces.piece_types;
+    patterns = Drupal.settings.GamePieces.patterns;
+    current_pattern = piece_types[pieces[id].type].move_pattern;
+
+    
+    console.log(patterns[current_pattern]);
   }
   /**
    * change to move to element

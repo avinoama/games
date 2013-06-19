@@ -40,6 +40,7 @@ function _game_chess_add_default_patterns() {
     if (empty($e)) {
       $p = entity_create($entity_type, $pattern);
       $p->field_pattern[LANGUAGE_NONE] = $pattern['field_pattern'][LANGUAGE_NONE];
+      $p->field_over_piece[LANGUAGE_NONE] = $pattern['field_over_piece'][LANGUAGE_NONE];
       game_pattern_save($p);
     }
   }
@@ -177,6 +178,7 @@ function _game_chess_pieces_default_patterns() {
       'label' => 'Pawn White Move',
       'machine_name' => 'pawn-white-move',
       'type' => 'move_pattern',
+      'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => array(0 => array('value' => $tmp)))
   );
 //----------------------------------------------------------------------
@@ -184,9 +186,10 @@ function _game_chess_pieces_default_patterns() {
       0 => array('value' => '{"start":{"x": "px+1","y": "py-1"}}'),
       1 => array('value' => '{"start":{"x": "px-1","y": "py-1"}}'));
   $patterns[] = array(
-      "label" => "Pawn White Initiate",
-      "machine_name" => "pawn-white-initiate",
-      "type" => "move_pattern",
+      'label' => 'Pawn White Initiate',
+      'machine_name' => 'pawn-white-initiate',
+      'type' => 'move_pattern',
+      'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
 //----------------------------------------------------------------------
@@ -195,6 +198,7 @@ function _game_chess_pieces_default_patterns() {
       'label' => 'Pawn Black Move',
       'machine_name' => 'pawn-black-move',
       'type' => 'move_pattern',
+      'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => array(0 => array('value' => $tmp)))
   );
 //----------------------------------------------------------------------
@@ -205,6 +209,7 @@ function _game_chess_pieces_default_patterns() {
       "label" => "Pawn Black Initiate",
       "machine_name" => "pawn-black-initiate",
       "type" => "move_pattern",
+      'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
 //----------------------------------------------------------------------
@@ -222,6 +227,7 @@ function _game_chess_pieces_default_patterns() {
       "label" => "King move Initiate",
       "machine_name" => "king-move-initiate",
       "type" => "move_pattern",
+      'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
 //----------------------------------------------------------------------
@@ -240,6 +246,7 @@ function _game_chess_pieces_default_patterns() {
       'label' => 'Queen move Initiate',
       'machine_name' => 'queen-move-initiate',
       'type' => 'move_pattern',
+      'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 1))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
 //----------------------------------------------------------------------
@@ -254,6 +261,7 @@ function _game_chess_pieces_default_patterns() {
       'label' => 'Bishop move Initiate',
       'machine_name' => 'bishop-move-initiate',
       'type' => 'move_pattern',
+      'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
 //----------------------------------------------------------------------
@@ -272,6 +280,7 @@ function _game_chess_pieces_default_patterns() {
       'label' => 'Knight move Initiate',
       'machine_name' => 'knight-move-initiate',
       'type' => 'move_pattern',
+      'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 1))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
 
@@ -287,6 +296,7 @@ function _game_chess_pieces_default_patterns() {
       'label' => 'Rook move Initiate',
       'machine_name' => 'rook-move-initiate',
       'type' => 'move_pattern',
+      'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
 
