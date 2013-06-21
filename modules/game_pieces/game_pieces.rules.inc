@@ -216,7 +216,7 @@ function piece_remove_validation($running_game = null, $piece = null) {
 
 function piece_remove($running_game = null, $piece = null) {
 
-  
+
   $running_game_command = array();
   $running_game_command['running_game_id'] = $running_game->id;
   $running_game_command['command_id'] = 1;
@@ -303,7 +303,7 @@ function piece_move($running_game = null, $piece = null, $position = array()) {
     $piece->field_position[LANGUAGE_NONE][$i] = array('value' => $val);
     $i++;
   }
-
+  $piece->moved=1;
 
   if ($piece->save()) {
     $running_game_command = array();
@@ -373,10 +373,20 @@ function piece_check_move_pattern($game = null, $piece, $position) {
     game_piece_evaluate_pattern($pattern);
 
     if (isset($pattern['start']) && isset($pattern['end'])) {
-      for ($x = $pattern['start']['x']; $x <= $pattern['end']['x']; $x++) {
-        for ($y = $pattern['start']['y']; $y <= $pattern['end']['y']; $y++) {
-          if ($x == $position[0] && $y == $position[1]) {
-            return TRUE;
+      if (pattern . end . x < pattern . start . x || pattern . end . y < pattern . start . y) {
+        for ($x = $pattern['start']['x']; $x >= $pattern['end']['x']; $x--) {
+          for ($y = $pattern['start']['y']; $y >= $pattern['end']['y']; $y--) {
+            if ($x == $position[0] && $y == $position[1]) {
+              return TRUE;
+            }
+          }
+        }        
+      } else {
+        for ($x = $pattern['start']['x']; $x <= $pattern['end']['x']; $x++) {
+          for ($y = $pattern['start']['y']; $y <= $pattern['end']['y']; $y++) {
+            if ($x == $position[0] && $y == $position[1]) {
+              return TRUE;
+            }
           }
         }
       }

@@ -4,23 +4,45 @@
       pieces = Drupal.settings.GamePieces.pieces;
       piece_types = Drupal.settings.GamePieces.piece_types;
       patterns = Drupal.settings.GamePieces.patterns;
-      //console.log(Drupal.settings.GamePieces);
-
+      
+      var dimension_amount = Drupal.settings.RunningGame.game.field_board_dimension_amount['und'];
+      
+      var positions = Drupal.settings.GamePieces.positions;
+      if(!positions) {positions=Array();}
       pieces_holder = $("<div/>").attr("id","pieces_holder").css("position","relative");
 
       $(".game-canvas").prepend(pieces_holder);
-      
+      console.log(pieces);
       // draw current game pieces
       // add lisiners
-
+      
+      items = Array();
       for (i in pieces) {
+        
+        position = pieces[i].field_position['und'];
+        pointer= positions;
+        for(j=0;j<dimension_amount.length;j++) {
+          if(!pointer[position[j]['value']]) {
+            pointer[position[j]['value']]=Array()
+          }
+          pointer = pointer[position[j]['value']] ;
+          if(j== (dimension_amount.length-1)) {
+            if(!pointer) {
+              pointer= Array();
+            }
+            pointer.push(pieces[i].id);
+          }
+        }
+        
         this.create_piece({
           field_position : pieces[i].field_position,
           piece: pieces[i],
           piece_type: piece_types[pieces[i].type]
         });
       }
-
+      
+      Drupal.settings.GamePieces.positions = positions;
+      console.log(positions);
       $(".game-canvas").bind("click",function(e) {
         piece_end_tap(e);
       });
@@ -59,26 +81,47 @@
     },
 
     move_piece: function(params) {
+      var positions = Drupal.settings.GamePieces.positions;
+
       piece = $("#piece_"+params.piece.id);
-      console.log();
+      // remove piece
+
       tmp=Array(params.position.length);
       for(p in params.position) {
         tmp[p]=Array(1);
         tmp[p]['value']= params.position[p];
       }
-      Drupal.settings.GamePieces.pieces[params.piece.id].field_position['und'] = tmp;
+      
+      if(positions[params.position[0]]==undefined) {
+        positions[params.position[0]] = Array();
+      }
+      if(positions[params.position[0]][params.position[1]]==undefined) {
+        positions[params.position[0]][params.position[1]] = Array();
+      }
+      positions[params.position[0]][params.position[1]].push(params.piece.id);
+      old_position = Drupal.settings.GamePieces.pieces[params.piece.id].field_position['und'];
+      if(positions[old_position[0]['value']] != undefined) {
+        if(positions[old_position[0]['value']][old_position[1]['value']] != undefined) {
+          positions[old_position[0]['value']][old_position[1]['value']] = undefined;
+        }
+      }
+      Drupal.settings.GamePieces.pieces[params.piece.id] = params.piece;
       move_to_position(params.position,piece);
     },
     load_piece_type: function(machine_name) {
       
     },
     current: null,
-    show_pattern: function (pattern,piece) {
+    show_pattern: function (pattern,piece,over_piece) {
+      if(!over_piece) {
+        over_piece=0;
+      }
       px = piece['field_position']['und'][0]['value'];
       py = piece['field_position']['und'][1]['value'];
       dimension_amount = Drupal.settings.RunningGame.game.field_board_dimension_amount['und'];
       board_x = dimension_amount[0]['value'];
       board_y = dimension_amount[1]['value'];
+
       temp = pattern
       .replace(/px/gi,px)
       .replace(/py/gi,py)
@@ -86,20 +129,38 @@
       .replace(/right/gi,board_x)
       .replace(/top/gi,1)
       .replace(/bottom/gi,board_y);
-
+      
       pattern = $.parseJSON(temp);
-      this.eval_single_pattern(pattern);
+
+      this.eval_single_pattern(pattern,over_piece);
     },
-    eval_single_pattern: function (pattern) {
+    eval_single_pattern: function (pattern, over_piece) {
+      var positions = Drupal.settings.GamePieces.positions;
+      
+      
       if(pattern!=null) {
         if(pattern.start!= null && pattern.end!= null) {
           pattern.start.x = eval(pattern.start.x);
           pattern.start.y = eval(pattern.start.y);
           pattern.end.x = eval(pattern.end.x);
           pattern.end.y = eval(pattern.end.y);
-          for(i=pattern.start.x;i<=pattern.end.x;i++) {
-            for(j=pattern.start.y;j<=pattern.end.y;j++) {
-              $(".position_" + i  + "_" + j).addClass("selected");
+          
+          
+          if(pattern.end.x < pattern.start.x  ||  pattern.end.y<pattern.start.y) {
+            for(i=pattern.start.x; i >= pattern.end.x; i--) {
+              for(j=pattern.start.y; j >= pattern.end.y; j--) {
+                if(over_piece==0 && positions[i]!=undefined) {if(positions[i][j]!=undefined) {console.log("re");return;}}
+                $(".position_" + i  + "_" + j).addClass("selected");
+              }
+             // if(over_piece==0 && positions[i]!=undefined) {return;}
+            }
+          } else {
+            for(i=pattern.start.x;i<=pattern.end.x;i++) {
+              for(j=pattern.start.y;j<=pattern.end.y;j++) {
+                if(over_piece==0 && positions[i]!=undefined) {if(positions[i][j]!=undefined) {return;}}
+                $(".position_" + i  + "_" + j).addClass("selected");
+              }
+               if(over_piece==0 && positions[i]!=undefined) {return;}
             }
           }
         }
@@ -108,10 +169,24 @@
           pattern.start.y = eval(pattern.start.y);
           if(pattern.start.repeat!=null) {
             for (i=0;i<=pattern.start.repeat;i++) {
-              //alert(i);
-              $(".position_" + (pattern.start.x + (pattern.start.offsetx* i)) + "_" + (pattern.start.y + (pattern.start.offsety* i))).addClass("selected");
+              x = pattern.start.x + (pattern.start.offsetx* i);
+              y = pattern.start.y + (pattern.start.offsety* i);
+              
+              if(over_piece==0 && positions[x]!=undefined) {
+                if(positions[x][y]!=undefined) {
+                  console.log(x+ " " +y);
+                  return;
+                }
+              }
+
+              $(".position_" + (x) + "_" + (y)).addClass("selected");
             }
           } else {
+            if( positions[pattern.start.x]!=undefined) {
+              if(positions[pattern.start.x][pattern.start.y]!=undefined) {
+              //return;
+              }
+            }
             $(".position_" + pattern.start.x  + "_" + pattern.start.y).addClass("selected");
           }
         }
@@ -123,6 +198,20 @@
       }
     }
   };
+  function switch_sides(pattern) {
+    start = {
+      "x": pattern.end.x ,
+      "y" :pattern.end.y
+    };
+    end = {
+      "x": pattern.start.x ,
+      "y" :pattern.start.y
+    };
+    return {
+      "start":start,
+      "end": end
+    };
+  }
   function show_current_piece_pattern(piece) {
     id = piece.id.replace("piece_","");
     pieces = Drupal.settings.GamePieces.pieces;
@@ -130,8 +219,10 @@
     patterns = Drupal.settings.GamePieces.patterns;
     current_pattern = piece_types[pieces[id].type].move_pattern;
     pattern = patterns[current_pattern];
+    over_piece = pattern.field_over_piece['und'][0]['value'];
+    
     for(i in pattern.field_pattern['und']) {
-      Drupal.behaviors.GamePieces.show_pattern(pattern.field_pattern['und'][i]['value'],pieces[id]);
+      Drupal.behaviors.GamePieces.show_pattern(pattern.field_pattern['und'][i]['value'],pieces[id],over_piece);
     }
   }
 

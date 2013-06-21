@@ -234,28 +234,28 @@ function _game_chess_pieces_default_patterns() {
 
   $tmp = array(
       0 => array('value' => '{"start":{"x": "px+1","y": "py"},"end":{"x": "right","y": "py"}}'),
-      1 => array('value' => '{"start":{"x": "left","y": "py"},"end":{"x": "px-1","y": "py"}}'),
-      2 => array('value' => '{"start":{"x": "px","y": "top"},"end":{"x": "px","y": "py-1"}}'),
+      1 => array('value' => '{"start":{"x": "px-1","y": "py"},"end":{"x": "left","y": "py"}}'),
+      2 => array('value' => '{"start":{"x": "px","y": "py-1"},"end":{"x": "px","y": "top"}}'),
       3 => array('value' => '{"start":{"x": "px","y": "py+1"},"end":{"x": "px","y": "bottom"}}'),
-      4 => array('value' => '{"start":{"x": "px","offsetx":"1","y": "py","offsety":"-1","repeat":"right"}}'),
-      5 => array('value' => '{"start":{"x": "px","offsetx":"-1","y": "py","offsety":"-1","repeat":"right"}}'),
-      6 => array('value' => '{"start":{"x": "px","offsetx":"-1","y": "py","offsety":"1","repeat":"bottom"}}'),
-      7 => array('value' => '{"start":{"x": "px","offsetx":"1","y": "py","offsety":"1","repeat":"bottom"}}')
+      4 => array('value' => '{"start":{"x": "px-1","offsetx":"-1","y": "py-1","offsety":"-1","repeat":"right"}}'),
+      5 => array('value' => '{"start":{"x": "px+1","offsetx":"1","y": "py-1","offsety":"-1","repeat":"right"}}'),
+      6 => array('value' => '{"start":{"x": "px-1","offsetx":"-1","y": "py+1","offsety":"1","repeat":"bottom"}}'),
+      7 => array('value' => '{"start":{"x": "px+1","offsetx":"1","y": "py+1","offsety":"1","repeat":"bottom"}}')
   );
   $patterns[] = array(
       'label' => 'Queen move Initiate',
       'machine_name' => 'queen-move-initiate',
       'type' => 'move_pattern',
-      'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 1))),
+      'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
 //----------------------------------------------------------------------
 
   $tmp = array(
-      0 => array('value' => '{"start":{"x": "px","offsetx":"1","y": "py","offsety":"-1","repeat":"right"}}'),
-      1 => array('value' => '{"start":{"x": "px","offsetx":"-1","y": "py","offsety":"-1","repeat":"right"}}'),
-      2 => array('value' => '{"start":{"x": "px","offsetx":"-1","y": "py","offsety":"1","repeat":"bottom"}}'),
-      3 => array('value' => '{"start":{"x": "px","offsetx":"1","y": "py","offsety":"1","repeat":"bottom"}}')
+      0 => array('value' => '{"start":{"x": "px-1","offsetx":"-1","y": "py-1","offsety":"-1","repeat":"right"}}'),
+      1 => array('value' => '{"start":{"x": "px+1","offsetx":"1","y": "py-1","offsety":"-1","repeat":"right"}}'),
+      2 => array('value' => '{"start":{"x": "px-1","offsetx":"-1","y": "py+1","offsety":"1","repeat":"bottom"}}'),
+      3 => array('value' => '{"start":{"x": "px+1","offsetx":"1","y": "py+1","offsety":"1","repeat":"bottom"}}')
   );
   $patterns[] = array(
       'label' => 'Bishop move Initiate',
@@ -288,8 +288,8 @@ function _game_chess_pieces_default_patterns() {
 
   $tmp = array(
       0 => array('value' => '{"start":{"x": "px+1","y": "py"},"end":{"x": "right","y": "py"}}'),
-      1 => array('value' => '{"start":{"x": "left","y": "py"},"end":{"x": "px-1","y": "py"}}'),
-      2 => array('value' => '{"start":{"x": "px","y": "top"},"end":{"x": "px","y": "py-1"}}'),
+      1 => array('value' => '{"start":{"x": "px-1","y": "py"},"end":{"x": "left","y": "py"}}'),
+      2 => array('value' => '{"start":{"x": "px","y": "py-1"},"end":{"x": "px","y": "top"}}'),
       3 => array('value' => '{"start":{"x": "px","y": "py+1"},"end":{"x": "px","y": "bottom"}}')
   );
   $patterns[] = array(

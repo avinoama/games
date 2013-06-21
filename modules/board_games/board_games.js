@@ -2,7 +2,7 @@
   Drupal.behaviors.BoardGame = {
     attach: function (context, settings) {
       field_matrix = Drupal.settings.RunningGame.instance.field_matrix;
-      console.log(Drupal.settings.RunningGame.instance.field_board_status);
+
       if(Drupal.settings.RunningGame.instance.field_board_status['und'] !=undefined) {
         status = Drupal.settings.RunningGame.instance.field_board_status['und'][0]['value'];
       }
