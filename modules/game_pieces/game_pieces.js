@@ -52,6 +52,7 @@
       $(piece).text(params.piece.label).addClass("piece")
       .addClass(params.piece.type)
       .addClass(params.piece.id)
+      //.addClass("owned_"+params.piece.uid)
       .attr("id","piece_"+params.piece.id).hide();
       
       piece.bind("click",function(){

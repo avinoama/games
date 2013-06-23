@@ -57,14 +57,14 @@ function game_chess_default_rules_configuration() {
           "running_game" : [ "running_game" ],
           "piece_type" : "rook_white",
           "position" : "1-8",
-          "owned" : "2"
+          "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "rook_white",
           "position" : "8-8",
-          "owned" : "2"
+          "owned" : "1"
         }
       },
       { "piece_create" : {
@@ -85,14 +85,14 @@ function game_chess_default_rules_configuration() {
           "running_game" : [ "running_game" ],
           "piece_type" : "knight_white",
           "position" : "7-8",
-          "owned" : "2"
+          "owned" : "1"
         }
       },
       { "piece_create" : {
           "running_game" : [ "running_game" ],
           "piece_type" : "knight_white",
           "position" : "2-8",
-          "owned" : "2"
+          "owned" : "1"
         }
       },
       { "piece_create" : {
@@ -278,14 +278,20 @@ function game_chess_default_rules_configuration() {
   $rules['rules_pawn_white_move_conditions'] = rules_import('{ "rules_pawn_white_move_conditions" : {
     "LABEL" : "pawn white move conditions",
     "PLUGIN" : "or",
-    "REQUIRES" : [ "game_pieces" ],
+    "REQUIRES" : [ "game_pieces", "rules" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : {
+          "game" : [ "game" ],
+          "piece" : [ "piece" ],
+          "position" : [ "position" ]
+        }
+      },
+      { "OR" : [ { "data_is" : { "data" : [ "piece:moved" ], "value" : "0" } } ] }
     ]
   }
 }');
@@ -490,7 +496,13 @@ function game_chess_default_rules_configuration() {
       { "data_is" : { "data" : [ "game:machine-name" ], "value" : "chess" } },
       { "NOT data_is" : { "data" : [ "initiator:id" ], "value" : [ "initiated:id" ] } },
       { "NOT data_is" : { "data" : [ "initiator:uid" ], "value" : [ "initiated:uid" ] } },
-      { "entity_has_field" : { "entity" : [ "initiated" ], "field" : "field_position" } }
+      { "entity_has_field" : { "entity" : [ "initiated" ], "field" : "field_position" } },
+      { "piece_check_initiate_pattern" : {
+          "game" : [ "game" ],
+          "initiator" : [ "initiator" ],
+          "initiated" : [ "initiated" ]
+        }
+      }
     ],
     "DO" : [
       { "piece_move" : {
@@ -503,6 +515,66 @@ function game_chess_default_rules_configuration() {
     ]
   }
 }');
+
+
+
+
+  $rules['rules_chess_check_winner'] = rules_import('{ "rules_chess_check_winner" : {
+    "LABEL" : "chess check winner",
+    "PLUGIN" : "rule set",
+    "REQUIRES" : [ "game_pieces", "rules", "game" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "RunningGame", "type" : "running_game" },
+      "last_piece" : { "label" : "Last Piece Moved Or Initiated", "type" : "piece" },
+      "current_player_id" : { "label" : "CurrentPlayerID", "type" : "integer" }
+    },
+    "RULES" : [
+      { "RULE" : { "DO" : [], "LABEL" : "Two knights endgame" } },
+      { "RULE" : {
+          "IF" : [
+            { "OR" : [
+                { "AND" : [
+                    { "piece_can_initiate_piece" : {
+                        "game" : [ "game" ],
+                        "running_game" : [ "running_game" ],
+                        "initiator" : [ "last-piece" ],
+                        "initiated_piece_type" : "king_black"
+                      }
+                    },
+                    { "data_is" : { "data" : [ "current-player-id" ], "value" : "0" } }
+                  ]
+                },
+                { "AND" : [
+                    { "piece_can_initiate_piece" : {
+                        "game" : [ "game" ],
+                        "running_game" : [ "running_game" ],
+                        "initiator" : [ "last-piece" ],
+                        "initiated_piece_type" : "king_white"
+                      }
+                    },
+                    { "data_is" : { "data" : [ "current-player-id" ], "value" : "1" } }
+                  ]
+                }
+              ]
+            }
+          ],
+          "DO" : [
+            { "rules_game_send_message" : { "running_game" : [ "running_game" ], "message_text" : "Check" } }
+          ],
+          "LABEL" : "Check capture the king "
+        }
+      },
+      { "RULE" : { "DO" : [], "LABEL" : "Checkmate winning condition" } }
+    ]
+  }
+}');
+
+
+
+
+
+
 
   return $rules;
 }
