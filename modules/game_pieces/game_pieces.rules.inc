@@ -2,6 +2,28 @@
 
 function game_pieces_rules_condition_info() {
   return array(
+      'piece_check_can_evade' => array(
+          'group' => 'Piece',
+          'label' => t('Piece can evade beaing initiated'),
+          'arguments' => array(
+              'game' => array(
+                  'type' => 'game',
+                  'label' => 'game',
+                  'optional' => FALSE,
+              ),
+              'running_game' => array(
+                  'type' => 'running_game',
+                  'label' => 'running_game',
+                  'optional' => FALSE,
+              ),
+              'piece' => array(
+                  'type' => 'piece',
+                  'label' => 'piece',
+                  'optional' => FALSE,
+              ),
+          ),
+          'module' => 'game_pieces',
+      ),
       'piece_check_valid_move' => array(
           'group' => 'Piece',
           'label' => t('Piece check valide move'),
@@ -9,6 +31,11 @@ function game_pieces_rules_condition_info() {
               'game' => array(
                   'type' => 'game',
                   'label' => 'game',
+                  'optional' => FALSE,
+              ),
+              'running_game' => array(
+                  'type' => 'running_game',
+                  'label' => 'running_game',
                   'optional' => FALSE,
               ),
               'piece' => array(
@@ -91,8 +118,8 @@ function game_pieces_rules_condition_info() {
                   'type' => 'text',
                   'label' => 'piece_type',
                   'optional' => FALSE,
-                  'descritpion' => "Machine name of piece type",
-                  'options list' => "get_all_piece_types",
+                  'descritpion' => 'Machine name of piece type',
+                  'options list' => 'get_all_piece_types_and_extra_options',
               ),
           ),
           'module' => 'game_pieces',
@@ -126,31 +153,6 @@ function game_pieces_rules_action_info() {
           'base' => 'piece_move',
           'callbacks' => array(
               'validate' => 'piece_move_validation',
-          ),
-      ),
-      'piece_move_to_element' => array(
-          'label' => t('piece move to element'),
-          'parameter' => array(
-              'running_game' => array(
-                  'type' => 'running_game',
-                  'label' => 'running_game',
-                  'optional' => FALSE,
-              ),
-              'piece' => array(
-                  'type' => 'piece',
-                  'label' => 'piece',
-                  'optional' => FALSE,
-              ),
-              'element_id' => array(
-                  'type' => 'text',
-                  'label' => 'element_id',
-                  'optional' => FALSE,
-              )
-          ),
-          'group' => t('Game Board'),
-          'base' => 'piece_move_to_element',
-          'callbacks' => array(
-              'validate' => 'piece_move_to_element_validation',
           ),
       ),
       'piece_remove' => array(
@@ -214,7 +216,7 @@ function game_pieces_rules_action_info() {
 }
 
 /**
- * get_all_piece_types
+ * function get_all_piece_types
  * @return array
  */
 function get_all_piece_types() {
@@ -226,20 +228,56 @@ function get_all_piece_types() {
   return $r;
 }
 
-function piece_move_to_element_validation($running_game = null, $piece_type = null, $element_id = -1) {
-  
+/**
+ * function get_all_piece_types_and_extra_options
+ * 
+ * 
+ * @return array
+ */
+function get_all_piece_types_and_extra_options() {
+  $delimiter = "_";
+  $r = array();
+  $r += module_invoke_all("piece_extra_options");
+  $e = entity_load("piece_type");
+  foreach ($e as $val) {
+    $type = explode($delimiter, $val->type);
+    $label = explode(' ', $val->label);
+    $r[$type[0]] = $label[0];
+  }
+  return $r;
 }
 
-function piece_move_to_element($running_game = null, $piece_type = null, $element_id = -1) {
-
-}
-
+/**
+ * function piece_remove_validation
+ *
+ * Can always remove piece
+ *
+ * @todo check maybe we need validation
+ *
+ * @param type $running_game
+ * @param type $piece
+ * @return boolean
+ */
 function piece_remove_validation($running_game = null, $piece = null) {
   return true;
 }
 
+/**
+ * function piece_remove
+ *
+ * removes a piece from the game
+ *
+ * @param type $running_game
+ * @param type $piece
+ */
 function piece_remove($running_game = null, $piece = null) {
-
+  $id = $piece;
+  foreach ($running_game->field_pieces[LANGUAGE_NONE] as $key => $val) {
+    if ($val['target_id'] == $id) {
+      unset($running_game->field_pieces[LANGUAGE_NONE][$key]);
+    }
+  }
+  $running_game->save();
 
   $running_game_command = array();
   $running_game_command['running_game_id'] = $running_game->id;
@@ -252,7 +290,10 @@ function piece_remove($running_game = null, $piece = null) {
 }
 
 /**
- * function piece_create_validation() {
+ * function piece_create_validation()
+ *
+ * Validate if the running game can actually hold game pieces
+ *
  * @return boolean
  */
 function piece_create_validation($running_game = null, $piece_type = null, $position = -1) {
@@ -262,6 +303,21 @@ function piece_create_validation($running_game = null, $piece_type = null, $posi
   return true;
 }
 
+/**
+ * function piece_create()
+ *
+ * Create an entity called piece
+ * In current game
+ * By type "piece_type"
+ * in position
+ * and owned by player
+ *
+ * @param type $running_game
+ * @param type $piece_type
+ * @param type $element
+ * @param type $position
+ * @param type $owend
+ */
 function piece_create($running_game = null, $piece_type = null, $element = '', $position = '', $owend = -1) {
 
   // create piece
@@ -304,6 +360,16 @@ function piece_create($running_game = null, $piece_type = null, $element = '', $
   }
 }
 
+/**
+ * piece_move_validation()
+ *
+ * The move is valid only if position is positive
+ * 
+ * @param type $running_game
+ * @param type $piece
+ * @param type $position
+ * @return boolean
+ */
 function piece_move_validation($running_game = null, $piece = null, $position = -1) {
 
   if ($position < 0) {
@@ -315,12 +381,18 @@ function piece_move_validation($running_game = null, $piece = null, $position = 
 }
 
 /**
+ * piece_move()
+ *
+ * Update piece to the new position 
+ * Send updates to clients
  *
  * @param type $running_game
  * @param type $piece
  * @param type $position
+ * 
  */
 function piece_move($running_game = null, $piece = null, $position = array()) {
+
   $piece->field_position[LANGUAGE_NONE] = array();
   $i = 0;
   foreach ($position as $val) {
@@ -340,30 +412,138 @@ function piece_move($running_game = null, $piece = null, $position = array()) {
     $running_game_command_entity = entity_create("running_game_command", $running_game_command);
     $running_game_command_entity->save();
   }
-  return true;
 }
 
 /**
+ * function piece_check_can_evade
+ * check if a piece evade beaing initiated by another piece can evade
  *
+ * 
+ * 
+ * @param type $game
+ * @param type $running_game
+ * @param type $piece
+ * @return boolean
+ */
+function piece_check_can_evade($game = null, $running_game = null, $piece = null) {
+  // take all pieces in game
+  $pieces = $running_game->field_pieces[LANGUAGE_NONE];
+  $ids = array();
+  foreach ($pieces as $p) {
+    if ($piece->id == $p['target_id']) {
+      continue;
+    }
+    $ids[] = $p['target_id'];
+  }
+  // load all game pieces
+  $game_pieces = entity_load('piece', $ids);
+
+  // find initiator
+  // load matrix
+  $initiator = null;
+  $matrix = array();
+  foreach ($game_pieces as $game_piece) {
+    draw_piece_on_board($game, $matrix, $game_piece);
+    if ($piece->uid != $game_piece->uid) {
+      draw_piece_initiation_on_board($game, $matrix, $game_piece);
+      if (piece_check_initiate_pattern($game, $game_piece, $piece)) {
+        $initiator = $game_piece;
+      }
+    }
+  }
+
+
+  $running_game;
+
+
+
+  $position = $piece->field_position[LANGUAGE_NONE];
+  // get player move patterns
+  // each option check if it is avilabel and not threatened by another piece
+  // check if other piece can block initiation move
+  //
+  
+  return FALSE;
+}
+
+function draw_piece_on_board(&$game, &$matrix, &$piece) {
+  //$d = $game->field_board_dimension_amount[LANGUAGE_NONE];
+  $position = $piece->field_position[LANGUAGE_NONE];
+  $matrix[$position[0]['value']][$position[1]['value']] = $piece->id;
+}
+
+function draw_piece_initiation_on_board(&$game, &$matrix, &$piece) {
+  $piece_type = piece_types($piece->type);
+  if (!property_exists($piece_type, "initiate_pattern")) {
+    return FALSE;
+  }
+}
+
+/**
+ * function piece_check_valid_move
+ *
+ * will invoke component (Condition set) that describe the movment of the piece
+ * 
  * @param type $piece
  * @param type $position
  * @return boolean
  */
-function piece_check_valid_move($game = null, $piece = null, $position = array()) {
-
+function piece_check_valid_move($game = null, $running_game = null, $piece = null, $position = array()) {
   $c = 'rules_' . $piece->type . '_move_conditions';
   $return = rules_invoke_component($c, $game, $piece, $position);
+  return (!$return) ? FALSE : TRUE;
+}
 
-  if (!$return) {
-    return false;
+/**
+ * function piece_can_initiate_piece
+ * 
+ * Check if piece can initiate on another piece type
+ * Other player can have many piece types
+ *
+ * @todo maybe alllow to initiate an action on initiator pieces or just another single player
+ *
+ * @param type $game
+ * @param type $running_game
+ * @param type $initiator
+ * @param type $initiated_piece_type
+ * @return boolean
+ */
+function piece_can_initiate_piece($game, $running_game, $initiator, $initiated_piece_type) {
+
+  // take all pieces in game
+  $pieces = $running_game->field_pieces[LANGUAGE_NONE];
+  $ids = array();
+  foreach ($pieces as $p) {
+    $ids[] = $p['target_id'];
   }
-  return true;
-}
-function piece_can_initiate_piece($game,$running_game, $initiator, $initiated_piece_type) {
+  // find the one that starts with the word i want
+  // example : king  will get king_white and king_black
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'piece')
+          ->entityCondition('entity_id', $ids, 'IN')
+          ->entityCondition('bundle', $initiated_piece_type, 'STARTS_WITH');
+  $result = $query->execute();
 
+  if (isset($result['piece'])) {
+    $pids = array_keys($result['piece']);
+    $current_pieces = entity_load('piece', $pids);
+  }
 
-  
+  // Foreach player that is of "piece type" in the game
+  // check if piece is not the owned by the initiator
+  // try to initiate from $initiator to this given piece
+
+  foreach ($current_pieces as $piece) {
+    if ($piece->uid != $initiator->uid) {
+      if (piece_check_initiate_pattern($game, $initiator, $piece)) {
+        return TRUE;
+      }
+    }
+  }
+
+  return FALSE;
 }
+
 function piece_check_initiate_pattern($game = null, $initiator, $initiated) {
   $piece_type = piece_types($initiator->type);
   if (!property_exists($piece_type, "initiate_pattern")) {
@@ -400,6 +580,13 @@ function piece_check_move_pattern($game = null, $piece, $position) {
   return $re;
 }
 
+/**
+ * function game_piece_evaluate_pattern
+ *
+ * Designed to take a pattern and evaluate the answer
+ *
+ * @param type $pattern
+ */
 function game_piece_evaluate_pattern(&$pattern) {
 
   if (!is_numeric($pattern['start']['x']) && !empty($pattern['start']['x'])) {
@@ -410,27 +597,44 @@ function game_piece_evaluate_pattern(&$pattern) {
     //$pattern['start']['y'] = eval("return (".$pattern['start']['y'].");");
     $pattern['start']['y'] = calculate_string($pattern['start']['y']);
   }
-  if (!is_numeric($pattern['end']['x']) && !empty($pattern['end']['x'])) {
-    //$pattern['end']['x'] = eval("return (".$pattern['end']['x'].");");
-    $pattern['end']['x'] = calculate_string($pattern['end']['x']);
-  }
-  if (!is_numeric($pattern['end']['y']) && !empty($pattern['end']['y'])) {
-    //$pattern['end']['y'] = eval("return (".$pattern['end']['y'].");");
-    $pattern['end']['y'] = calculate_string($pattern['end']['y']);
+  if (isset($pattern['end'])) {
+    if (!is_numeric($pattern['end']['x']) && !empty($pattern['end']['x'])) {
+      //$pattern['end']['x'] = eval("return (".$pattern['end']['x'].");");
+      $pattern['end']['x'] = calculate_string($pattern['end']['x']);
+    }
+    if (!is_numeric($pattern['end']['y']) && !empty($pattern['end']['y'])) {
+      //$pattern['end']['y'] = eval("return (".$pattern['end']['y'].");");
+      $pattern['end']['y'] = calculate_string($pattern['end']['y']);
+    }
   }
 }
 
+/**
+ * function piece_check_valid_patterns
+ *
+ * @param type $game
+ * @param type $patterns
+ * @param type $piece
+ * @param type $position
+ * @return boolean
+ */
 function piece_check_valid_patterns($game, $patterns, $piece, $position) {
   foreach ($patterns->field_pattern[LANGUAGE_NONE] as $key => $var) {
 
     $var['value'] = str_replace("px", $piece->field_position[LANGUAGE_NONE][0]['value'], $var['value']);
     $var['value'] = str_replace("py", $piece->field_position[LANGUAGE_NONE][1]['value'], $var['value']);
     if (!empty($game) && property_exists($game, 'field_board_dimension_amount')) {
-
+      //
       $var['value'] = str_replace("left", '1', $var['value']);
       $var['value'] = str_replace("right", $game->field_board_dimension_amount[LANGUAGE_NONE][0]['value'], $var['value']);
+      //
       $var['value'] = str_replace("top", '1', $var['value']);
       $var['value'] = str_replace("bottom", $game->field_board_dimension_amount[LANGUAGE_NONE][1]['value'], $var['value']);
+      // prepering for 3d z exis
+      if (isset($game->field_board_dimension_amount[LANGUAGE_NONE][2])) {
+        $var['value'] = str_replace("back", '1', $var['value']);
+        $var['value'] = str_replace("front", $game->field_board_dimension_amount[LANGUAGE_NONE][2]['value'], $var['value']);
+      }
     }
 
     $pattern = drupal_json_decode($var['value']);
@@ -444,7 +648,7 @@ function piece_check_valid_patterns($game, $patterns, $piece, $position) {
 
     if (isset($pattern['start']) && isset($pattern['end'])) {
       if ($pattern['end']['x'] < $pattern['start']['x'] || $pattern['end']['y'] < $pattern['start']['y']) {
-        for ($x = $pattern['start']['x']; $x >= v; $x--) {
+        for ($x = $pattern['start']['x']; $x >= $pattern['end']['x']; $x--) {
           for ($y = $pattern['start']['y']; $y >= $pattern['end']['y']; $y--) {
             if ($x == $position[0] && $y == $position[1]) {
               return TRUE;
@@ -483,16 +687,24 @@ function piece_check_valid_patterns($game, $patterns, $piece, $position) {
   return FALSE;
 }
 
+/**
+ * function calculate_string
+ *
+ * instead of eval actually does the same thing but with only numbers
+ * 
+ * @param type $mathString
+ * @return number
+ */
 function calculate_string($mathString) {
   $mathString = trim($mathString);     // trim white spaces
-  $mathString = ereg_replace('[^0-9\+-\*\/\(\) ]', '', $mathString);    // remove any non-numbers chars; exception for math operators
-
+  $mathString =  preg_replace('[^0-9\+-\*\/\(\) ]', '', $mathString);    // remove any non-numbers chars; exception for math operators
+  
   $compute = create_function("", "return (" . $mathString . ");");
   return 0 + $compute();
 }
 
 /**
- * Hook_rules_event_info
+ * function Hook_rules_event_info
  * @return array
  */
 function game_pieces_rules_event_info() {

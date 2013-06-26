@@ -254,11 +254,12 @@ function game_chess_default_rules_configuration() {
   $rules['rules_chess_on_move_piece'] = rules_import('{ "rules_chess_on_move_piece" : {
     "LABEL" : "rules chess on move piece",
     "PLUGIN" : "reaction rule",
-    "REQUIRES" : [ "game_pieces" ],
+    "REQUIRES" : [ "game_pieces", "rules" ],
     "ON" : [ "piece_move_to_position" ],
     "IF" : [
       { "piece_check_valid_move" : {
           "game" : [ "game" ],
+          "running_game" : [ "running_game" ],
           "piece" : [ "piece" ],
           "position" : [ "position" ]
         }
@@ -269,6 +270,13 @@ function game_chess_default_rules_configuration() {
           "running_game" : [ "running_game" ],
           "piece" : [ "piece" ],
           "position" : [ "position" ]
+        }
+      },
+      { "component_rules_chess_check_winner" : {
+          "game" : [ "game" ],
+          "running_game" : [ "running_game" ],
+          "last_piece" : [ "piece" ],
+          "current_player_id" : [ "piece:uid" ]
         }
       }
     ]
@@ -533,39 +541,38 @@ function game_chess_default_rules_configuration() {
       { "RULE" : { "DO" : [], "LABEL" : "Two knights endgame" } },
       { "RULE" : {
           "IF" : [
-            { "OR" : [
-                { "AND" : [
-                    { "piece_can_initiate_piece" : {
-                        "game" : [ "game" ],
-                        "running_game" : [ "running_game" ],
-                        "initiator" : [ "last-piece" ],
-                        "initiated_piece_type" : "king_black"
-                      }
-                    },
-                    { "data_is" : { "data" : [ "current-player-id" ], "value" : "0" } }
-                  ]
-                },
-                { "AND" : [
-                    { "piece_can_initiate_piece" : {
-                        "game" : [ "game" ],
-                        "running_game" : [ "running_game" ],
-                        "initiator" : [ "last-piece" ],
-                        "initiated_piece_type" : "king_white"
-                      }
-                    },
-                    { "data_is" : { "data" : [ "current-player-id" ], "value" : "1" } }
-                  ]
-                }
-              ]
+            { "piece_can_initiate_piece" : {
+                "game" : [ "game" ],
+                "running_game" : [ "running_game" ],
+                "initiator" : [ "last-piece" ],
+                "initiated_piece_type" : "king"
+              }
             }
           ],
           "DO" : [
-            { "rules_game_send_message" : { "running_game" : [ "running_game" ], "message_text" : "Check" } }
+            { "rules_game_send_message" : {
+                "running_game" : [ "running_game" ],
+                "message_text" : "Check from [last-piece:label]"
+              }
+            }
           ],
-          "LABEL" : "Check capture the king "
+          "LABEL" : "Check"
         }
       },
-      { "RULE" : { "DO" : [], "LABEL" : "Checkmate winning condition" } }
+      { "RULE" : {
+          "IF" : [
+            { "piece_can_initiate_piece" : {
+                "game" : [ "game" ],
+                "running_game" : [ "running_game" ],
+                "initiator" : [ "last-piece" ],
+                "initiated_piece_type" : "king"
+              }
+            }
+          ],
+          "DO" : [],
+          "LABEL" : "Checkmate"
+        }
+      }
     ]
   }
 }');

@@ -5,6 +5,12 @@ function game_chess_menu() {
 
   return $items;
 }
+/*
+ * function hook_piece_extra_options
+ * not needed for this game
+function game_chess_piece_extra_options() {
+  return array('current_king'=>'Current king','other_king'=>'Other king');
+}*/
 
 function _game_chess_add_default_games() {
   $entity_type = "game";

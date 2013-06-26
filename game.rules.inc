@@ -180,6 +180,8 @@ function rules_game_send_message($running_game, $message) {
   $running_game_command['command_data'] = drupal_json_encode(array("message" => $message, "callback" => array("module" => "RunningGame", "fn" => "message", "params" => array($message)), "time" => time()));
   $running_game_command_entity = entity_create("running_game_command", $running_game_command);
   $running_game_command_entity->save();
+
+  
 }
 
 function rules_game_over_validation($running_game) {

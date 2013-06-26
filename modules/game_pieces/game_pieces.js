@@ -4,7 +4,9 @@
       pieces = Drupal.settings.GamePieces.pieces;
       piece_types = Drupal.settings.GamePieces.piece_types;
       patterns = Drupal.settings.GamePieces.patterns;
-      
+      if(!piece_types) {
+        Drupal.settings.GamePieces.piece_types= Array();
+      }
       var dimension_amount = Drupal.settings.RunningGame.game.field_board_dimension_amount['und'];
       
       var positions = Drupal.settings.GamePieces.positions;
@@ -48,6 +50,7 @@
       });
     },
     create_piece: function(params){
+      
       piece = $("<div/>");
       $(piece).text(params.piece.label).addClass("piece")
       .addClass(params.piece.type)
@@ -73,6 +76,8 @@
         move_to_position(positions,piece);
       }
       
+      //Drupal.settings.GamePieces.piece_types[params.piece_type['type']] = params.piece_type;
+      //Drupal.settings.GamePieces.pieces.push(piece);
       
       
     // add another piece to game pieces
@@ -218,6 +223,7 @@
     pieces = Drupal.settings.GamePieces.pieces;
     piece_types = Drupal.settings.GamePieces.piece_types;
     patterns = Drupal.settings.GamePieces.patterns;
+    
     current_pattern = piece_types[pieces[id].type].move_pattern;
     pattern = patterns[current_pattern];
     over_piece = pattern.field_over_piece['und'][0]['value'];
