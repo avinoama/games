@@ -478,7 +478,7 @@ function piece_check_can_evade($game = null, $running_game = null, $piece = null
     draw_piece_on_board($game, $matrix, $game_piece);
     if ($piece->uid != $game_piece->uid) {
       draw_piece_initiation_on_board($game, $matrix, $game_piece);
-      if (piece_check_initiate_pattern($game, $game_piece, $piece)) {
+      if (piece_check_initiate_pattern($game, $running_game, $game_piece, $piece)) {
         $initiator = $game_piece;
       }
     }
@@ -710,12 +710,15 @@ function piece_check_valid_patterns($game, $running_game = null, $patterns, $pie
           }
           // this pattern cannot continue try another
           if ($over_piece == false && isset($positions[$x][$y])) {
-            break 2;
+            break;
           }
         }
       } else {
         $x = $pattern['start']['x'];
         $y = $pattern['start']['y'];
+        /*if ($over_piece == false && isset($positions[$x][$y])) {
+          return FALSE;
+        }*/
         if ($x == $position[0] && $y == $position[1]) {
           return TRUE;
         }

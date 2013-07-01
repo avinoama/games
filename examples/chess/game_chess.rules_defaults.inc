@@ -581,6 +581,12 @@ function game_chess_default_rules_configuration() {
                 "initiator" : [ "last-piece" ],
                 "initiated_piece_type" : "king"
               }
+            },
+            { "piece_check_can_evade" : {
+                "game" : [ "game" ],
+                "running_game" : [ "running_game" ],
+                "piece" : [ "last-piece" ]
+              }
             }
           ],
           "DO" : [],
