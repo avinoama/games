@@ -26,8 +26,7 @@
       
       var count=0;
 
-      //alert(dimension_amount[0].value);
-      //alert(dimension_amount[1].value);
+
 
       for(d = 1; d <= dimensions-1; d++) {
         if(dimension_amount[d] != undefined) {
@@ -75,10 +74,13 @@
           }
         }
       }
+
+      //
       // console.log("count " + count);
 
       $("#game-canvas").html('');
       $("#game-canvas").append(board);
+      _resize_canvas();
     },
     listen_to_click_event: function(params){
       $(".tile").bind("click",function(){
@@ -111,7 +113,11 @@
       _board_game_set_tile(params.tile_position, params.tile_value);
     }
   }
-  
+  function _resize_canvas() {
+     dimension_amount = Drupal.settings.RunningGame.game.field_board_dimension_amount['und'];
+      $('.boardInstance').width(($(".tile").width()+4)* dimension_amount[0].value);
+    
+  }
   function _board_game_set_tile(position,value) {
     if($("#tile_"+position).is("input")) {
       $("#tile_"+position).val(value).removeAttr('disabled');

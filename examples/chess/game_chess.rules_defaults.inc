@@ -289,12 +289,14 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces", "rules" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
       { "piece_check_move_pattern" : {
           "game" : [ "game" ],
+          "running_game" : [ "running_game" ],
           "piece" : [ "piece" ],
           "position" : [ "position" ]
         }
@@ -310,11 +312,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ],  "running_game" : [ "running_game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
@@ -325,11 +328,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "running_game" : [ "running_game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
@@ -340,11 +344,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "running_game" : [ "running_game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
@@ -355,11 +360,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "running_game" : [ "running_game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
@@ -369,11 +375,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "running_game" : [ "running_game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
@@ -384,11 +391,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "running_game" : [ "running_game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
@@ -398,11 +406,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "running_game" : [ "running_game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
@@ -413,11 +422,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "running_game" : [ "running_game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
@@ -427,11 +437,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "running_game" : [ "running_game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
@@ -443,11 +454,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "running_game" : [ "running_game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
@@ -458,11 +470,12 @@ function game_chess_default_rules_configuration() {
     "REQUIRES" : [ "game_pieces" ],
     "USES VARIABLES" : {
       "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "running_game", "type" : "running_game" },
       "piece" : { "label" : "Piece", "type" : "piece" },
       "position" : { "label" : "Position", "type" : "list\u003Cinteger\u003E" }
     },
     "OR" : [
-      { "piece_check_move_pattern" : { "game" : [ "game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
+      { "piece_check_move_pattern" : { "game" : [ "game" ], "running_game" : [ "running_game" ], "piece" : [ "piece" ], "position" : [ "position" ] } }
     ]
   }
 }');
@@ -507,6 +520,7 @@ function game_chess_default_rules_configuration() {
       { "entity_has_field" : { "entity" : [ "initiated" ], "field" : "field_position" } },
       { "piece_check_initiate_pattern" : {
           "game" : [ "game" ],
+          "running_game" : [ "running_game" ],
           "initiator" : [ "initiator" ],
           "initiated" : [ "initiated" ]
         }

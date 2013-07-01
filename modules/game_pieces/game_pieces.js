@@ -20,10 +20,7 @@
       pieces_holder = $("<div/>").attr("id","pieces_holder").css("position","relative");
 
       $(".game-canvas").prepend(pieces_holder);
-      //console.log(pieces);
-      // draw current game pieces
-      // add lisiners
-      
+
       items = Array();
       for (i in pieces) {
         
@@ -50,7 +47,6 @@
       }
       
       Drupal.settings.GamePieces.positions = positions;
-      //console.log(positions);
       $(".game-canvas").bind("click",function(e) {
         piece_end_tap(e);
       });
@@ -158,7 +154,6 @@
     eval_single_pattern: function (pattern, over_piece) {
       var positions = Drupal.settings.GamePieces.positions;
       
-      
       if(pattern!=null) {
         if(pattern.start!= null && pattern.end!= null) {
           pattern.start.x = eval(pattern.start.x);
@@ -171,28 +166,20 @@
             for(i=pattern.start.x; i >= pattern.end.x; i--) {
               for(j=pattern.start.y; j >= pattern.end.y; j--) {
                 if(over_piece==0 && positions[i]!=undefined) {
-                  if(positions[i][j]!=undefined) {
-                    console.log("re");
-                    return;
-                  }
+                    if(positions[i][j]!=undefined) {return;}
+                    console.log( i  + "_" + j);
+                    $(".position_" + i  + "_" + j).addClass("selected");
                 }
-              $(".position_" + i  + "_" + j).addClass("selected");
               }
-            // if(over_piece==0 && positions[i]!=undefined) {return;}
             }
         } else {
           for(i=pattern.start.x;i<=pattern.end.x;i++) {
             for(j=pattern.start.y;j<=pattern.end.y;j++) {
               if(over_piece==0 && positions[i]!=undefined) {
-                if(positions[i][j]!=undefined) {
-                  return;
-                }
+                if(positions[i][j]!=undefined) {return;}
               }
             $(".position_" + i  + "_" + j).addClass("selected");
             }
-          if(over_piece==0 && positions[i]!=undefined) {
-            return;
-          }
           }
       }
     }
@@ -206,7 +193,6 @@
               
           if(over_piece==0 && positions[x]!=undefined) {
             if(positions[x][y]!=undefined) {
-              console.log(x+ " " +y);
               return;
             }
           }
