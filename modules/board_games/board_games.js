@@ -26,6 +26,8 @@
       
       var count=0;
 
+      //alert(dimension_amount[0].value);
+      //alert(dimension_amount[1].value);
 
       for(d = 1; d <= dimensions-1; d++) {
         if(dimension_amount[d] != undefined) {

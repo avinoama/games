@@ -324,8 +324,26 @@ function piece_create($running_game = null, $piece_type = null, $element = '', $
   $entity_type = "piece";
   $piece = entity_create($entity_type, array());
 
-  $piece_type_entity = reset(entity_load("piece_type", FALSE, array("type" => $piece_type)));
 
+  $piece_type_entity = reset(entity_load("piece_type", FALSE, array("type" => $piece_type)));
+  // load patterns
+  $patterns = array();
+  if (property_exists($piece_type_entity, 'move_pattern')) {
+    if (!empty($piece_type_entity->move_pattern)) {
+      $p = game_pattern_load_by_machine_name($piece_type_entity->move_pattern);
+      if (!empty($p)) {
+        $patterns[$piece_type_entity->move_pattern] = $p;
+      }
+    }
+  }
+  if (property_exists($piece_type_entity, 'initiate_pattern')) {
+    if (!empty($piece_type_entity->initiate_pattern)) {
+      $p = game_pattern_load_by_machine_name($piece_type_entity->initiate_pattern);
+      if (!empty($p)) {
+        $patterns[$piece_type_entity->initiate_pattern] = $p;
+      }
+    }
+  }
   $piece->label = $piece_type_entity->symbol;
   $piece->type = $piece_type;
   $piece->uid = $owend;
@@ -347,15 +365,19 @@ function piece_create($running_game = null, $piece_type = null, $element = '', $
     $running_game_command = array();
     $running_game_command['running_game_id'] = $running_game->id;
     $running_game_command['command_id'] = 1;
-    $running_game_command['command_data'] = drupal_json_encode(array("callback" =>
-        array("module" => "GamePieces",
-            "fn" => "create_piece",
-            "params" => array("position" => $position,
+    $running_game_command['command_data'] = drupal_json_encode(array(
+        'callback' =>
+        array('module' => 'GamePieces',
+            'fn' => 'create_piece',
+            'params' => array(
+                'position' => $position,
                 'element' => $element,
-                "piece" => $piece,
-                "piece_type" => $piece_type)),
-        "time" => time()));
-    $running_game_command_entity = entity_create("running_game_command", $running_game_command);
+                'piece' => $piece,
+                'piece_type' => $piece_type_entity,
+                'patterns' => $patterns,
+        )),
+        'time' => time()));
+    $running_game_command_entity = entity_create('running_game_command', $running_game_command);
     $running_game_command_entity->save();
   }
 }
@@ -697,8 +719,8 @@ function piece_check_valid_patterns($game, $patterns, $piece, $position) {
  */
 function calculate_string($mathString) {
   $mathString = trim($mathString);     // trim white spaces
-  $mathString =  preg_replace('[^0-9\+-\*\/\(\) ]', '', $mathString);    // remove any non-numbers chars; exception for math operators
-  
+  $mathString = preg_replace('[^0-9\+-\*\/\(\) ]', '', $mathString);    // remove any non-numbers chars; exception for math operators
+
   $compute = create_function("", "return (" . $mathString . ");");
   return 0 + $compute();
 }
