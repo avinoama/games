@@ -2,7 +2,7 @@
 
 function game_pieces_rules_condition_info() {
   return array(
-      'piece_check_can_evade' => array(
+      'piece_check_initiated_can_evade' => array(
           'group' => 'Piece',
           'label' => t('Piece can evade beaing initiated'),
           'arguments' => array(
@@ -16,10 +16,17 @@ function game_pieces_rules_condition_info() {
                   'label' => 'running_game',
                   'optional' => FALSE,
               ),
-              'piece' => array(
+              'initiator' => array(
                   'type' => 'piece',
                   'label' => 'piece',
                   'optional' => FALSE,
+              ),
+              'initiated_piece_type' => array(
+                  'type' => 'text',
+                  'label' => 'piece_type',
+                  'optional' => FALSE,
+                  'descritpion' => 'Machine name of piece type',
+                  'options list' => 'get_all_piece_types_and_extra_options',
               ),
           ),
           'module' => 'game_pieces',
@@ -457,20 +464,42 @@ function piece_move($running_game = null, $piece = null, $position = array()) {
  * @param type $piece
  * @return boolean
  */
-function piece_check_can_evade($game = null, $running_game = null, $piece = null) {
+function piece_check_initiated_can_evade($game = null, $running_game = null, $initiator=null, $initiated_piece_type = null) {
+
   // take all pieces in game
   $pieces = $running_game->field_pieces[LANGUAGE_NONE];
   $ids = array();
   foreach ($pieces as $p) {
-    if ($piece->id == $p['target_id']) {
-      continue;
-    }
     $ids[] = $p['target_id'];
   }
+
   // load all game pieces
   $game_pieces = entity_load('piece', $ids);
 
-  // find initiator
+  // find the one that starts with the word i want
+  // example : king  will get king_white and king_black
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'piece')
+          ->entityCondition('entity_id', $ids, 'IN')
+          ->entityCondition('bundle', $initiated_piece_type, 'STARTS_WITH');
+  $result = $query->execute();
+
+  if (isset($result['piece'])) {
+    $pids = array_keys($result['piece']);
+    $current_initiated_pieces = entity_load('piece', $pids);
+  }
+  
+  $initiated=null;
+  foreach($current_initiated_pieces as $piece) {
+    if($piece->uid!=$initiator->uid) {
+      $initiated = $piece;
+    }
+  }
+  if(empty($initiated)) {// if no piece it cant evade
+    return FALSE;
+  }
+  // found initiated
+  // 
   // load matrix
   $initiator = null;
   $matrix = array();
@@ -478,14 +507,14 @@ function piece_check_can_evade($game = null, $running_game = null, $piece = null
     draw_piece_on_board($game, $matrix, $game_piece);
     if ($piece->uid != $game_piece->uid) {
       draw_piece_initiation_on_board($game, $matrix, $game_piece);
-      if (piece_check_initiate_pattern($game, $running_game, $game_piece, $piece)) {
-        $initiator = $game_piece;
-      }
+      //if (piece_check_initiate_pattern($game, $running_game, $game_piece, $piece)) {
+        //$initiator = $game_piece;
+      //}
     }
   }
 
 
-  $running_game;
+  
 
 
 

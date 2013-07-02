@@ -568,36 +568,53 @@ function game_chess_default_rules_configuration() {
                 "running_game" : [ "running_game" ],
                 "message_text" : "Check from [last-piece:label]"
               }
+            },
+            { "component_rules_chess_check_checkmate" : {
+                "game" : [ "game" ],
+                "running_game" : [ "running_game" ],
+                "last_piece" : [ "last_piece" ],
+                "current_player_id" : [ "current_player_id" ]
+              }
             }
           ],
           "LABEL" : "Check"
-        }
-      },
-      { "RULE" : {
-          "IF" : [
-            { "piece_can_initiate_piece" : {
-                "game" : [ "game" ],
-                "running_game" : [ "running_game" ],
-                "initiator" : [ "last-piece" ],
-                "initiated_piece_type" : "king"
-              }
-            },
-            { "piece_check_can_evade" : {
-                "game" : [ "game" ],
-                "running_game" : [ "running_game" ],
-                "piece" : [ "last-piece" ]
-              }
-            }
-          ],
-          "DO" : [],
-          "LABEL" : "Checkmate"
         }
       }
     ]
   }
 }');
 
-
+ $rules['rules_chess_check_checkmate'] = rules_import('{ "rules_chess_check_checkmate" : {
+    "LABEL" : "chess check mate",
+    "PLUGIN" : "rule",
+    "REQUIRES" : [ "game_pieces", "game", "game_players" ],
+    "USES VARIABLES" : {
+      "game" : { "label" : "Game", "type" : "game" },
+      "running_game" : { "label" : "RunningGame", "type" : "running_game" },
+      "last_piece" : { "label" : "Last Piece Moved Or Initiated", "type" : "piece" },
+      "current_player_id" : { "label" : "CurrentPlayerID", "type" : "integer" }
+    },
+    "IF" : [
+      { "piece_check_initiated_can_evade" : {
+          "game" : [ "game" ],
+          "running_game" : [ "running_game" ],
+          "initiator" : [ "last-piece" ],
+          "initiated_piece_type" : "king"
+        }
+      }
+    ],
+    "DO" : [
+      { "rules_game_send_message" : { "running_game" : [ "running_game" ], "message_text" : "Mate" } },
+      { "rules_game_set_winners" : {
+          "running_game" : [ "running_game" ],
+          "player_id" : [ "current-player-id" ]
+        }
+      },
+      { "rules_game_over" : { "running_game" : [ "running_game" ] } },
+      { "rules_game_send_message" : { "running_game" : [ "running_game" ], "message_text" : "GameOver" } }
+    ]
+  }
+}');
 
 
 
