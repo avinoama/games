@@ -595,11 +595,17 @@ function game_chess_default_rules_configuration() {
       "current_player_id" : { "label" : "CurrentPlayerID", "type" : "integer" }
     },
     "IF" : [
-      { "piece_check_initiated_can_evade" : {
+      { "NOT piece_check_initiated_can_evade" : {
           "game" : [ "game" ],
           "running_game" : [ "running_game" ],
           "initiator" : [ "last-piece" ],
           "initiated_piece_type" : "king"
+        }
+      },
+      { "NOT piece_check_initator_can_be_initiated" : {
+          "game" : [ "game" ],
+          "running_game" : [ "running_game" ],
+          "initiator" : [ "last-piece" ]
         }
       }
     ],
@@ -609,9 +615,7 @@ function game_chess_default_rules_configuration() {
           "running_game" : [ "running_game" ],
           "player_id" : [ "current-player-id" ]
         }
-      },
-      { "rules_game_over" : { "running_game" : [ "running_game" ] } },
-      { "rules_game_send_message" : { "running_game" : [ "running_game" ], "message_text" : "GameOver" } }
+      }
     ]
   }
 }');

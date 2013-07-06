@@ -33,7 +33,7 @@ function game_pieces_rules_condition_info() {
       ),
       'piece_check_initator_can_be_initiated' => array(
           'group' => 'Piece',
-          'label' => t('Initiator can be initiated'),
+          'label' => t('Initiator can be initiated  by other team'),
           'arguments' => array(
               'game' => array(
                   'type' => 'game',
@@ -50,6 +50,57 @@ function game_pieces_rules_condition_info() {
                   'label' => 'piece',
                   'optional' => FALSE,
               )
+          ),
+          'module' => 'game_pieces',
+      ),
+      'piece_check_initator_can_be_initiated' => array(
+          'group' => 'Piece',
+          'label' => t('Initiator can be initiated  by other team'),
+          'arguments' => array(
+              'game' => array(
+                  'type' => 'game',
+                  'label' => 'game',
+                  'optional' => FALSE,
+              ),
+              'running_game' => array(
+                  'type' => 'running_game',
+                  'label' => 'running_game',
+                  'optional' => FALSE,
+              ),
+              'initiator' => array(
+                  'type' => 'piece',
+                  'label' => 'piece',
+                  'optional' => FALSE,
+              )
+          ),
+          'module' => 'game_pieces',
+      ),
+      'piece_check_initiation_can_be_blocked' => array(
+          'group' => 'Piece',
+          'label' => t('initiation can be blocked by other team'),
+          'arguments' => array(
+              'game' => array(
+                  'type' => 'game',
+                  'label' => 'game',
+                  'optional' => FALSE,
+              ),
+              'running_game' => array(
+                  'type' => 'running_game',
+                  'label' => 'running_game',
+                  'optional' => FALSE,
+              ),
+              'initiator' => array(
+                  'type' => 'piece',
+                  'label' => 'piece',
+                  'optional' => FALSE,
+              ),
+              'initiated_piece_type' => array(
+                  'type' => 'text',
+                  'label' => 'piece_type',
+                  'optional' => FALSE,
+                  'descritpion' => 'Machine name of piece type',
+                  'options list' => 'get_all_piece_types_and_extra_options',
+              ),
           ),
           'module' => 'game_pieces',
       ),
@@ -476,6 +527,209 @@ function piece_move($running_game = null, $piece = null, $position = array()) {
 }
 
 /**
+ * piece_check_initiation_can_be_blocked by other team
+ * @param type $game
+ * @param type $running_game
+ * @param type $initiator
+ */
+function piece_check_initiation_can_be_blocked($game = null, $running_game = null, $initiator = null, $initiated_piece_type = null) {
+  $pieces = $running_game->field_pieces[LANGUAGE_NONE];
+  $ids = array();
+  foreach ($pieces as $p) {
+    $ids[] = $p['target_id'];
+  }
+
+  $initiator_piece_type = piece_type_load($initiator->type);
+
+  $machine_name = $initiator_piece_type->initiate_pattern;
+  $patterns = game_pattern_load_by_machine_name($machine_name);
+  if (empty($patterns)) {
+    return FALSE;
+  }
+  if (property_exists($patterns, 'field_over_piece')) {
+    if (isset($patterns->field_over_piece[LANGUAGE_NONE][0]['value']) && $patterns->field_over_piece[LANGUAGE_NONE][0]['value'] == 1) {
+      return FALSE; // cannot bloack a piece that moves over other pieces
+    }
+  }
+  // get initiated piece
+  // find the one that starts with the word i want
+  // example : king  will get king_white and king_black
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'piece')
+          ->entityCondition('entity_id', $ids, 'IN')
+          ->entityCondition('bundle', $initiated_piece_type, 'STARTS_WITH');
+  $result = $query->execute();
+
+  if (isset($result['piece'])) {
+    $pids = array_keys($result['piece']);
+    $current_initiated_pieces = entity_load('piece', $pids);
+  }
+
+  $initiated = null;
+  foreach ($current_initiated_pieces as $piece) {
+    if ($piece->uid != $initiator->uid) {
+      $initiated = $piece;
+    }
+  }
+  if (empty($initiated)) {// if no piece it cant evade
+    return FALSE;
+  }
+
+
+  // get the positions between the $initiator to $initiated
+  $positions = game_piece_get_pattern_block_positions($game, $running_game, $initiator, $patterns, $initiated);
+
+
+  // load all game pieces
+  $game_pieces = entity_load('piece', $ids);
+  foreach ($game_pieces as $piece) {
+    if ($piece->uid != $initiated->uid) {
+      continue;
+    }
+    foreach ($positions as $position) {
+      if (piece_check_move_pattern($game, $running_game, $piece, $position)) {
+        return TRUE;
+      }
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * the position were i can block th initation between 2 pieces
+ * @param type $game
+ * @param type $running_game
+ * @param type $initiator
+ * @param type $initiated
+ */
+function game_piece_get_pattern_block_positions($game, $running_game, $initiator, $patterns, $initiated) {
+  $position = array();
+
+  $position[0] = $initiated->field_position[LANGUAGE_NONE][0]['value'];
+  $position[1] = $initiated->field_position[LANGUAGE_NONE][1]['value'];
+  $position[2] = $initiated->field_position[LANGUAGE_NONE][2]['value'];
+
+
+  foreach ($patterns->field_pattern[LANGUAGE_NONE] as $key => $var) {
+    $positions = array();
+    $var['value'] = str_replace("px", $initiator->field_position[LANGUAGE_NONE][0]['value'], $var['value']);
+    $var['value'] = str_replace("py", $initiator->field_position[LANGUAGE_NONE][1]['value'], $var['value']);
+
+    if (!empty($game) && property_exists($game, 'field_board_dimension_amount')) {
+      //
+      $var['value'] = str_replace("left", '1', $var['value']);
+      $var['value'] = str_replace("right", $game->field_board_dimension_amount[LANGUAGE_NONE][0]['value'], $var['value']);
+      //
+      $var['value'] = str_replace("top", '1', $var['value']);
+      $var['value'] = str_replace("bottom", $game->field_board_dimension_amount[LANGUAGE_NONE][1]['value'], $var['value']);
+      // prepering for 3d z exis
+      if (isset($game->field_board_dimension_amount[LANGUAGE_NONE][2])) {
+        $var['value'] = str_replace("back", '1', $var['value']);
+        $var['value'] = str_replace("front", $game->field_board_dimension_amount[LANGUAGE_NONE][2]['value'], $var['value']);
+      }
+    }
+
+    $pattern = drupal_json_decode($var['value']);
+
+    if (empty($pattern)) {
+      // error json didnot eval correct
+      return FALSE;
+    }
+
+    game_piece_evaluate_pattern($pattern);
+
+    if (isset($pattern['start']) && isset($pattern['end'])) {
+      if ($pattern['end']['x'] < $pattern['start']['x'] || $pattern['end']['y'] < $pattern['start']['y']) {
+        for ($x = $pattern['start']['x']; $x >= $pattern['end']['x']; $x--) {
+          for ($y = $pattern['start']['y']; $y >= $pattern['end']['y']; $y--) {
+            if ($x == $position[0] && $y == $position[1]) {
+              return $positions;
+            } else {
+              $positions[] = array($x, $y);
+            }
+            // this pattern cannot continue try another
+            if ($over_piece == false && isset($positions[$x][$y])) {
+              break 2;
+            }
+          }
+        }
+      } else {
+        for ($x = $pattern['start']['x']; $x <= $pattern['end']['x']; $x++) {
+          for ($y = $pattern['start']['y']; $y <= $pattern['end']['y']; $y++) {
+            if ($x == $position[0] && $y == $position[1]) {
+              return $positions;
+            } else {
+              $positions[] = array($x, $y);
+            }
+            // this pattern cannot continue try another
+            if ($over_piece == false && isset($positions[$x][$y])) {
+              break 2;
+            }
+          }
+        }
+      }
+    } else if (isset($pattern['start'])) {
+
+
+      if (isset($pattern['start']['repeat'])) {
+        for ($i = 0; $i <= $pattern['start']['repeat']; $i++) {
+          $x = ($pattern['start']['x'] + ($pattern ['start']['offsetx'] * $i));
+          $y = ($pattern['start']['y'] + ($pattern['start']['offsety'] * $i));
+          if ($x == $position[0] && $y == $position[1]) {
+            return $positions;
+          } else {
+            $positions[] = array($x, $y);
+          }
+          // this pattern cannot continue try another
+          if ($over_piece == false && isset($positions[$x][$y])) {
+            break;
+          }
+        }
+      } else {
+        $x = $pattern['start']['x'];
+        $y = $pattern['start']['y'];
+        /* if ($over_piece == false && isset($positions[$x][$y])) {
+          return FALSE;
+          } */
+        if ($x == $position[0] && $y == $position[1]) {
+          return array();
+        }
+      }
+    }
+  }
+  return array();
+}
+
+/**
+ * piece_check_initator_can_be_initiated by other team
+ * @param type $game
+ * @param type $running_game
+ * @param type $initiator
+ * @return boolean
+ */
+function piece_check_initator_can_be_initiated($game = null, $running_game = null, $initiator = null) {
+  $pieces = $running_game->field_pieces[LANGUAGE_NONE];
+  $ids = array();
+  foreach ($pieces as $p) {
+    $ids[] = $p['target_id'];
+  }
+
+  // load all game pieces
+  $game_pieces = entity_load('piece', $ids);
+
+  // for each piece check if can initiate on initiator
+  foreach ($game_pieces as $piece) {
+    if ($piece->uid != $initiator->uid) {
+      if (piece_check_initiate_pattern($game, $running_game, $piece, $initiator)) {
+        return TRUE;
+      }
+    }
+  }
+
+  return FALSE;
+}
+
+/**
  * function piece_check_can_evade
  * check if a piece evade beaing initiated by another piece can evade
  *
@@ -808,6 +1062,17 @@ function piece_can_initiate_piece($game, $running_game, $initiator, $initiated_p
   return FALSE;
 }
 
+/**
+ * piece_check_initiate_pattern
+ *
+ * 
+ *
+ * @param type $game
+ * @param type $running_game
+ * @param type $initiator
+ * @param type $initiated
+ * @return boolean
+ */
 function piece_check_initiate_pattern($game = null, $running_game, $initiator, $initiated) {
   $piece_type = piece_types($initiator->type);
   if (!property_exists($piece_type, "initiate_pattern")) {
@@ -824,11 +1089,17 @@ function piece_check_initiate_pattern($game = null, $running_game, $initiator, $
       1 => $initiated->field_position[LANGUAGE_NONE][1]['value']
   );
 
-
-  $re = piece_check_valid_patterns($game, $running_game, $patterns, $initiator, $position);
-  return $re;
+  return piece_check_valid_patterns($game, $running_game, $patterns, $initiator, $position);
 }
 
+/**
+ * 
+ * @param type $game
+ * @param type $running_game
+ * @param type $piece
+ * @param type $position
+ * @return boolean
+ */
 function piece_check_move_pattern($game = null, $running_game, $piece, $position) {
   $piece_type = piece_types($piece->type);
   if (!property_exists($piece_type, "move_pattern")) {
