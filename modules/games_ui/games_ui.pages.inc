@@ -5,18 +5,65 @@
  */
 function game_ui_view($game) {
   drupal_set_title(entity_label('game', $game));
-  return entity_view('game', array(entity_id('game', $game) => $game), 'full');;
+  return entity_view('game', array(entity_id('game', $game) => $game), 'full');
+  ;
 }
 
-function game_ui_play($running_game) {
+/**
+ * 
+ * @param type $game
+ */
+function game_ui_list_instances($game) {
 
+  $path = drupal_get_path("module", 'game');
+  require_once $path . '/game.define.inc';
+
+
+
+  $title = t('All Open games');
+  $type = 'ul';
+// The following attributes apply to the list tag (e.g., <ol> or <ul>)
+  $attributes = array(
+      'id' => 'my-custom-listing',
+      'class' => 'custom-class another-custom-class', // a string or indexed (string) array with the classes for the list tag
+  );
+  
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'running_game')
+          ->propertyCondition('gid', $game->gid)
+          ->propertyCondition('status', GAME_STATUS_NOT_STARTED);
+  $running_games = array();
+  $result = $query->execute();
+  if (isset($result['running_game'])) {
+    $ids = array_keys($result['running_game']);
+    $running_games = entity_load('running_game', $ids);
+  }
+  $s = array('Not created', 'Not Started', 'Started', 'Ended');
+
+  $items = array();
+  foreach ($running_games as $running_game) {
+    $items[] = array(
+        'data' => $game->title . " - " . $s[$running_game->status] . " - " . l('Join', 'play/' . $running_game->id),
+        'id' => $running_game->id, // be careful not to add another id attribute on the page that might be the same as one of the uids or your page will not validate
+            //'class' => array_keys($account->roles), // value for 'class' key MUST be an (indexed) array. Using a string value like '2 3 4' produces an error
+    );
+  }
+  $items[] = array('data' => l("create new", 'game/' . $game->gid . '/create'));
+
+  return theme_item_list(array('items' => $items, 'title' => $title, 'type' => $type, 'attributes' => $attributes));
+  ;
+}
+
+/**
+ * show running game
+ * @global type $user
+ * @param type $running_game
+ * @return type
+ */
+function game_ui_play($running_game) {
+  global $user;
   drupal_session_start();
   drupal_set_title("");
-  global $user;
-  $path = drupal_get_path('module', 'games_ui');
-  drupal_add_js($path . "/jgrowl/jquery.jgrowl.js", 'file');
-  drupal_add_css($path . "/jgrowl/jquery.jgrowl.css", 'file');
-
 
   $game = game_load($running_game->gid);
 

@@ -3,38 +3,31 @@
     attach: function (context, settings) {
       // set default id to 0
       Drupal.settings.RunningGame.clientId = 0;
-      
-      $.jGrowl.defaults.pool = 5;
-      $.jGrowl.defaults.position = "bottom-right";
+      Drupal.settings.RunningGame.messages=Array();
       //  Show Game Status
       setTimeout(getCommands,1000);
 
-    
     }, // end attach
     message: function(params){
       for(i in params) {
         if(params[i]!=undefined && params[i]!="") {
-          $("#game-last-notice").text(params[i]);
-          $("#game-notice-board").jGrowl(params[i], {
-            sticky:			false,
-            life: 			12000
-          });
+          Drupal.settings.RunningGame.messages.push(params[i]);
         }
       }
+      _recursive_handle_messages(); 
       
     },
     start_game: function() {
-      //console.log("game started");
       $(".start-game").fadeOut(500);
-      //Drupal.settings.RunningGame.instance.status=2;
-      
+      Drupal.settings.RunningGame.instance.status=2;
     },
     game_ended: function() {
-      //console.log(Drupal.behaviors.RunningGame);
-      //Drupal.behaviors.RunningGame.instance.status=3;
-      m = new Array();
-      m[0]= "game over";
-      this.message(m);
+      
+    //console.log(Drupal.behaviors.RunningGame);
+    //Drupal.behaviors.RunningGame.instance.status=3;
+    //m = new Array();
+    //m[0]= "game over";
+    //this.message(m);
       
     },
     show_start_game_button: function() {
@@ -48,8 +41,6 @@
       $("#game-canvas").append(div);
     },
     trigger_rule : function (hook, params) {
-      console.log("trigger " +hook);
-      console.log(params);
       $.ajax({
         url: location.pathname+"/ajax",
         data: {
@@ -127,16 +118,16 @@
   
   function getCommands(){
     $.ajax({
-      url: location.pathname+"/ajax",
+      url: location.pathname+'/ajax',
       data: {
         action: {
           command: 'command',
           time:Drupal.settings.RunningGame.serverTime,
           id:Drupal.settings.RunningGame.clientId
         }
-      }, 
-      dataType :"json",
-      type:"post",
+      },
+      dataType :'json',
+      type:'post',
       success: function(data) {
         Drupal.behaviors.RunningGame.handle_response(data);
         setTimeout(getCommands,4000);
@@ -144,13 +135,19 @@
       error: function(jqXHR, textStatus, errorThrow) {
         console.log(jqXHR+ " " + textStatus + " " +errorThrow );
       }
-    });    
+    });
   }
   
   function _start_game() {
-    hook = "game_start";
+    hook = 'game_start';
     params = {};
     Drupal.behaviors.RunningGame.trigger_rule(hook, params);
   }
-
+  function _recursive_handle_messages() {
+    if(Drupal.settings.RunningGame.messages.length>0) {
+      param = Drupal.settings.RunningGame.messages.pop();
+      $("#game-last-notice").text(param);
+      setTimeout('_recursive_handle_messages()',4000);
+    }
+  }
 })(jQuery);

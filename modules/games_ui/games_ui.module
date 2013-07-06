@@ -73,16 +73,24 @@ function games_ui_menu() {
       'type' => MENU_LOCAL_TASK,
       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
   );
-  $items[$game_uri . '/play'] = array(
-      'title' => 'Play',
+  $items[$game_uri . '/create'] = array(
+      'title' => 'Create New',
       'page callback' => 'game_ui_create_instance',
       'page arguments' => array($game_uri_argument_position),
       'access arguments' => array('administer game types'),
       'file' => 'games_ui.admin.inc',
+      /*'type' => MENU_LOCAL_TASK,
+      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,*/
+  );
+  $items[$game_uri . '/play'] = array(
+      'title' => 'Play',
+      'page callback' => 'game_ui_list_instances',
+      'page arguments' => array($game_uri_argument_position),
+      'access arguments' => array('administer game types'),
+      'file' => 'games_ui.pages.inc',
       'type' => MENU_LOCAL_TASK,
       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
   );
-
   foreach (game_types() as $type => $info) {
     $items['game/add/' . $type] = array(
         'title' => 'Add game',
@@ -162,17 +170,3 @@ function games_ui_preprocess_page(&$vars) {
 function startsWith($haystack, $needle) {
   return !strncmp($haystack, $needle, strlen($needle));
 }
-/*
-function games_ui_view() {
-  $gid = arg(1);
-  $game = game_load($gid);
-  $string = "";
-  foreach ($game as $key => $field) {
-    if (startsWith($key, "field")) {
-      if (isset($field["und"][0]["value"])) {
-        $string .= $key . " " . $field["und"][0]["value"] . "<br>";
-      }
-    }
-  }
-  return "title : " . $game->title . "<br>description:" . $game->description . "<br>" . $string;
-}*/

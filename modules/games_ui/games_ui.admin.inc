@@ -420,9 +420,12 @@ function game_ui_instance_form_delete_confirm_submit($form, &$form_state) {
   $form_state['redirect'] = 'admin/structure/game-instances';
 }
 
+/**
+ * 
+ * @param type $game
+ */
 function game_ui_create_instance($game) {
   // create instance and redirect to that instance to start playing
-  //return "11";
   game_ui_instance_create_instance($game);
 }
 /**

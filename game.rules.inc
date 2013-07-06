@@ -1,5 +1,8 @@
 <?php
 
+$path = drupal_get_path("module", 'game');
+require_once $path . '/game.define.inc';
+
 /**
  *
  * @return type
@@ -129,10 +132,8 @@ function game_rules_action_info() {
 }
 
 function rules_start_game($running_game, $game) {
-  
 
   // invoke a game started
-  
   // need to be moved to game players module after building the invokement
   $query = db_select('running_game_player', 'p')->fields('p')->condition('running_game_id', $running_game->id, '=');
   $players = $query->execute();
@@ -180,8 +181,6 @@ function rules_game_send_message($running_game, $message) {
   $running_game_command['command_data'] = drupal_json_encode(array("message" => $message, "callback" => array("module" => "RunningGame", "fn" => "message", "params" => array($message)), "time" => time()));
   $running_game_command_entity = entity_create("running_game_command", $running_game_command);
   $running_game_command_entity->save();
-
-  
 }
 
 function rules_game_over_validation($running_game) {

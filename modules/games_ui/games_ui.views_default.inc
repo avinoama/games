@@ -4,6 +4,7 @@
  * Implements hook_views_default_views().
  */
 function games_ui_views_default_views() {
+
   $view = new view();
   $view->name = 'games';
   $view->description = 'This is the list of game that are already playable by your system';
@@ -79,6 +80,7 @@ function games_ui_views_default_views() {
 
 
   $views['games'] = $view;
+
 
   return $views;
 }
