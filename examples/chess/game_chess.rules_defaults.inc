@@ -254,16 +254,25 @@ function game_chess_default_rules_configuration() {
   $rules['rules_chess_on_move_piece'] = rules_import('{ "rules_chess_on_move_piece" : {
     "LABEL" : "rules chess on move piece",
     "PLUGIN" : "reaction rule",
-    "REQUIRES" : [ "game_pieces", "rules" ],
+    "REQUIRES" : [ "rules", "game_pieces", "board_games", "game" ],
     "ON" : [ "piece_move_to_position" ],
     "IF" : [
+      { "data_is" : { "data" : [ "game:machine-name" ], "value" : "chess" } },
+      { "NOT data_is" : { "data" : [ "site:current-player-id" ], "value" : "0" } },
+      { "data_is" : {
+          "data" : [ "site:current-player-id" ],
+          "value" : [ "site:current-player-turn" ]
+        }
+      },
+      { "data_is" : { "data" : [ "running-game:status" ], "op" : "\u003C", "value" : "3" } },
       { "piece_check_valid_move" : {
           "game" : [ "game" ],
           "running_game" : [ "running_game" ],
           "piece" : [ "piece" ],
           "position" : [ "position" ]
         }
-      }
+      },
+      { "data_is" : { "data" : [ "site:current-player-id" ], "value" : [ "piece:uid" ] } }
     ],
     "DO" : [
       { "piece_move" : {
@@ -277,6 +286,12 @@ function game_chess_default_rules_configuration() {
           "running_game" : [ "running_game" ],
           "last_piece" : [ "piece" ],
           "current_player_id" : [ "piece:uid" ]
+        }
+      },
+      { "rules_game_change_turn" : { "running_game" : [ "running_game" ] } },
+      { "rules_game_send_message" : {
+          "running_game" : [ "running_game" ],
+          "message_text" : "Its Player [site:current-player-turn] turn"
         }
       }
     ]
@@ -511,10 +526,15 @@ function game_chess_default_rules_configuration() {
   $rules['rules_chess_on_piece_initiate'] = rules_import('{ "rules_chess_on_piece_initiate" : {
     "LABEL" : "Chess on piece initiate",
     "PLUGIN" : "reaction rule",
-    "REQUIRES" : [ "rules", "game_pieces" ],
+    "REQUIRES" : [ "rules", "game_pieces", "board_games" ],
     "ON" : [ "piece_initiate" ],
     "IF" : [
       { "data_is" : { "data" : [ "game:machine-name" ], "value" : "chess" } },
+      { "data_is" : {
+          "data" : [ "site:current-player-turn" ],
+          "value" : [ "site:current-player-id" ]
+        }
+      },
       { "NOT data_is" : { "data" : [ "initiator:id" ], "value" : [ "initiated:id" ] } },
       { "NOT data_is" : { "data" : [ "initiator:uid" ], "value" : [ "initiated:uid" ] } },
       { "entity_has_field" : { "entity" : [ "initiated" ], "field" : "field_position" } },
@@ -524,7 +544,8 @@ function game_chess_default_rules_configuration() {
           "initiator" : [ "initiator" ],
           "initiated" : [ "initiated" ]
         }
-      }
+      },
+      { "data_is" : { "data" : [ "initiator:uid" ], "value" : [ "site:current-player-id" ] } }
     ],
     "DO" : [
       { "piece_move" : {
@@ -533,7 +554,15 @@ function game_chess_default_rules_configuration() {
           "position" : [ "initiated:field-position" ]
         }
       },
-      { "piece_remove" : { "running_game" : [ "running_game" ], "piece" : [ "initiated" ] } }
+      { "piece_remove" : { "running_game" : [ "running_game" ], "piece" : [ "initiated" ] } },
+      { "component_rules_chess_check_winner" : {
+          "game" : [ "game" ],
+          "running_game" : [ "running_game" ],
+          "last_piece" : [ "initiator" ],
+          "current_player_id" : [ "site:current-player-id" ]
+        }
+      },
+      { "rules_game_change_turn" : { "running_game" : [ "running_game" ] } }
     ]
   }
 }');
