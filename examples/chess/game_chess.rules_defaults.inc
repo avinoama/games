@@ -607,6 +607,13 @@ function game_chess_default_rules_configuration() {
           "running_game" : [ "running_game" ],
           "initiator" : [ "last-piece" ]
         }
+      },
+      { "NOT piece_check_initiation_can_be_blocked" : {
+          "game" : [ "game" ],
+          "running_game" : [ "running_game" ],
+          "initiator" : [ "last-piece" ],
+          "initiated_piece_type" : "king"
+        }
       }
     ],
     "DO" : [
