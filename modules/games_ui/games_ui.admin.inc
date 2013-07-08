@@ -393,7 +393,6 @@ function game_ui_instance_form_submit_delete(&$form, &$form_state) {
   $form_state['redirect'] = 'admin/structure/running-game/' . $form_state['running_game']->id . '/delete';
 }
 
-
 /**
  * Game type delete form.
  */
@@ -428,6 +427,7 @@ function game_ui_create_instance($game) {
   // create instance and redirect to that instance to start playing
   game_ui_instance_create_instance($game);
 }
+
 /**
  * Delete confirmation form.
  */
@@ -450,4 +450,36 @@ function game_delete_form_submit($form, &$form_state) {
   drupal_set_message(t('Game %title deleted.', array('%title' => entity_label('game', $game))));
 
   $form_state['redirect'] = 'games';
+}
+
+/**
+ *
+ * @param type $form
+ * @param type $form_state
+ * @param type $op
+ */
+function game_ui_setting_form($form, &$form_state, $op = 'edit') {
+  // long polling interval
+  $form['label'] = array(
+      '#title' => t('Long polling interval'),
+      '#type' => 'textfield',
+      '#default_value' => variable_get('game_poll', '4000'),
+      '#description' => t('in millisecound'),
+      '#required' => TRUE,
+      '#size' => 30,
+  );
+
+  // players time out interval
+
+  $form['player_idle_interval'] = array(
+      '#title' => t('Player idle interval'),
+      '#type' => 'textfield',
+      '#default_value' => variable_get('player_idle', '10000'),
+      '#description' => t('in millisecound'),
+      '#required' => TRUE,
+      '#size' => 30,
+  );
+
+  
+  return $form;
 }

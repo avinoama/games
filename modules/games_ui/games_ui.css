@@ -1,4 +1,5 @@
 .game{display: block;width: 100%;}
+.game .bold{font-weight: bolder;}
 .game-header-row {height:20px; margin:5px; width:100%; text-align: center;}
 .game-header-row-middle.game-title{text-align: center;}
 .game-header-row-middle {width:48%;display:inline-block;border:1px dotted black;margin-right:1%; text-align: left;padding-left: 2%;}

@@ -111,7 +111,16 @@ function games_ui_menu() {
       'type' => MENU_NORMAL_ITEM,
       'file' => 'games_ui.admin.inc',
   );
-
+  
+  $items['admin/config/games'] = array(
+      'title' => 'Games setting',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('game_ui_setting_form'),
+      'access arguments' => array('administer game types'),
+      'weight' => 1,
+      'type' => MENU_NORMAL_ITEM,
+      'file' => 'games_ui.admin.inc',
+  );
   return $items;
 }
 

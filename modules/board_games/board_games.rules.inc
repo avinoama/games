@@ -138,7 +138,7 @@ function board_games_rules_condition_info() {
                 'optional' => FALSE,
             ),
             'pattern' => array(
-                'type' => 'integer',
+                'type' => 'text',
                 'label' => 'Pattern',
                 'options list' => 'get_all_board_patterns',
                 'optional' => FALSE,
@@ -186,7 +186,7 @@ function board_games_check_pattern($running_game = null, $game = null, $pattern 
   if (!property_exists($running_game, "field_matrix")) {
     return FALSE;
   }
-  $pattern = game_pattern_load($pattern);
+  $pattern = game_pattern_load_by_machine_name($pattern);
   if (empty($pattern)) {
     return FALSE;
   }
@@ -326,7 +326,7 @@ function get_all_board_patterns() {
   $re = array();
 
   foreach ($e as $key => $entity) {
-    $re[$entity->id] = $entity->label;
+    $re[$entity->machine_name] = $entity->label;
   }
 
   return $re;

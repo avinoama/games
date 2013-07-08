@@ -3,19 +3,24 @@
     attach: function (context, settings) {
       // set default id to 0
       Drupal.settings.RunningGame.clientId = 0;
-      Drupal.settings.RunningGame.messages=Array();
+      Drupal.settings.RunningGame.messages= new Array();
       //  Show Game Status
       setTimeout(getCommands,1000);
 
     }, // end attach
     message: function(params){
+      if(Drupal.settings.RunningGame.messages==undefined) {
+        Drupal.settings.RunningGame.messages= new Array();
+      }
       for(i in params) {
-        if(params[i]!=undefined && params[i]!="") {
+        if(params[i]!=undefined && params[i]!="") {  
           Drupal.settings.RunningGame.messages.push(params[i]);
         }
+        
       }
-      _recursive_handle_messages(); 
-      
+      if(Drupal.settings.RunningGame.message_handler==null) {
+        _recursive_handle_messages();
+      }
     },
     start_game: function() {
       $(".start-game").fadeOut(500);
@@ -144,10 +149,18 @@
     Drupal.behaviors.RunningGame.trigger_rule(hook, params);
   }
   function _recursive_handle_messages() {
-    if(Drupal.settings.RunningGame.messages.length>0) {
-      param = Drupal.settings.RunningGame.messages.pop();
-      $("#game-last-notice").text(param);
-      setTimeout('_recursive_handle_messages()',4000);
+    console.log(Drupal.settings.RunningGame.messages.length);
+    console.log(Drupal.settings.RunningGame.messages);
+    if(Drupal.settings.RunningGame.messages.length==0) {
+      Drupal.settings.RunningGame.message_handler=null
+      return;
     }
+    param = Drupal.settings.RunningGame.messages.pop();
+    $("#game-last-notice").text(param);
+    $("#game-last-notice").addClass('bold');
+    setTimeout(function() {
+      $("#game-last-notice").removeClass('bold');
+    },2000);
+    Drupal.settings.RunningGame.message_handler = setTimeout(_recursive_handle_messages,4000);
   }
 })(jQuery);

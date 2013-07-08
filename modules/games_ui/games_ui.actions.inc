@@ -56,7 +56,7 @@ function game_ui_instance_ajax_callback($running_game) {
       if (empty($game_response)) {
         $response;
       }
-      //echo ;
+      
       $response = drupal_json_encode($game_response);
       echo $response;
       return;

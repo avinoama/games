@@ -228,7 +228,7 @@ function game_tictactoe_default_rules_configuration() {
   }
 }');
 
-$rules['rules_tictactoe_checkwinner_3_addition'] = rules_import('{ "rules_ticktacktoe_checkwinner_3_addition" : {
+$rules['rules_tictactoe_checkwinner_3_addition'] = rules_import('{ "rules_tictactoe_checkwinner_3_addition" : {
     "LABEL" : "TickTackToe CheckWinner 3 addition",
     "PLUGIN" : "rule",
     "REQUIRES" : [ "board_games", "game_players", "game" ],
@@ -242,28 +242,28 @@ $rules['rules_tictactoe_checkwinner_3_addition'] = rules_import('{ "rules_tickta
           { "board_games_check_pattern" : {
               "running_game" : [ "running_game" ],
               "game" : [ "game" ],
-              "pattern" : "1",
+              "pattern" : "row",
               "equal_to" : [ "player-id" ]
             }
           },
           { "board_games_check_pattern" : {
               "running_game" : [ "running_game" ],
               "game" : [ "game" ],
-              "pattern" : "2",
+              "pattern" : "column",
               "equal_to" : [ "player-id" ]
             }
           },
           { "board_games_check_pattern" : {
               "running_game" : [ "running_game" ],
               "game" : [ "game" ],
-              "pattern" : "3",
+              "pattern" : "diagonal-topleft-bottomright",
               "equal_to" : [ "player-id" ]
             }
           },
           { "board_games_check_pattern" : {
               "running_game" : [ "running_game" ],
               "game" : [ "game" ],
-              "pattern" : "4",
+              "pattern" : "diagonal-topright-bottomleft",
               "equal_to" : [ "player-id" ]
             }
           }
