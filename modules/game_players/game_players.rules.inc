@@ -21,6 +21,24 @@ function game_players_rules_event_info() {
               ),
           ),
       ),
+      'player_idle' => array(
+          'label' => t('Player Idle'),
+          'group' => t('Game Rules'),
+          'variables' => array(
+              'running_game' => array(
+                  'type' => 'running_game',
+                  'label' => t('Running Game'),
+              ),
+              'game' => array(
+                  'type' => 'game',
+                  'label' => t('Game'),
+              ),
+              'running_game_player' => array(
+                  'type' => 'running_game_player',
+                  'label' => t('Player'),
+              ),
+          ),
+      ),
   );
 
   return $items;

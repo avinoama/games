@@ -26,22 +26,8 @@
 .boardInstance .tile.selected {
   background-color: #FFFFDD;
 }
-.owned_1 {
-  background: greenyellow;
 
-}
-.owned_2 {
-  background: #FFBE7D;
-}
-.owned_3 {
-  background:red;
-}
-.owned_4 {
-  background:blue;
-}
-#tic-tac-toe #game-canvas .boardInstance {width:400px;}
-#tic-tac-toe #game-canvas .boardInstance .tile.clicked {background-color: #DCDCDC;}
-/*#tic-tac-toe #game-canvas .boardInstance .tile:nth-child(3n+0) {background-color: red;clear:right}*/
+
 
 #sudoku #game-canvas .boardInstance {width:507px}
 #sudoku #game-canvas .boardInstance .tile:nth-child(3n+3) {margin-right: 2px}
@@ -62,15 +48,3 @@
 }
 
 
-#chess #game-canvas .boardInstance .tile
-{
-  position:relative;
-  display:inline-block;
-  border:1px solid black;
-  width:80px;
-  height:80px;
-  margin:0 auto;
-  padding:0;
-  text-align :center;
-  font-size:20px;
-}

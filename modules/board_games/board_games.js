@@ -45,7 +45,7 @@
               if(tile_type==1) {
                 if(field_matrix[count]!=undefined && field_matrix[count].value>0) {
                   tile.addClass("owned_"+field_matrix[count].value).addClass("owned");
-                  tile.text(field_matrix[count].value);
+                  //tile.text(field_matrix[count].value);
                 } else {
                   tile.html("&nbsp;");
                 }
@@ -94,7 +94,7 @@
     },
     board_games_tile_set_owner_action: function(params){
       $("#tile_"+params.tile_id).addClass("owned_"+params.player_turn).addClass("owned");
-      $("#tile_"+params.tile_id).text(params.player_turn);
+     // $("#tile_"+params.tile_id).text(params.player_turn);
     },
     board_games_tile_increment_action: function(params){
       $("#tile_"+params.tile_id).text(params.value);

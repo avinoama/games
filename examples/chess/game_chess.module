@@ -1,5 +1,10 @@
 <?php
-
+function game_chess_game_init_load($game, $running_game) {
+  if ($game->type == "board_game" && $game->machine_name == 'chess') {
+    $path = drupal_get_path('module', 'game_chess');
+    drupal_add_css($path . "/game_chess.css", 'file');
+  }
+}
 function game_chess_menu() {
   $items = array();
 

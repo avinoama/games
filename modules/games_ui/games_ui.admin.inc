@@ -460,10 +460,10 @@ function game_delete_form_submit($form, &$form_state) {
  */
 function game_ui_setting_form($form, &$form_state, $op = 'edit') {
   // long polling interval
-  $form['label'] = array(
+  $form['game_poll_interval'] = array(
       '#title' => t('Long polling interval'),
       '#type' => 'textfield',
-      '#default_value' => variable_get('game_poll', '4000'),
+      '#default_value' => variable_get('game_poll_interval', '4000'),
       '#description' => t('in millisecound'),
       '#required' => TRUE,
       '#size' => 30,
@@ -474,12 +474,74 @@ function game_ui_setting_form($form, &$form_state, $op = 'edit') {
   $form['player_idle_interval'] = array(
       '#title' => t('Player idle interval'),
       '#type' => 'textfield',
-      '#default_value' => variable_get('player_idle', '10000'),
+      '#default_value' => variable_get('player_idle_interval', '30000'),
       '#description' => t('in millisecound'),
       '#required' => TRUE,
       '#size' => 30,
   );
 
-  
+  $form['time_to_show_each_message'] = array(
+      '#title' => t('Time to show each message'),
+      '#type' => 'textfield',
+      '#default_value' => variable_get('time_to_show_each_message', '4000'),
+      '#description' => t('in millisecound'),
+      '#required' => TRUE,
+      '#size' => 30,
+  );
+  $form['time_to_bold_each_message'] = array(
+      '#title' => t('Time to bold each message'),
+      '#type' => 'textfield',
+      '#default_value' => variable_get('time_to_bold_each_message', '2000'),
+      '#description' => t('in millisecound, this time is less time the showing message or equal to.'),
+      '#required' => TRUE,
+      '#size' => 30,
+  );
+
+
+  $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save Settings'),
+      '#weight' => 40,
+  );
+
   return $form;
+}
+
+function game_ui_setting_form_validate($form, &$form_state) {
+  $var = $form_state['values'];
+  if (!empty($var['game_poll_interval']) && !is_numeric($var['game_poll_interval'])) {
+    form_set_error('game_poll_interval', 'Most have numeric value');
+  }
+  if (!empty($var['player_idle_interval']) && !is_numeric($var['player_idle_interval'])) {
+    form_set_error('player_idle_interval', 'Most have numeric value');
+  }
+  if (!empty($var['time_to_show_each_message']) && !is_numeric($var['time_to_show_each_message'])) {
+    form_set_error('time_to_show_each_message', 'Most have numeric value');
+  }
+  if (!empty($var['time_to_bold_each_message']) && !is_numeric($var['time_to_bold_each_message'])) {
+    form_set_error('time_to_bold_each_message', 'Most have numeric value');
+  }
+  if(!empty($var['time_to_bold_each_message']) && !empty($var['time_to_show_each_message'])) {
+    if($var['time_to_bold_each_message']>=$var['time_to_show_each_message'] ) {
+      form_set_error('time_to_bold_each_message', 'Most be smaller then time to show message');
+    }
+  }
+}
+
+function game_ui_setting_form_submit($form, &$form_state) {
+  $var = $form_state['values'];
+  if(isset($var['game_poll_interval'])) {
+      variable_set('game_poll_interval', $var['game_poll_interval']);
+  }
+  if(isset($var['player_idle_interval'])) {
+    variable_set('player_idle_interval', $var['player_idle_interval']);
+  }
+  if(isset($var['time_to_show_each_message'])) {
+    variable_set('time_to_show_each_message', $var['time_to_show_each_message']);
+  }
+  if(isset($var['time_to_bold_each_message'])) {
+    variable_set('time_to_bold_each_message', $var['time_to_bold_each_message']);
+  }
+
+  drupal_set_message("Configuration was saved");
 }

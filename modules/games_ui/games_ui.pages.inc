@@ -27,7 +27,7 @@ function game_ui_list_instances($game) {
       'id' => 'my-custom-listing',
       'class' => 'custom-class another-custom-class', // a string or indexed (string) array with the classes for the list tag
   );
-  
+
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'running_game')
           ->propertyCondition('gid', $game->gid)
@@ -74,7 +74,15 @@ function game_ui_play($running_game) {
     $function($game, $running_game);
   }
 
-  drupal_add_js(array('RunningGame' => array('session' => session_id(), "instance" => $running_game, "game" => $game, 'serverTime' => time())), 'setting');
+  drupal_add_js(array('RunningGame' => array(
+          'session' => session_id(),
+          'instance' => $running_game,
+          'game' => $game,
+          'player_idle_interval' => variable_get('player_idle_interval', '30000'),
+          'game_poll_interval' => variable_get('game_poll_interval', '4000'),
+          'time_to_show_each_message' => variable_get('time_to_show_each_message', '4000'),
+          'time_to_bold_each_message' => variable_get('time_to_bold_each_message', '2000'),
+          'serverTime' => time())), 'setting');
 
   $s = array('Not created', 'Not Started', 'Started', 'Ended');
   $status = $s[$running_game->status];

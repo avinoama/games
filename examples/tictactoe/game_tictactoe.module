@@ -1,5 +1,12 @@
 <?php
 
+function game_tictactoe_game_init_load($game, $running_game) {
+  if ($game->type == "board_game" && $game->machine_name == 'tic-tac-toe') {
+    $path = drupal_get_path('module', 'game_tictactoe');
+    drupal_add_css($path . "/game_tictactoe.css", 'file');
+  }
+}
+
 function _game_tictactoe_add_default_games() {
   $entity_type = "game";
   $bundle = 'board_game';
@@ -55,5 +62,4 @@ function _game_add_default_patterns() {
   $pattern->type = $bundle;
   $pattern->field_pattern[LANGUAGE_NONE][]['value'] = '{"start":{"x": "right","offsetx":"-1","y": "top","offsety":"1","repeat":"bottom"}}';
   game_pattern_save($pattern);
-  
 }

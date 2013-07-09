@@ -67,7 +67,7 @@ function game_ui_instance_ajax_callback($running_game) {
     case "command":
 
       // invoke other modules for this event
-      foreach (module_implements('_game_command') as $module) {
+      foreach (module_implements('game_command') as $module) {
         $function = $module . '_game_command';
         $function($running_game, $game);
       }

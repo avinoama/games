@@ -134,21 +134,12 @@ function game_rules_action_info() {
 function rules_start_game($running_game, $game) {
 
   // invoke a game started
-  // need to be moved to game players module after building the invokement
-  $query = db_select('running_game_player', 'p')->fields('p')->condition('running_game_id', $running_game->id, '=');
-  $players = $query->execute();
-
-  $i = 1;
-  $first_player;
-  foreach ($players as $player) {
-    if ($i == 1) {
-      $first_player = $player->player_name;
-    }
-    $player->status = PLAYER_STATUS_PLAYING;
-    $player->player_turn = $i;
-    entity_save("running_game_player", $player);
-    $i++;
+  // invoke other modules for this event
+  foreach (module_implements('game_start') as $module) {
+    $function = $module . '_game_start';
+    $function($running_game, $game);
   }
+
 
 
   //  Start game

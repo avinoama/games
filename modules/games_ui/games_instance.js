@@ -5,7 +5,7 @@
       Drupal.settings.RunningGame.clientId = 0;
       Drupal.settings.RunningGame.messages= new Array();
       //  Show Game Status
-      setTimeout(getCommands,1000);
+      setTimeout(getCommands,Drupal.settings.RunningGame.game_poll_interval);
 
     }, // end attach
     message: function(params){
@@ -135,7 +135,7 @@
       type:'post',
       success: function(data) {
         Drupal.behaviors.RunningGame.handle_response(data);
-        setTimeout(getCommands,4000);
+        setTimeout(getCommands, Drupal.settings.RunningGame.game_poll_interval);
       },
       error: function(jqXHR, textStatus, errorThrow) {
         console.log(jqXHR+ " " + textStatus + " " +errorThrow );
@@ -160,7 +160,8 @@
     $("#game-last-notice").addClass('bold');
     setTimeout(function() {
       $("#game-last-notice").removeClass('bold');
-    },2000);
-    Drupal.settings.RunningGame.message_handler = setTimeout(_recursive_handle_messages,4000);
+    },Drupal.settings.RunningGame.time_to_blod_each_message);
+    Drupal.settings.RunningGame.message_handler = setTimeout(_recursive_handle_messages,
+      Drupal.settings.RunningGame.time_to_show_each_message);
   }
 })(jQuery);

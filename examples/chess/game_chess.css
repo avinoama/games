@@ -1,0 +1,52 @@
+#chess #game-canvas .boardInstance .tile
+{
+  position:relative;
+  display:inline-block;
+  border:1px solid black;
+  width:80px;
+  height:80px;
+  margin:0 auto;
+  padding:0;
+  text-align :center;
+  font-size:20px;
+}
+
+#chess #game-canvas .boardInstance .tile {
+    background:#fff;
+    background:-moz-linear-gradient(top, #fff, #eee);
+    background:-webkit-gradient(linear,0 0, 0 100%, from(#fff), to(#eee));
+    box-shadow:inset 0 0 0 1px #fff;
+    -moz-box-shadow:inset 0 0 0 1px #fff;
+    -webkit-box-shadow:inset 0 0 0 1px #fff;
+    text-align:center;
+    vertical-align:middle;
+}
+/*
+:nth-child(16n+1), #chess div:nth-child(16n+3),
+#chess div:nth-child(16n+5), #chess div:nth-child(16n+7),
+#chess div:nth-child(16n+10),#chess div:nth-child(16n+12),
+#chess div:nth-child(16n+14),#chess div:nth-child(16n+16)
+*/
+/*#chess #game-canvas .boardInstance  div:nth-child(odd),*/
+#chess #game-canvas .boardInstance div:nth-child(16n+1),
+#chess #game-canvas .boardInstance div:nth-child(16n+3),
+#chess #game-canvas .boardInstance div:nth-child(16n+5),
+#chess #game-canvas .boardInstance div:nth-child(16n+7),
+#chess #game-canvas .boardInstance div:nth-child(16n+10),
+#chess #game-canvas .boardInstance div:nth-child(16n+12),
+#chess #game-canvas .boardInstance div:nth-child(16n+14),
+#chess #game-canvas .boardInstance div:nth-child(16n+16)
+{
+    background:#ccc;
+    background:-moz-linear-gradient(top, #ccc, #eee);
+    background:-webkit-gradient(linear,0 0, 0 100%, from(#ccc), to(#eee));
+    box-shadow:inset 0 0 10px rgba(0,0,0,.4);
+    -moz-box-shadow:inset 0 0 10px rgba(0,0,0,.4);
+    -webkit-box-shadow:inset 0 0 10px rgba(0,0,0,.4);
+}
+
+#chess #game-canvas .piece {
+  font-size:80px;
+  height:100px;
+  width:100px;
+}

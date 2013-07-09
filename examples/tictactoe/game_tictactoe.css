@@ -1,0 +1,27 @@
+#tic-tac-toe #game-canvas .boardInstance {width:400px;}
+#tic-tac-toe #game-canvas .boardInstance .tile.clicked {background-color: #DCDCDC;}
+#tic-tac-toe #game-canvas .boardInstance .tile{
+  line-height: 100px;
+}
+
+#tic-tac-toe #game-canvas .boardInstance .tile.owned_1 {
+  background: greenyellow;
+  font-size:1;
+}
+#tic-tac-toe #game-canvas .boardInstance .tile.owned_1:after {
+  content: "X";
+}
+#tic-tac-toe #game-canvas .boardInstance .tile.owned_2 {
+  background: #FFBE7D;
+}
+#tic-tac-toe #game-canvas .boardInstance .tile.owned_2:after {
+  content: "O";
+}
+#tic-tac-toe #game-canvas .boardInstance .tile.owned_3 {
+  background:red;
+}
+#tic-tac-toe #game-canvas .boardInstance .tile.owned_4 {
+  background:blue;
+}
+
+/*#tic-tac-toe #game-canvas .boardInstance .tile:nth-child(3n+0) {background-color: red;clear:right}*/
