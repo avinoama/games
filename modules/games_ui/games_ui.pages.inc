@@ -14,9 +14,7 @@ function game_ui_view($game) {
  * @param type $game
  */
 function game_ui_list_instances($game) {
-
-  $path = drupal_get_path("module", 'game');
-  require_once $path . '/game.define.inc';
+  module_load_include('inc', 'game', 'game.define');
 
 
 

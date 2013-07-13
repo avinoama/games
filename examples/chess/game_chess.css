@@ -12,14 +12,23 @@
 }
 
 #chess #game-canvas .boardInstance .tile {
-    background:#fff;
-    background:-moz-linear-gradient(top, #fff, #eee);
-    background:-webkit-gradient(linear,0 0, 0 100%, from(#fff), to(#eee));
-    box-shadow:inset 0 0 0 1px #fff;
-    -moz-box-shadow:inset 0 0 0 1px #fff;
-    -webkit-box-shadow:inset 0 0 0 1px #fff;
-    text-align:center;
-    vertical-align:middle;
+  background:#fff;
+  background:-moz-linear-gradient(top, #fff, #eee);
+  background:-webkit-gradient(linear,0 0, 0 100%, from(#fff), to(#eee));
+  box-shadow:inset 0 0 0 1px #fff;
+  -moz-box-shadow:inset 0 0 0 1px #fff;
+  -webkit-box-shadow:inset 0 0 0 1px #fff;
+  text-align:center;
+  vertical-align:middle;
+}
+#chess #game-canvas .boardInstance .tile.selected {
+  background:-webkit-gradient(linear,0 0, 0 100%, from(#FFFF99), to(#eee));
+  /*border-radius: 50%;
+  box-shadow: inset -25px -25px 40px rgba(0,0,0,.5);
+  background-image: -webkit-linear-gradient(-45deg, rgba(255,255,220,.3) 0%, transparent 100%);
+  background-image: -moz-linear-gradient(-45deg, rgba(255,255,220,.3) 0%, transparent 100%);
+  background-image: -o-linear-gradient(-45deg, rgba(255,255,220,.3) 0%, transparent 100%);
+  background-image: -ms-linear-gradient(-45deg, rgba(255,255,220,.3) 0%, transparent 100%);*/
 }
 /*
 :nth-child(16n+1), #chess div:nth-child(16n+3),
@@ -37,16 +46,31 @@
 #chess #game-canvas .boardInstance div:nth-child(16n+14),
 #chess #game-canvas .boardInstance div:nth-child(16n+16)
 {
-    background:#ccc;
-    background:-moz-linear-gradient(top, #ccc, #eee);
-    background:-webkit-gradient(linear,0 0, 0 100%, from(#ccc), to(#eee));
-    box-shadow:inset 0 0 10px rgba(0,0,0,.4);
-    -moz-box-shadow:inset 0 0 10px rgba(0,0,0,.4);
-    -webkit-box-shadow:inset 0 0 10px rgba(0,0,0,.4);
+  background:#ccc;
+  background:-moz-linear-gradient(top, #ccc, #eee);
+  background:-webkit-gradient(linear,0 0, 0 100%, from(#ccc), to(#eee));
+  box-shadow:inset 0 0 10px rgba(0,0,0,.4);
+  -moz-box-shadow:inset 0 0 10px rgba(0,0,0,.4);
+  -webkit-box-shadow:inset 0 0 10px rgba(0,0,0,.4);
 }
-
+/*
 #chess #game-canvas .piece {
   font-size:80px;
   height:100px;
   width:100px;
+}
+*/
+#chess .piece {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 80px;
+  height: 80px;
+  font-size: 80px;
+  margin: 0 auto;
+  line-height: 80px;
+  cursor: pointer;
+  cursor: hand;
+  z-index: 2;
+  text-align: center;
 }

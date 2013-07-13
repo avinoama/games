@@ -1,8 +1,5 @@
 <?php
-
-$path = drupal_get_path("module", 'game');
-require_once $path . '/game.define.inc';
-
+module_load_include('inc', 'game', 'game.define');
 /**
  *
  * @return type

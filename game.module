@@ -1,4 +1,10 @@
 <?php
+/**
+ * 
+ * file : Game.module
+ * Describe basic game entities needed for playing a game
+ *
+ */
 
 /**
  * Implements hook_entity_info().
@@ -184,56 +190,10 @@ function game_permission() {
  * @param type $info 
  */
 function game_entity_property_info_alter(&$info) {
-/*
-  $info['site']['properties']['current_game_session'] = array(
-      'label' => t('Current game played at the moment'),
-      'description' => t('the current game running.'),
-      'type' => 'text',
-      'getter callback' => 'game_current_session',
-  );
- */
-  /*
-  $info['site']['properties']['current_running_game'] = array(
-      'label' => t('Current game played at the moment'),
-      'description' => t('the current game running.'),
-      'type' => 'running_game',
-      'getter callback' => 'game_current_running',
-  );*/
- /*
-  $info['site']['properties']['current_game_id'] = array(
-      'label' => t('Current game played at the moment'),
-      'description' => t('the current game.'),
-      'type' => 'text',
-      'getter callback' => 'game_current_id',
-  );
-*/
+
   return $info;
 }
-/*
-function game_current_session() {
-  $session = check_plain($_POST['action']['params']['session']);
-  return $session;
-}
 
-function game_current_running() {
-  $session = check_plain($_POST['action']['params']['session']);
-  $conditions = array("session" => $session);
-  $e = entity_load('running_game', array(), $conditions, FALSE);
-  $k = array_keys($e);
-  $entity = $e[$k[0]];
-  
-  return $entity;
-}
-
-function game_current_id() {
-  $session = check_plain($_POST['action']['params']['session']);
-  $conditions = array("session" => $session);
-  $e = entity_load('running_game', array(), $conditions, FALSE);
-  $k = array_keys($e);
-  $entity = $e[$k[0]];
-  return $entity->gid;
-}
-*/
 /* * *****************************************************************************
  * ******************************** Game API's **********************************
  * **************************************************************************** */
@@ -397,7 +357,7 @@ function running_game_delete_multiple($running_game_ids) {
 }
 
 
-
+/*
 function game_trigger_info() {
   return array(
       'game' => array(
@@ -424,7 +384,7 @@ function game_trigger_info() {
       ),
   );
 }
-
+*/
 
 /***
  *  ------------------------------------ dont know if im using this code
