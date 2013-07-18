@@ -16,40 +16,30 @@ function game_ui_view($game) {
 function game_ui_list_instances($game) {
   module_load_include('inc', 'game', 'game.define');
 
-
-
-  $title = t('All Open games');
-  $type = 'ul';
-// The following attributes apply to the list tag (e.g., <ol> or <ul>)
-  $attributes = array(
-      'id' => 'my-custom-listing',
-      'class' => 'custom-class another-custom-class', // a string or indexed (string) array with the classes for the list tag
-  );
-
+  $header = array(t('id'), t('Status'), t('Actions'));
+  
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'running_game')
           ->propertyCondition('gid', $game->gid)
-          ->propertyCondition('status', GAME_STATUS_NOT_STARTED);
+          ->propertyOrderBy('id', 'DESC');
+          //->propertyCondition('status', GAME_STATUS_NOT_STARTED);
   $running_games = array();
   $result = $query->execute();
   if (isset($result['running_game'])) {
     $ids = array_keys($result['running_game']);
     $running_games = entity_load('running_game', $ids);
   }
-  $s = array('Not created', 'Not Started', 'Started', 'Ended');
+  $s = array(t('Not created'), t('Not Started'), t('Started'), t('Ended'));
 
-  $items = array();
+  $rows = array();
   foreach ($running_games as $running_game) {
-    $items[] = array(
-        'data' => $game->title . " - " . $s[$running_game->status] . " - " . l('Join', 'play/' . $running_game->id),
-        'id' => $running_game->id, // be careful not to add another id attribute on the page that might be the same as one of the uids or your page will not validate
-            //'class' => array_keys($account->roles), // value for 'class' key MUST be an (indexed) array. Using a string value like '2 3 4' produces an error
-    );
+   $rows[] = array($running_game->id, $s[$running_game->status] ,l('Join', 'play/' . $running_game->id));
   }
-  $items[] = array('data' => l("create new", 'game/' . $game->gid . '/create'));
+  
+  $output = l(t('Create new game'), 'game/' . $game->gid . '/create');
+  $output .= theme('table', array('header' => $header, 'rows' => $rows));
 
-  return theme_item_list(array('items' => $items, 'title' => $title, 'type' => $type, 'attributes' => $attributes));
-  ;
+  return $output;
 }
 
 /**
