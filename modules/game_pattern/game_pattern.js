@@ -4,9 +4,9 @@
       board_sizes=[3,5,7];
       Drupal.behaviors.GamePattern.init(5);
       refresh_inputs();
-      
     },
     init : function (current_board_size) {
+      console.log("init");
       Drupal.settings.current_board_size = current_board_size;
       Drupal.settings.current_board_mid = current_board_mid = Math.ceil(current_board_size/2);
 
@@ -80,11 +80,11 @@
     start = {
       "x": pattern.end.x ,
       "y" :pattern.end.y
-      };
+    };
     end = {
       "x": pattern.start.x ,
       "y" :pattern.start.y
-      };
+    };
     return {
       "start":start,
       "end": end
@@ -101,6 +101,8 @@
       li.text(board_sizes[size]+ "x" + board_sizes[size]).attr("id",board_sizes[size]);
       if(current_board_size==board_sizes[size]) {
         li.addClass("selected");
+      // add arrows
+        
       }
       li.bind("click",function(e){
         Drupal.behaviors.GamePattern.init($(e.currentTarget).attr("id"));
@@ -211,33 +213,52 @@
   function _tile_unselect(tile) {
     console.log("tile_unselect");
     tile.removeClass("selected");
-    
+    var pattern = create_pattern_from_tile(tile);
+    input_pattern = $('#edit-field-pattern .form-item tbody tr td .form-type-textfield input[value="'+pattern+'"]');
+    input_pattern.val("");
+    for (i in Drupal.settings.pattern.field_pattern['und']) {
+      if(Drupal.settings.pattern.field_pattern['und'][i]['value']==pattern) {
+        Drupal.settings.pattern.field_pattern['und'].splice(i, 1);
+        break;
+      }
+    }
   }
   function _tile_select(tile) {
-    
-    tile_id = $(tile).attr("id").replace("tile_");
-    tile_position = get_position($(tile).attr("class"));
-    
-    middle = $(".tile.middle");
-    middle_id = middle.attr("id").replace("tile_");
-    middle_position = get_position($(middle).attr("class"));
-    
-    //pattern = '{"start":{"x": "px","offsetx":"@offsetx","y": "py","offsety":"@offsety","repeat":1}}';
-    pattern = '{"start":{"x": "px+@offsetx","y": "py+@offsety"}}';
-    
-    pattern = pattern.replace("@offsetx", tile_position[0] - middle_position[0] );
-    pattern = pattern.replace("@offsety", tile_position[1] - middle_position[1] );
-    
+    pattern = create_pattern_from_tile(tile);
     Drupal.settings.pattern.field_pattern['und'].push({
       "value":pattern
     });
-
-    
-
-    $('[name="field_pattern_add_more"]').mousedown();
+    input_pattern = $('#edit-field-pattern .form-item tbody tr td .form-type-textfield  input:text');
+    for ( i in input_pattern) {
+      if($(input_pattern[i]).val()=="") {
+        $(input_pattern[i]).val(pattern);
+        break;
+      }
+    }
+    setTimeout(function(){
+      l=$('#edit-field-pattern .form-item tbody tr td .form-type-textfield  input').length;
+      console.log(l+ " == " + Drupal.settings.pattern.field_pattern['und'].length);
+      if(l==Drupal.settings.pattern.field_pattern['und'].length) {
+        $('[name="field_pattern_add_more"]').mousedown();
+      }
+    },100);
     tile.addClass("selected");
   }
+  function create_pattern_from_tile(tile) {
+    tile_id = $(tile).attr("id").replace("tile_");
+    tile_position = get_position($(tile).attr("class"));
 
+    middle = $(".tile.middle");
+    middle_id = middle.attr("id").replace("tile_");
+    middle_position = get_position($(middle).attr("class"));
+
+    //pattern = '{"start":{"x": "px","offsetx":"@offsetx","y": "py","offsety":"@offsety","repeat":1}}';
+    pattern = '{"start":{"x": "px+@offsetx","y": "py+@offsety"}}';
+
+    pattern = pattern.replace("@offsetx", tile_position[0] - middle_position[0] );
+    pattern = pattern.replace("@offsety", tile_position[1] - middle_position[1] );
+    return pattern;
+  }
   function refresh_inputs(){
     var inputs = $("#field-pattern-values .draggable input");
     for (i in Drupal.settings.pattern.field_pattern['und']) {
@@ -246,9 +267,7 @@
   }
 
   function get_position(tile_class) {
-    console.log("get_position" + " "+ tile_class);
     start=tile_class.indexOf("position_");
-    console.log(start);
     if(start>-1) {
       end = tile_class.indexOf(" ",start);
       if(end==-1) {
