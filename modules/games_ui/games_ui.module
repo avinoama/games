@@ -77,7 +77,7 @@ function games_ui_menu() {
       'title' => 'Create New',
       'page callback' => 'game_ui_create_instance',
       'page arguments' => array($game_uri_argument_position),
-      'access arguments' => array('administer game types'),
+      'access arguments' => array('play game entities'),
       'file' => 'games_ui.admin.inc',
       /*'type' => MENU_LOCAL_TASK,
       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,*/
@@ -86,7 +86,7 @@ function games_ui_menu() {
       'title' => 'Play',
       'page callback' => 'game_ui_list_instances',
       'page arguments' => array($game_uri_argument_position),
-      'access arguments' => array('administer game types'),
+      'access arguments' => array('play game entities'),
       'file' => 'games_ui.pages.inc',
       'type' => MENU_LOCAL_TASK,
       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
