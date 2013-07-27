@@ -349,40 +349,10 @@ function _game_pattern_type_default_fields() {
       'cardinality' => FIELD_CARDINALITY_UNLIMITED,
       'entity_type' => 'game_pattern',
   );
-  
-  $fields[] = array(
-      'field_name' => 'field_over_piece',
-      'label' => t('over piece'),
-      'type' => 'list_integer',
-      'default_value' => 1,
-      'cardinality' => 1,
-      'entity_type' => 'game_pattern',
-      'indexes' => array(
-          'value' => array(
-              0 => 'value',
-          ),
-      ),
-      'required'=>TRUE,
-      'module' => 'list',
-      'settings' => array('target_type' => 'text', 'target_bundles' => array(), 'allowed_values_function' => '_game_pattern_boolean_options'),
-      'widget' => array(
-          'active' => 1,
-          'module' => 'options',
-          'settings' => array(),
-          'type' => 'options_select',
-          'weight' => '5',
-      ),
-  );
 
   return $fields;
 }
-function _game_pattern_boolean_options() {
-    $options = array(
-      0 => 'FALSE',
-      1 => 'TRUE',
-  );
-  return $options;
-}
+
 /**
  *
  */
@@ -396,8 +366,8 @@ function _game_patterns_add_pattern_types() {
   game_pattern_type_save($pattern_type);
 
   $pattern_type2 = entity_create($entity_type, array());
-  $pattern_type2->label = "Move Pattern";
-  $pattern_type2->type = "move_pattern";
+  $pattern_type2->label = "Piece Pattern";
+  $pattern_type2->type = "piece_pattern";
 
   game_pattern_type_save($pattern_type2);
 }

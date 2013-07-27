@@ -79,8 +79,8 @@ function games_ui_menu() {
       'page arguments' => array($game_uri_argument_position),
       'access arguments' => array('play game entities'),
       'file' => 'games_ui.admin.inc',
-      /*'type' => MENU_LOCAL_TASK,
-      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,*/
+          /* 'type' => MENU_LOCAL_TASK,
+            'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE, */
   );
   $items[$game_uri . '/play'] = array(
       'title' => 'Play',
@@ -111,7 +111,7 @@ function games_ui_menu() {
       'type' => MENU_NORMAL_ITEM,
       'file' => 'games_ui.admin.inc',
   );
-  
+
   $items['admin/config/system/games'] = array(
       'title' => 'Game settings',
       'description' => 'Change long pulling interval, player idle time',
@@ -180,3 +180,5 @@ function games_ui_preprocess_page(&$vars) {
 function startsWith($haystack, $needle) {
   return !strncmp($haystack, $needle, strlen($needle));
 }
+
+

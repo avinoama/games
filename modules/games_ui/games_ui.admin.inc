@@ -459,6 +459,18 @@ function game_delete_form_submit($form, &$form_state) {
  * @param type $op
  */
 function game_ui_setting_form($form, &$form_state, $op = 'edit') {
+/*
+  // Limit number of open games per
+  $form['game_limit_open_games'] = array(
+      '#title' => t('Limit open games'),
+      '#type' => 'textfield',
+      '#default_value' => variable_get('game_limit_open_games', '10'),
+      '#description' => t('Limits per game the amount of open game that can be created after that it removes the last game created'),
+      '#required' => TRUE,
+      '#size' => 30,
+  );
+  */
+
   // long polling interval
   $form['game_poll_interval'] = array(
       '#title' => t('Long polling interval'),

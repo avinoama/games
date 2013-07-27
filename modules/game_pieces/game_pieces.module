@@ -230,9 +230,9 @@ function game_pieces_game_init_load($game, $running_game) {
         //
         if (!empty($piece_type)) {
           $pieces_type[$p->type] = $piece_type;
-          if (property_exists($piece_type, 'move_pattern')) {
-            if (!isset($patterns[$piece_type->move_pattern])) {
-              $patterns[$piece_type->move_pattern] = game_pattern_load_by_machine_name($piece_type->move_pattern);
+          if (property_exists($piece_type, 'piece_pattern')) {
+            if (!isset($patterns[$piece_type->piece_pattern])) {
+              $patterns[$piece_type->piece_pattern] = game_pattern_load_by_machine_name($piece_type->piece_pattern);
             }
           }
           // $p->type . "_move_conditions";
@@ -240,7 +240,7 @@ function game_pieces_game_init_load($game, $running_game) {
       }
     }
   }
-  drupal_add_js(array('GamePieces' => array('pieces' => $pieces, 'piece_types' => $pieces_type,'patterns'=>$patterns)), 'setting');
+  drupal_add_js(array('GamePieces' => array('pieces' => $pieces, 'piece_types' => $pieces_type, 'patterns' => $patterns)), 'setting');
 }
 
 /**
@@ -350,6 +350,62 @@ function game_pieces_menu() {
   return $items;
 }
 
+function _game_pieces_pattern_add_default_fields() {
+  $bundle = 'piece_pattern';
+  $fields = _game_pieces_pattern_default_fields();
+  foreach ($fields as $field) {
+    $field_info = field_info_field($field['field_name']);
+    if (!$field_info) {
+
+      field_create_field($field);
+
+      $instance = array(
+          'field_name' => $field['field_name'],
+          'label' => $field['label'],
+          'entity_type' => $field['entity_type'],
+          'bundle' => $bundle,
+      );
+      $instance += $field;
+
+      field_create_instance($instance);
+    }
+  }
+}
+
+function _game_pieces_pattern_default_fields() {
+
+  $fields[] = array(
+      'field_name' => 'field_over_piece',
+      'label' => t('over piece'),
+      'type' => 'list_integer',
+      'default_value' => 1,
+      'cardinality' => 1,
+      'entity_type' => 'game_pattern',
+      'indexes' => array(
+          'value' => array(
+              0 => 'value',
+          ),
+      ),
+      'required' => TRUE,
+      'module' => 'list',
+      'settings' => array('target_type' => 'text', 'target_bundles' => array(), 'allowed_values_function' => '_game_pieces_boolean_options'),
+      'widget' => array(
+          'active' => 1,
+          'module' => 'options',
+          'settings' => array(),
+          'type' => 'options_select',
+          'weight' => '5',
+      ),
+  );
+  return $fields;
+}
+function _game_pieces_boolean_options() {
+    $options = array(
+      0 => 'FALSE',
+      1 => 'TRUE',
+  );
+  return $options;
+}
 /**
  *
  */

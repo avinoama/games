@@ -42,7 +42,7 @@ function _game_chess_add_default_games() {
 
 function _game_chess_add_default_patterns() {
   $entity_type = 'game_pattern';
-  $bundle = 'move_pattern';
+  $bundle = 'piece_pattern';
 
 
   $patterns = _game_chess_pieces_default_patterns();
@@ -188,7 +188,7 @@ function _game_chess_pieces_default_patterns() {
   $patterns[] = array(
       'label' => 'Pawn White Move',
       'machine_name' => 'pawn-white-move',
-      'type' => 'move_pattern',
+      'type' => 'piece_pattern',
       'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => array(0 => array('value' => $tmp)))
   );
@@ -199,7 +199,7 @@ function _game_chess_pieces_default_patterns() {
   $patterns[] = array(
       'label' => 'Pawn White Initiate',
       'machine_name' => 'pawn-white-initiate',
-      'type' => 'move_pattern',
+      'type' => 'piece_pattern',
       'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
@@ -208,7 +208,7 @@ function _game_chess_pieces_default_patterns() {
   $patterns[] = array(
       'label' => 'Pawn Black Move',
       'machine_name' => 'pawn-black-move',
-      'type' => 'move_pattern',
+      'type' => 'piece_pattern',
       'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => array(0 => array('value' => $tmp)))
   );
@@ -219,7 +219,7 @@ function _game_chess_pieces_default_patterns() {
   $patterns[] = array(
       "label" => "Pawn Black Initiate",
       "machine_name" => "pawn-black-initiate",
-      "type" => "move_pattern",
+      "type" => "piece_pattern",
       'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
@@ -237,7 +237,7 @@ function _game_chess_pieces_default_patterns() {
   $patterns[] = array(
       "label" => "King move Initiate",
       "machine_name" => "king-move-initiate",
-      "type" => "move_pattern",
+      "type" => "piece_pattern",
       'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
@@ -256,7 +256,7 @@ function _game_chess_pieces_default_patterns() {
   $patterns[] = array(
       'label' => 'Queen move Initiate',
       'machine_name' => 'queen-move-initiate',
-      'type' => 'move_pattern',
+      'type' => 'piece_pattern',
       'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
@@ -271,7 +271,7 @@ function _game_chess_pieces_default_patterns() {
   $patterns[] = array(
       'label' => 'Bishop move Initiate',
       'machine_name' => 'bishop-move-initiate',
-      'type' => 'move_pattern',
+      'type' => 'piece_pattern',
       'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
@@ -290,7 +290,7 @@ function _game_chess_pieces_default_patterns() {
   $patterns[] = array(
       'label' => 'Knight move Initiate',
       'machine_name' => 'knight-move-initiate',
-      'type' => 'move_pattern',
+      'type' => 'piece_pattern',
       'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 1))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );
@@ -306,7 +306,7 @@ function _game_chess_pieces_default_patterns() {
   $patterns[] = array(
       'label' => 'Rook move Initiate',
       'machine_name' => 'rook-move-initiate',
-      'type' => 'move_pattern',
+      'type' => 'piece_pattern',
       'field_over_piece'=>array(LANGUAGE_NONE => array(0 => array('value' => 0))),
       'field_pattern' => array(LANGUAGE_NONE => $tmp)
   );

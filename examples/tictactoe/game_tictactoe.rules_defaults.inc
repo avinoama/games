@@ -293,7 +293,7 @@ $rules['rules_tictactoe_checkwinner_3_addition'] = rules_import('{ "rules_tictac
   $rules['rules_ticktacktoe_game_rules'] = rules_import('{ "rules_ticktacktoe_game_rules" : {
     "LABEL" : "TickTackToe Game Rules",
     "PLUGIN" : "reaction rule",
-    "REQUIRES" : [ "rules", "board_games" ],
+    "REQUIRES" : [ "rules", "board_games", "game" ],
     "ON" : [ "tile_click" ],
     "IF" : [
       { "NOT data_is" : { "data" : [ "site:current-player-id" ], "value" : "0" } },
@@ -323,7 +323,12 @@ $rules['rules_tictactoe_checkwinner_3_addition'] = rules_import('{ "rules_tictac
           "game_matrix" : [ "site:current-game-matrix" ]
         }
       },
-      { "component_rules_ticktacktoe_switchplayer" : { "running_game" : [ "running_game" ] } }
+      { "component_rules_ticktacktoe_switchplayer" : { "running_game" : [ "running_game" ] } },
+      { "rules_game_send_message" : {
+          "running_game" : [ "running_game" ],
+          "message_text" : "Its Player[site:current-player-turn] turn"
+        }
+      }
     ]
   }
 }');

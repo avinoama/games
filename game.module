@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 
  * file : Game.module
@@ -93,7 +94,7 @@ function game_entity_info() {
       ),
   );
 
- 
+
   $return['running_game_command'] = array(
       'label' => t('Running Game Command'),
       'entity class' => 'RunningGameCommand',
@@ -346,6 +347,11 @@ function running_game_save($running_game) {
  * Delete single case type.
  */
 function running_game_delete($running_game) {
+  $commands = entity_load('running_game_command', FALSE, array('running_game_id' => $running_game->id));
+  $ids = array_keys($commands);
+  if (!empty($ids)) {
+    entity_delete('running_game_command', $ids);
+  }
   entity_delete('running_game', entity_id('running_game', $running_game));
 }
 
@@ -356,40 +362,40 @@ function running_game_delete_multiple($running_game_ids) {
   entity_delete_multiple('running_game', $running_game_ids);
 }
 
-
 /*
-function game_trigger_info() {
+  function game_trigger_info() {
   return array(
-      'game' => array(
-          'game_create' => array(
-              'label' => t('When creating a new game'),
-              'type' => 'game',
-          ),
-          'game_start' => array(
-              'label' => t('When game status changes to game start'),
-              'type' => 'game',
-          ),
-          'game_turn_start' => array(
-              'label' => t('When player turn starts'),
-              'type' => 'game',
-          ),
-          'game_turn_end' => array(
-              'label' => t('When player turn ends'),
-              'type' => 'game',
-          ),
-          'game_end' => array(
-              'label' => t('When game status changes to game end'),
-              'type' => 'game',
-          ),
-      ),
+  'game' => array(
+  'game_create' => array(
+  'label' => t('When creating a new game'),
+  'type' => 'game',
+  ),
+  'game_start' => array(
+  'label' => t('When game status changes to game start'),
+  'type' => 'game',
+  ),
+  'game_turn_start' => array(
+  'label' => t('When player turn starts'),
+  'type' => 'game',
+  ),
+  'game_turn_end' => array(
+  'label' => t('When player turn ends'),
+  'type' => 'game',
+  ),
+  'game_end' => array(
+  'label' => t('When game status changes to game end'),
+  'type' => 'game',
+  ),
+  ),
   );
-}
-*/
+  }
+ */
 
-/***
+/* * *
  *  ------------------------------------ dont know if im using this code
  *  maybe create a class that allowes me to send players message
  */
+
 function game_action_info() {
   return array(
       'game_message_action' => array(
@@ -463,4 +469,52 @@ function game_message_action_validate($form, $form_state) {
 function game_message_action_submit($form, $form_state) {
   //dpm($form_state['values']);
   return array('game_id' => $form_state['values']['game_id'], 'message' => $form_state['values']['message']);
+}
+
+/**
+ * Hook_cron
+ * Running maintnance task on game
+ *
+ */
+function game_cron() {
+  // Default to an hourly interval. Of course, cron has to be running at least
+  // hourly for this to work.
+  $interval = variable_get('game_cron_interval', 60 * 60); //* 60
+  // We usually don't want to act every time cron runs (which could be every
+  // minute) so keep a time for the next run in a variable.
+  $always = true;
+  if (time() >= variable_get('game_cron_next_execution', 0) || $always) {
+    // This is a silly example of a cron job.
+    // It just makes it obvious that the job has run without
+    // making any changes to your database.
+    game_remove_all_running_games_that_ended();
+    //watchdog('cron_example', 'cron_example ran');
+    if (!empty($GLOBALS['game_cron_show_status_message'])) {
+      drupal_set_message(t('game_cron executed at %time', array('%time' => date_iso8601(time(0)))));
+    }
+    variable_set('game_cron_next_execution', time() + $interval);
+  }
+}
+
+/**
+ * 
+ */
+function game_remove_all_running_games_that_ended() {
+  module_load_include('inc', 'game', 'game.define');
+
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'running_game')
+          ->propertyCondition('status', GAME_STATUS_ENDED);
+  $running_games = array();
+  $result = $query->execute();
+  if (isset($result['running_game'])) {
+    $ids = array_keys($result['running_game']);
+    $running_games = entity_load('running_game', $ids);
+  }
+  foreach ($running_games as $running_game) {
+
+
+
+    running_game_delete($running_game);
+  }
 }

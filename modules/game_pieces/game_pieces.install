@@ -5,6 +5,7 @@
  */
 function game_pieces_install() {
   _game_pieces_running_game_add_default_fields();
+  _game_pieces_pattern_add_default_fields();
 }
 
 /**
