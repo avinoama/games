@@ -1,0 +1,276 @@
+<?php
+/**
+	remember 
+	 $action_mapping = array(
+      'GET' => 'retrieve', 
+      'POST' => 'create', 
+      'PUT' => 'update', 
+      'DELETE' => 'delete',
+    );
+*/
+
+/**
+ * Implements hook_services_resources().
+ */
+function game_service_services_resources() {
+  return array(
+   'game' => array(
+     'retrieve' => array(
+       'help' => 'Retrieve a game',
+       'file' => array('file' => 'inc', 'module' => 'game_service'),
+       'callback' => '_game_service_retrieve',
+       'access callback' => '_game_service_access',
+       'access arguments' => array('view'),
+       'access arguments append' => TRUE,
+       'args' => array(
+         array(
+           'name' => 'id',
+           'type' => 'int',
+           'description' => 'The id of the game to get',
+           'source' => array('path' => '0'),
+           'optional' => FALSE,
+         ),
+       ),
+     ),
+     'create' => array(
+       'help' => 'Creates a game',
+       'file' => array('file' => 'inc', 'module' => 'game_service'),
+       'callback' => '_game_service_create',
+       'access arguments' => array('game resource create'),
+       'access arguments append' => FALSE,
+       'args' => array(
+         array(
+           'name' => 'data',
+           'type' => 'struct',
+           'description' => 'The game object',
+           'source' => 'data',
+           'optional' => FALSE,
+         ),
+       ),
+     ),
+     'update' => array(
+       'help' => 'Updates a game',
+       'file' => array('file' => 'inc', 'module' => 'game_service'),
+       'callback' => '_game_service_update',
+       'access callback' => '_game_service_access',
+       'access arguments' => array('update'),
+       'access arguments append' => TRUE,
+       'args' => array(
+         array(
+           'name' => 'id',
+           'type' => 'int',
+           'description' => 'The id of the game to update',
+           'source' => array('path' => '0'),
+           'optional' => FALSE,
+         ),
+         array(
+           'name' => 'data',
+           'type' => 'struct',
+           'description' => 'The game data object',
+           'source' => 'data',
+           'optional' => FALSE,
+         ),
+       ),
+     ),
+     'delete' => array(
+       'help' => 'Deletes a game',
+       'file' => array('file' => 'inc', 'module' => 'game_service'),
+       'callback' => '_game_service_delete',
+       'access callback' => '_game_service_access',
+       'access arguments' => array('delete'),
+       'access arguments append' => TRUE,
+       'args' => array(
+         array(
+           'name' => 'gid',
+           'type' => 'int',
+           'description' => 'The id of the game to delete',
+           'source' => array('path' => '0'),
+           'optional' => FALSE,
+         ),
+       ),
+     ),
+     'index' => array(
+       'help' => 'Retrieves a listing of games',
+       'file' => array('file' => 'inc', 'module' => 'game_service'),
+       'callback' => '_game_service_index',
+       'access callback' => 'user_access',
+       'access arguments' => array('access content'),
+       'access arguments append' => FALSE,
+       'args' => array(array(
+           'name' => 'page',
+           'type' => 'int',
+           'description' => '',
+           'source' => array(
+             'param' => 'page',
+           ),
+           'optional' => TRUE,
+           'default value' => 0,
+         ),
+         array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+         ),
+       ),
+     ),
+   ),
+  'running_game'=>array(
+     'retrieve' => array(
+       'help' => 'Retrieve a running game',
+       'file' => array('file' => 'inc', 'module' => 'game_service'),
+       'callback' => '_running_game_service_retrieve',
+       'access callback' => '_game_service_access',
+       'access arguments' => array('view'),
+       'access arguments append' => TRUE,
+       'args' => array(
+         array(
+           'name' => 'id',
+           'type' => 'int',
+           'description' => 'The id of the game to get',
+           'source' => array('path' => '0'),
+           'optional' => FALSE,
+         ),
+       ),
+   		),
+   		'index' => array(
+       'help' => 'Retrieves a listing of running games',
+       'file' => array('file' => 'inc', 'module' => 'game_service'),
+       'callback' => '_running_game_service_index',
+       'access callback' => 'user_access',
+       'access arguments' => array('access content'),
+       'access arguments append' => FALSE,
+       'args' => array(
+          array(
+           'name' => 'gid',
+           'type' => 'int',
+           'description' => 'The id of the game to get',
+           'source' => array(
+             'param' => 'gid',
+           ),
+           'optional' => TRUE,
+         ),
+       array(
+           'name' => 'page',
+           'type' => 'int',
+           'description' => '',
+           'source' => array(
+             'param' => 'page',
+           ),
+           'optional' => TRUE,
+           'default value' => 0,
+         ),
+         array(
+           'name' => 'parameters',
+           'type' => 'array',
+           'description' => '',
+           'source' => 'param',
+           'optional' => TRUE,
+           'default value' => array(),
+         ),
+       ),
+     ),
+   ),
+   
+   );
+}
+/**
+ * Implements hook_perm().
+ */
+function game_service_perm() {
+    return array(
+      'game resource create',
+      'game resource view any note',
+      'game resource view own notes',
+      'game resource edit any note',
+      'game resource edit own notes',
+      'game resource delete any note',
+      'game resource delete own notes',
+    );
+}
+
+ /**
+ * Access callback for the note resource.
+ *
+ * @param string $op
+ *  The operation that's going to be performed.
+ * @param array $args
+ *  The arguments that will be passed to the callback.
+ * @return bool
+ *  Whether access is given or not.
+ */
+function _game_service_access($op, $args) {
+global $user;
+$access = FALSE;
+
+  switch ($op) {
+    case 'view':
+      $game = game_load($args[0]);
+      $access = user_access('game resource view any note');
+      $access = $access || $game->uid == $user->uid && user_access('game resource view own notes');
+      break;
+    case 'update':
+      $game = game_load($args[0]->id);
+      $access = user_access('game resource edit any note');
+      $access = $access || $game->uid == $user->uid && user_access('game resource edit own notes');
+      break;
+    case 'delete':
+      $game = game_load($args[0]);
+      $access = user_access('game resource delete any note');
+      $access = $access || $game->uid == $user->uid && user_access('game resource delete own notes');
+      break;
+	}
+return $access;
+}
+function game_service_default_services_endpoint() {
+  $export = array();
+
+    $endpoint = new stdClass();
+    $endpoint->disabled = FALSE; /* Edit this to true to make a default endpoint disabled initially */
+    $endpoint->api_version = 3;
+    $endpoint->name = 'games';
+    $endpoint->server = 'rest_server';
+    $endpoint->path = 'gameis';
+    $endpoint->authentication = array(
+      'services' => 'services',
+    );
+    $endpoint->server_settings = array();
+    $endpoint->resources = array(
+      'game' => array(
+        'operations' => array(
+          'create' => array(
+            'enabled' => '1',
+          ),
+          'retrieve' => array(
+            'enabled' => '1',
+          ),
+          'update' => array(
+            'enabled' => '1',
+          ),
+          'delete' => array(
+            'enabled' => '1',
+          ),
+          'index' => array(
+            'enabled' => '1',
+          ),
+        ),
+      ),
+      'running_game' => array(
+        'operations' => array(
+          'retrieve' => array(
+            'enabled' => '1',
+          ),
+          'index' => array(
+            'enabled' => '1',
+          ),
+        ),
+      ),
+    );
+    $endpoint->debug = 1;
+
+  $export['games'] = $endpoint;
+
+  return $export;
+}
