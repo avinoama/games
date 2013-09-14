@@ -278,7 +278,7 @@ function _board_games_get_current_instance($session = null) {
     $session = check_plain($_POST['action']['game']['session']);
   }
   $conditions = array("session" => $session);
-  running_game_load();
+  //running_game_load();
   $e = entity_load('running_game', array(), $conditions, FALSE);
   $k = array_keys($e);
   return $e[$k[0]];
