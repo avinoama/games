@@ -1,5 +1,7 @@
 <?php
-/*
+/**
+ * @file
+ * template for a basic game
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  * vars

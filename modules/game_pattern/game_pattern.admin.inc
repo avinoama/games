@@ -16,7 +16,8 @@ function game_pattern_type_form($form, &$form_state, $pattern_type, $op = 'edit'
   }
   if (property_exists($pattern_type, "symbol")) {
     $s = $$pattern_type->symbol;
-  } else {
+  }
+  else {
     $s = "";
   }
 
@@ -217,7 +218,7 @@ function pattern_ui_form($form, &$form_state, $pattern) {
  */
 function pattern_ui_machine_name_exists() {
 
-  return false;
+  return FALSE;
 }
 
 /**
@@ -226,7 +227,7 @@ function pattern_ui_machine_name_exists() {
  * @param type $form_state
  */
 function pattern_ui_form_validate($form, &$form_state) {
-  return true;
+  return TRUE;
 }
 
 /**

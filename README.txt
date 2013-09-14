@@ -38,3 +38,4 @@ avinoama2@gmail.com
 
 TODO:
 1. Add a module that will be an interface to services module
+2. Write test cases and Add game.test using simpletest

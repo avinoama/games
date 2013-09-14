@@ -348,8 +348,8 @@ function get_all_piece_types_and_extra_options() {
  * @param type $piece
  * @return boolean
  */
-function piece_remove_validation($running_game = null, $piece = null) {
-  return true;
+function piece_remove_validation($running_game = NULL, $piece = NULL) {
+  return TRUE;
 }
 
 /**
@@ -360,7 +360,7 @@ function piece_remove_validation($running_game = null, $piece = null) {
  * @param type $running_game
  * @param type $piece
  */
-function piece_remove($running_game = null, $piece = null) {
+function piece_remove($running_game = NULL, $piece = NULL) {
   $id = $piece;
   foreach ($running_game->field_pieces[LANGUAGE_NONE] as $key => $val) {
     if ($val['target_id'] == $id) {
@@ -386,11 +386,11 @@ function piece_remove($running_game = null, $piece = null) {
  *
  * @return boolean
  */
-function piece_create_validation($running_game = null, $piece_type = null, $position = -1) {
+function piece_create_validation($running_game = NULL, $piece_type = NULL, $position = -1) {
   if (property_exists($running_game, "field_pieces")) {
-    return false;
+    return FALSE;
   }
-  return true;
+  return TRUE;
 }
 
 /**
@@ -408,7 +408,7 @@ function piece_create_validation($running_game = null, $piece_type = null, $posi
  * @param type $position
  * @param type $owend
  */
-function piece_create($running_game = null, $piece_type = null, $element = '', $position = '', $owend = -1) {
+function piece_create($running_game = NULL, $piece_type = NULL, $element = '', $position = '', $owend = -1) {
 
   // create piece
   $entity_type = "piece";
@@ -482,14 +482,11 @@ function piece_create($running_game = null, $piece_type = null, $element = '', $
  * @param type $position
  * @return boolean
  */
-function piece_move_validation($running_game = null, $piece = null, $position = -1) {
-
+function piece_move_validation($running_game = NULL, $piece = NULL, $position = -1) {
   if ($position < 0) {
-    return false;
+    return FALSE;
   }
-
-
-  return true;
+  return TRUE;
 }
 
 /**
@@ -503,7 +500,7 @@ function piece_move_validation($running_game = null, $piece = null, $position = 
  * @param type $position
  * 
  */
-function piece_move($running_game = null, $piece = null, $position = array()) {
+function piece_move($running_game = NULL, $piece = NULL, $position = array()) {
 
   $piece->field_position[LANGUAGE_NONE] = array();
   $i = 0;
@@ -532,7 +529,7 @@ function piece_move($running_game = null, $piece = null, $position = array()) {
  * @param type $running_game
  * @param type $initiator
  */
-function piece_check_initiation_can_be_blocked($game = null, $running_game = null, $initiator = null, $initiated_piece_type = null) {
+function piece_check_initiation_can_be_blocked($game = NULL, $running_game = NULL, $initiator = NULL, $initiated_piece_type = NULL) {
   $pieces = $running_game->field_pieces[LANGUAGE_NONE];
   $ids = array();
   foreach ($pieces as $p) {
@@ -565,7 +562,7 @@ function piece_check_initiation_can_be_blocked($game = null, $running_game = nul
     $current_initiated_pieces = entity_load('piece', $pids);
   }
 
-  $initiated = null;
+  $initiated = NULL;
   foreach ($current_initiated_pieces as $piece) {
     if ($piece->uid != $initiator->uid) {
       $initiated = $piece;
@@ -644,31 +641,35 @@ function game_piece_get_pattern_block_positions($game, $running_game, $initiator
           for ($y = $pattern['start']['y']; $y >= $pattern['end']['y']; $y--) {
             if ($x == $position[0] && $y == $position[1]) {
               return $positions;
-            } else {
+            }
+            else {
               $positions[] = array($x, $y);
             }
             // this pattern cannot continue try another
-            if ($over_piece == false && isset($positions[$x][$y])) {
-              break 2;
-            }
-          }
-        }
-      } else {
-        for ($x = $pattern['start']['x']; $x <= $pattern['end']['x']; $x++) {
-          for ($y = $pattern['start']['y']; $y <= $pattern['end']['y']; $y++) {
-            if ($x == $position[0] && $y == $position[1]) {
-              return $positions;
-            } else {
-              $positions[] = array($x, $y);
-            }
-            // this pattern cannot continue try another
-            if ($over_piece == false && isset($positions[$x][$y])) {
+            if ($over_piece == FALSE && isset($positions[$x][$y])) {
               break 2;
             }
           }
         }
       }
-    } else if (isset($pattern['start'])) {
+      else {
+        for ($x = $pattern['start']['x']; $x <= $pattern['end']['x']; $x++) {
+          for ($y = $pattern['start']['y']; $y <= $pattern['end']['y']; $y++) {
+            if ($x == $position[0] && $y == $position[1]) {
+              return $positions;
+            }
+            else {
+              $positions[] = array($x, $y);
+            }
+            // this pattern cannot continue try another
+            if ($over_piece == FALSE && isset($positions[$x][$y])) {
+              break 2;
+            }
+          }
+        }
+      }
+    }
+    elseif (isset($pattern['start'])) {
 
 
       if (isset($pattern['start']['repeat'])) {
@@ -677,15 +678,17 @@ function game_piece_get_pattern_block_positions($game, $running_game, $initiator
           $y = ($pattern['start']['y'] + ($pattern['start']['offsety'] * $i));
           if ($x == $position[0] && $y == $position[1]) {
             return $positions;
-          } else {
+          }
+          else {
             $positions[] = array($x, $y);
           }
           // this pattern cannot continue try another
-          if ($over_piece == false && isset($positions[$x][$y])) {
+          if ($over_piece == FALSE && isset($positions[$x][$y])) {
             break;
           }
         }
-      } else {
+      }
+      else {
         $x = $pattern['start']['x'];
         $y = $pattern['start']['y'];
         /* if ($over_piece == false && isset($positions[$x][$y])) {
@@ -707,7 +710,7 @@ function game_piece_get_pattern_block_positions($game, $running_game, $initiator
  * @param type $initiator
  * @return boolean
  */
-function piece_check_initator_can_be_initiated($game = null, $running_game = null, $initiator = null) {
+function piece_check_initator_can_be_initiated($game = NULL, $running_game = NULL, $initiator = NULL) {
   $pieces = $running_game->field_pieces[LANGUAGE_NONE];
   $ids = array();
   foreach ($pieces as $p) {
@@ -740,7 +743,7 @@ function piece_check_initator_can_be_initiated($game = null, $running_game = nul
  * @param type $piece
  * @return boolean
  */
-function piece_check_initiated_can_evade($game = null, $running_game = null, $initiator = null, $initiated_piece_type = null) {
+function piece_check_initiated_can_evade($game = NULL, $running_game = NULL, $initiator = NULL, $initiated_piece_type = NULL) {
 
   // take all pieces in game
   $pieces = $running_game->field_pieces[LANGUAGE_NONE];
@@ -765,7 +768,7 @@ function piece_check_initiated_can_evade($game = null, $running_game = null, $in
     $current_initiated_pieces = entity_load('piece', $pids);
   }
 
-  $initiated = null;
+  $initiated = NULL;
   foreach ($current_initiated_pieces as $piece) {
     if ($piece->uid != $initiator->uid) {
       $initiated = $piece;
@@ -815,25 +818,27 @@ function piece_check_initiated_can_evade($game = null, $running_game = null, $in
               return TRUE;
             }
             // this pattern cannot continue try another
-            if ($over_piece == false && isset($positions[$x][$y])) {
+            if ($over_piece == FALSE && isset($positions[$x][$y])) {
               break 2;
             }
           }
         }
-      } else {
+      }
+      else {
         for ($x = $pattern['start']['x']; $x <= $pattern['end']['x']; $x++) {
           for ($y = $pattern['start']['y']; $y <= $pattern['end']['y']; $y++) {
             if ($x == $position[0] && $y == $position[1] && !isset($matrix[$x][$y])) {
               return TRUE;
             }
             // this pattern cannot continue try another
-            if ($over_piece == false && isset($positions[$x][$y])) {
+            if ($over_piece == FALSE && isset($positions[$x][$y])) {
               break 2;
             }
           }
         }
       }
-    } else if (isset($pattern['start'])) {
+    }
+    elseif (isset($pattern['start'])) {
 
 
       if (isset($pattern['start']['repeat'])) {
@@ -844,11 +849,12 @@ function piece_check_initiated_can_evade($game = null, $running_game = null, $in
             return TRUE;
           }
           // this pattern cannot continue try another
-          if ($over_piece == false && isset($positions[$x][$y])) {
+          if ($over_piece == FALSE && isset($positions[$x][$y])) {
             break;
           }
         }
-      } else {
+      }
+      else {
         $x = $pattern['start']['x'];
         $y = $pattern['start']['y'];
         /* if ($over_piece == false && isset($positions[$x][$y])) {
@@ -911,7 +917,7 @@ function draw_piece_initiation_on_board(&$game, &$matrix, &$piece) {
     $positions = array();
     foreach ($game_pieces as $game_piece) {
       $pos = $game_piece->field_position[LANGUAGE_NONE];
-      $positions[$pos[0]['value']][$pos[1]['value']] = true;
+      $positions[$pos[0]['value']][$pos[1]['value']] = TRUE;
     }
   }
 
@@ -941,12 +947,13 @@ function draw_piece_initiation_on_board(&$game, &$matrix, &$piece) {
               $matrix[$x][$y] = 'initiation';
             }
             // this pattern cannot continue try another
-            if ($over_piece == false && isset($positions[$x][$y])) {
+            if ($over_piece == FALSE && isset($positions[$x][$y])) {
               break 2;
             }
           }
         }
-      } else {
+      }
+      else {
         for ($x = $pattern['start']['x']; $x <= $pattern['end']['x']; $x++) {
           for ($y = $pattern['start']['y']; $y <= $pattern['end']['y']; $y++) {
             if (!isset($matrix[$x])) {
@@ -956,13 +963,14 @@ function draw_piece_initiation_on_board(&$game, &$matrix, &$piece) {
               $matrix[$x][$y] = 'initiation';
             }
             // this pattern cannot continue try another
-            if ($over_piece == false && isset($positions[$x][$y])) {
+            if ($over_piece == FALSE && isset($positions[$x][$y])) {
               break 2;
             }
           }
         }
       }
-    } else if (isset($pattern['start'])) {
+    }
+    elseif (isset($pattern['start'])) {
 
 
       if (isset($pattern['start']['repeat'])) {
@@ -976,11 +984,12 @@ function draw_piece_initiation_on_board(&$game, &$matrix, &$piece) {
             $matrix[$x][$y] = 'initiation';
           }
           // this pattern cannot continue try another
-          if ($over_piece == false && isset($positions[$x][$y])) {
+          if ($over_piece == FALSE && isset($positions[$x][$y])) {
             break;
           }
         }
-      } else {
+      }
+      else {
         $x = $pattern['start']['x'];
         $y = $pattern['start']['y'];
         /* if ($over_piece == false && isset($positions[$x][$y])) {
@@ -1006,7 +1015,7 @@ function draw_piece_initiation_on_board(&$game, &$matrix, &$piece) {
  * @param type $position
  * @return boolean
  */
-function piece_check_valid_move($game = null, $running_game = null, $piece = null, $position = array()) {
+function piece_check_valid_move($game = NULL, $running_game = NULL, $piece = NULL, $position = array()) {
   $c = 'rules_' . $piece->type . '_move_conditions';
   $return = rules_invoke_component($c, $game, $running_game, $piece, $position);
   return (!$return) ? FALSE : TRUE;
@@ -1073,7 +1082,7 @@ function piece_can_initiate_piece($game, $running_game, $initiator, $initiated_p
  * @param type $initiated
  * @return boolean
  */
-function piece_check_initiate_pattern($game = null, $running_game, $initiator, $initiated) {
+function piece_check_initiate_pattern($game = NULL, $running_game, $initiator, $initiated) {
   $piece_type = piece_types($initiator->type);
   if (!property_exists($piece_type, "initiate_pattern")) {
     return FALSE;
@@ -1100,7 +1109,7 @@ function piece_check_initiate_pattern($game = null, $running_game, $initiator, $
  * @param type $position
  * @return boolean
  */
-function piece_check_move_pattern($game = null, $running_game, $piece, $position) {
+function piece_check_move_pattern($game = NULL, $running_game, $piece, $position) {
   $piece_type = piece_types($piece->type);
   if (!property_exists($piece_type, "move_pattern")) {
     return FALSE;
@@ -1124,7 +1133,7 @@ function piece_check_move_pattern($game = null, $running_game, $piece, $position
  * @param type $position
  * @return boolean
  */
-function piece_check_valid_patterns($game, $running_game = null, $patterns, $piece, $position) {
+function piece_check_valid_patterns($game, $running_game = NULL, $patterns, $piece, $position) {
   if (!empty($running_game) && property_exists($running_game, 'field_pieces')) {
     // take all pieces in game
     $pieces = $running_game->field_pieces[LANGUAGE_NONE];
@@ -1140,7 +1149,7 @@ function piece_check_valid_patterns($game, $running_game = null, $patterns, $pie
     $positions = array();
     foreach ($game_pieces as $game_piece) {
       $pos = $game_piece->field_position[LANGUAGE_NONE];
-      $positions[$pos[0]['value']][$pos[1]['value']] = true;
+      $positions[$pos[0]['value']][$pos[1]['value']] = TRUE;
     }
   }
 
@@ -1183,25 +1192,27 @@ function piece_check_valid_patterns($game, $running_game = null, $patterns, $pie
               return TRUE;
             }
             // this pattern cannot continue try another
-            if ($over_piece == false && isset($positions[$x][$y])) {
+            if ($over_piece == FALSE && isset($positions[$x][$y])) {
               break 2;
             }
           }
         }
-      } else {
+      }
+      else {
         for ($x = $pattern['start']['x']; $x <= $pattern['end']['x']; $x++) {
           for ($y = $pattern['start']['y']; $y <= $pattern['end']['y']; $y++) {
             if ($x == $position[0] && $y == $position[1]) {
               return TRUE;
             }
             // this pattern cannot continue try another
-            if ($over_piece == false && isset($positions[$x][$y])) {
+            if ($over_piece == FALSE && isset($positions[$x][$y])) {
               break 2;
             }
           }
         }
       }
-    } else if (isset($pattern['start'])) {
+    }
+    elseif (isset($pattern['start'])) {
 
 
       if (isset($pattern['start']['repeat'])) {
@@ -1212,11 +1223,12 @@ function piece_check_valid_patterns($game, $running_game = null, $patterns, $pie
             return TRUE;
           }
           // this pattern cannot continue try another
-          if ($over_piece == false && isset($positions[$x][$y])) {
+          if ($over_piece == FALSE && isset($positions[$x][$y])) {
             break;
           }
         }
-      } else {
+      }
+      else {
         $x = $pattern['start']['x'];
         $y = $pattern['start']['y'];
         /* if ($over_piece == false && isset($positions[$x][$y])) {

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * 
+ */
 
 /**
  * running_game_ajax_callback( RunningGame )

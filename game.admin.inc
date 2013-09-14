@@ -226,7 +226,8 @@ function running_game_form($form, &$form_state, $running_game, $op = 'edit') {
   if (empty($running_game) && isset($form_state['running_game'])) {
 
     $running_game = $form_state['running_game'];
-  } else {
+  }
+  else {
 
     $form_state['running_game'] = $running_game;
     if (isset($running_game->gid) && !isset($form_state['values']['gid'])) {

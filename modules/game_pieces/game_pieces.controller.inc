@@ -9,7 +9,7 @@ class PieceController extends EntityAPIController {
     global $user;
     $values += array(
         'label' => '',
-        'uid' => null, //$user->uid
+        'uid' => NULL, //$user->uid
     );
     return parent::create($values);
   }
@@ -65,7 +65,7 @@ class PieceTypeUIController extends EntityDefaultUIController {
     
     $items[$this->path]['description'] = 'Manage piece types.';
     $items[$this->path . '/manage/' . $wildcard . '/components'] = array(
-        'title' => t('Configure rules'),
+        'title' => 'Configure rules',
         'page callback' => 'drupal_get_form',
         'page arguments' => array('piece_type_component_form', $this->entityType, $id_count + 1),
         'load arguments' => array($this->entityType),

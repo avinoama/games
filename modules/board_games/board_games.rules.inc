@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @file
+ * the basic rules board game has 
+ */
 /**
  *
  * @return type
@@ -179,7 +182,7 @@ function board_games_rules_condition_check_matrix($item1 = 0, $item2 = 0, $optio
  * @param type $equal_to
  * @return boolean
  */
-function board_games_check_pattern($running_game = null, $game = null, $pattern = 0, $equal_to = 0) {
+function board_games_check_pattern($running_game = NULL, $game = NULL, $pattern = 0, $equal_to = 0) {
   if (!property_exists($game, "field_board_dimension_amount")) {
     return FALSE;
   }
@@ -260,7 +263,8 @@ function _eval_single_pattern($string_pattern, &$matrix, $dimension, $equal_to =
         }
       }
     }
-  } else if (!empty($pattern['start'])) {
+  } 
+  elseif (!empty($pattern['start'])) {
     if (!empty($pattern['start']['repeat'])) {
       for ($i = 0; $i < $pattern['start']['repeat']; $i++) {
         $x = $pattern['start']['x'] + ($pattern['start']['offsetx'] * $i);
@@ -272,7 +276,8 @@ function _eval_single_pattern($string_pattern, &$matrix, $dimension, $equal_to =
         }
       }
       return TRUE;
-    } else {
+    }
+    else {
       $x = $pattern['start']['x'];
       $y = $pattern['start']['y'];
       $point = array($x, $y);
@@ -281,7 +286,8 @@ function _eval_single_pattern($string_pattern, &$matrix, $dimension, $equal_to =
         return TRUE;
       }
     }
-  } else if (!empty($pattern['end'])) {
+  } 
+  elseif (!empty($pattern['end'])) {
     $x = $pattern['end']['x'];
     $y = $pattern['end']['y'];
     $point = array($x, $y);
@@ -341,7 +347,7 @@ function get_all_board_patterns() {
  * @param type $equal_to
  * @return boolean
  */
-function board_games_rules_condition_check_row_equal($running_game = null, $game = null, $position = 0, $equal_to = 0) {
+function board_games_rules_condition_check_row_equal($running_game = NULL, $game = NULL, $position = 0, $equal_to = 0) {
 
   if (empty($running_game)
           || empty($game)
@@ -360,7 +366,8 @@ function board_games_rules_condition_check_row_equal($running_game = null, $game
       }
     }
     return TRUE;
-  } else if ($dimension_count == 2) {
+  } 
+  elseif ($dimension_count == 2) {
     for ($i = 0; $i < $dimensions[0]['value']; $i++) {
       if ($matrix[$i]['value'] != $equal_to) {
         return FALSE;
@@ -370,7 +377,7 @@ function board_games_rules_condition_check_row_equal($running_game = null, $game
   }
 
 
-  return false;
+  return FALSE;
 }
 
 /**
@@ -381,7 +388,7 @@ function board_games_rules_condition_check_row_equal($running_game = null, $game
  * @param type $equal_to
  * @return boolean
  */
-function board_games_rules_condition_check_column_equal($running_game = null, $game = null, $position = 0, $equal_to = 0) {
+function board_games_rules_condition_check_column_equal($running_game = NULL, $game = NULL, $position = 0, $equal_to = 0) {
 
   if (empty($running_game)
           || empty($game)
@@ -401,7 +408,8 @@ function board_games_rules_condition_check_column_equal($running_game = null, $g
       return FALSE;
     }
     return TRUE;
-  } else if ($position > 0 && $dimension_count == 2) {
+  } 
+  elseif ($position > 0 && $dimension_count == 2) {
 
     for ($i = 0; $i < $dimensions[1]['value']; $i++) {
       $p = (($position - 1) + $i) * $dimensions[1]['value'];
@@ -429,7 +437,7 @@ function get_all_diagonal_types() {
  * @param type $equal_to
  * @return boolean
  */
-function board_games_rules_condition_check_diagonal_equal($running_game = null, $game = null, $position = "", $position_type = 0, $equal_to = 0) {
+function board_games_rules_condition_check_diagonal_equal($running_game = NULL, $game = NULL, $position = "", $position_type = 0, $equal_to = 0) {
 
   if (empty($running_game)
           || empty($game)
@@ -508,7 +516,8 @@ function _convert_to_one_dimension_opposite($position, $dimension) {
 function _convert_to_two_dimension($position, $dimension) {
   if (($position % $dimension) > 0) {
     return array(($position / $dimension), ($position % ($dimension)));
-  } else {
+  } 
+  else {
     return array(($position / $dimension), 0);
   }
 }
@@ -681,7 +690,7 @@ function rules_tile_lisiten_to_click($running_game) {
 }
 
 function rules_tile_lisiten_to_click_validation($running_game) {
-  return false;
+  return FALSE;
 }
 
 /**
@@ -703,7 +712,7 @@ function rules_tile_lisiten_to_change($running_game) {
 }
 
 function rules_tile_lisiten_to_change_validation($running_game) {
-  return false;
+  return FALSE;
 }
 
 /**
@@ -714,7 +723,7 @@ function rules_tile_lisiten_to_change_validation($running_game) {
  * @return boolean
  */
 function rules_game_set_tile_in_matrix_validation($running_game, $tile_postion) {
-  return true;
+  return TRUE;
 }
 
 function rules_game_set_tile_in_matrix($running_game, $tile_position, $tile_value) {
@@ -765,7 +774,8 @@ function rules_tile_increment($running_game_session, $tile_position = 0, $modulo
   }
   if (empty($modulo)) {
     $running_game->field_matrix['und'][$tile_position]['value']++;
-  } else {
+  } 
+  else {
     $running_game->field_matrix['und'][$tile_position]['value'] = ($running_game->field_matrix['und'][$tile_position]['value'] + 1) % $modulo;
   }
 //  save game instance
@@ -778,15 +788,15 @@ function rules_tile_increment($running_game_session, $tile_position = 0, $modulo
     $running_game_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "callback" => array("module" => "BoardGame", "fn" => "board_games_tile_increment_action", "params" => $params), "time" => time()));
     $running_game_command_entity = entity_create("running_game_command", $running_game_command);
     $running_game_command_entity->save();
-  } else {
-
+  } 
+  else {
     dpm("cant save game instance");
   }
 }
 
 function rules_tile_increment_validation($running_game_session, $tile_position = 0, $modulo = 10) {
 // dpm("rules_tile_set_owner_validation");
-  return true;
+  return TRUE;
 }
 
 /**
@@ -831,13 +841,14 @@ function rules_tile_decrement($running_game_session, $tile_position = 0, $modulo
     $running_game_command['command_data'] = drupal_json_encode(array("message" => $context['message'], "callback" => array("module" => "BoardGame", "fn" => "board_games_tile_decrement_action", "params" => $params), "time" => time()));
     $running_game_command_entity = entity_create("running_game_command", $running_game_command);
     $running_game_command_entity->save();
-  } else {
+  } 
+  else {
     watchdog(WATCHDOG_ALERT, "cant save game instance");
   }
 }
 
 function rules_tile_decrement_validation($running_game_session, $tile_position = 0, $modulo = 0) {
-  return true;
+  return TRUE;
 }
 
 /**
@@ -856,7 +867,8 @@ function rules_game_change_turn($running_game) {
   $current_turn = $running_game->field_current_turn['und'][0]['value'];
   if (empty($current_turn)) {
     $current_turn = 1;
-  } else {
+  } 
+  else {
     $current_turn = (($current_turn) % $player_count) + 1;
   }
   $running_game->field_current_turn['und'][0]['value'] = $current_turn;
@@ -880,7 +892,7 @@ function rules_game_change_turn($running_game) {
 }
 
 function rules_game_change_turn_validation() {
-  return true;
+  return TRUE;
 }
 
 function rules_tile_set_owner($running_game, $tile_position = 0) {
@@ -920,11 +932,12 @@ function rules_tile_set_owner($running_game, $tile_position = 0) {
       $running_game_command_entity = entity_create("running_game_command", $running_game_command);
 
       $running_game_command_entity->save();
-    } else {
-
+    } 
+    else {
       watchdog(WATCHDOG_ALERT, "cant save game instance");
     }
-  } else {
+  }
+  else {
 // the tile is already owned by player cannot
     return array("callback" => array("module" => "RunningGame", "fn" => "message", "params" => array("The tile is already owned")));
 //dpm("the tile is already owned by user cannot");
@@ -939,7 +952,7 @@ function rules_tile_set_owner($running_game, $tile_position = 0) {
 
 function rules_tile_set_owner_validation() {
 // dpm("rules_tile_set_owner_validation");
-  return true;
+  return TRUE;
 }
 
 function rules_tile_set_owner_callback() {

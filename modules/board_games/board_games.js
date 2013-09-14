@@ -1,3 +1,8 @@
+/**
+ * @file
+ * deswcribe the basic js function of board game
+ */
+
 (function ($) {
   Drupal.behaviors.BoardGame = {
     attach: function (context, settings) {

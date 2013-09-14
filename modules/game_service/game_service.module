@@ -1,5 +1,9 @@
 <?php
 /**
+ * @file
+ * 
+ */
+/**
 	remember 
 	 $action_mapping = array(
       'GET' => 'retrieve', 
@@ -188,8 +192,22 @@ function game_service_services_resources() {
               'type'         => 'int',
               'description'  => t('The running game id.'),
               'source'       => array('data' => 'id'),
+              'optional'     => FALSE,
+            ),
+            array(
+              'name'         => 'event',
+              'type'         => 'text',
+              'description'  => t('The event to trigger.'),
+              'source'       => array('data' => 'event'),
               'optional'     => TRUE,
             ),
+            array(
+              'name'         => 'params',
+              'type'         => 'struct',//'array',
+              'description'  => t('The parameters to pass to the event'),
+              'source'       => array('data' => 'params'),
+              'optional'     => TRUE,
+            ),            
           ),
         ),
         'commands' => array(
@@ -204,26 +222,26 @@ function game_service_services_resources() {
               'name'         => 'id',
               'type'         => 'int',
               'description'  => t('The running game id.'),
-              //'source'       => array('data' => 'id'),
+              'source'       => array('data' => 'id'),
               'optional'     => FALSE,
             ),
 						array(
               'name'         => 'time',
               'type'         => 'int',
               'description'  => t('The running game timestemp.'),
-              //'source'       => array('data' => 'id'),
+              'source'       => array('data' => 'time'),
               'optional'     => TRUE,
             ),
 						array(
-              'name'         => 'from',
+              'name'         => 'command_id',
               'type'         => 'int',
-              'description'  => t('The running game id.'),
-              //'source'       => array('data' => 'id'),
+              'description'  => t('The last command id'),
+              'source'       => array('data' => 'command_id'),
               'optional'     => TRUE,
             ),
           ),
         ),        
-        'join' => array(
+/*        'join' => array(
           'file' => array('type' => 'inc', 'module' => 'game_service', 'name' => 'resources/running_game_resource'),
           'help'   => t('join current running game.'),
           'access callback' => '_game_service_access',
@@ -235,7 +253,7 @@ function game_service_services_resources() {
               'running_game' => 'id',
             ),
           ),
-        ),        
+        ),*/
         
      ),/* End actions*/
    ),

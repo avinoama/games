@@ -154,11 +154,11 @@ function rules_start_game($running_game, $game) {
 }
 
 function rules_start_game_validation($running_game, $game) {
-  return true;
+  return TRUE;
 }
 
 function rules_game_send_message_validation($running_game, $message) {
-  return true;
+  return TRUE;
 }
 
 function rules_game_send_message($running_game, $message) {
@@ -172,7 +172,7 @@ function rules_game_send_message($running_game, $message) {
 }
 
 function rules_game_over_validation($running_game) {
-  return true;
+  return TRUE;
 }
 
 function rules_game_over($running_game) {
@@ -183,7 +183,8 @@ function rules_game_over($running_game) {
   if (empty($session)) {
     //  user is not a registered user in this site
     $session = session_id();
-  } else {
+  } 
+  else {
     //  user is registered user in this site
   }
 
@@ -198,7 +199,8 @@ function rules_game_over($running_game) {
     $running_game_command['command_data'] = drupal_json_encode(array("message" => "Game Ended", "callback" => array("module" => "RunningGame", "fn" => "game_ended", "params" => '1'), "time" => time()));
     $running_game_command_entity = entity_create("running_game_command", $running_game_command);
     $running_game_command_entity->save();
-  } else {
+  } 
+  else {
     //  problom saving game
   }
 }
