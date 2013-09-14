@@ -1241,40 +1241,21 @@ function piece_check_valid_patterns($game, $running_game = null, $patterns, $pie
 function game_piece_evaluate_pattern(&$pattern) {
 
   if (!is_numeric($pattern['start']['x']) && !empty($pattern['start']['x'])) {
-    //$pattern['start']['x'] = eval("return (".$pattern['start']['x'].");");
     $pattern['start']['x'] = calculate_string($pattern['start']['x']);
   }
   if (!is_numeric($pattern['start']['y']) && !empty($pattern['start']['y'])) {
-    //$pattern['start']['y'] = eval("return (".$pattern['start']['y'].");");
     $pattern['start']['y'] = calculate_string($pattern['start']['y']);
   }
   if (isset($pattern['end'])) {
     if (!is_numeric($pattern['end']['x']) && !empty($pattern['end']['x'])) {
-      //$pattern['end']['x'] = eval("return (".$pattern['end']['x'].");");
       $pattern['end']['x'] = calculate_string($pattern['end']['x']);
     }
     if (!is_numeric($pattern['end']['y']) && !empty($pattern['end']['y'])) {
-      //$pattern['end']['y'] = eval("return (".$pattern['end']['y'].");");
       $pattern['end']['y'] = calculate_string($pattern['end']['y']);
     }
   }
 }
 
-/**
- * function calculate_string
- *
- * instead of eval actually does the same thing but with only numbers
- * 
- * @param type $mathString
- * @return number
- */
-function calculate_string($mathString) {
-  $mathString = trim($mathString);     // trim white spaces
-  $mathString = preg_replace('[^0-9\+-\*\/\(\) ]', '', $mathString);    // remove any non-numbers chars; exception for math operators
-
-  $compute = create_function("", "return (" . $mathString . ");");
-  return 0 + $compute();
-}
 
 /**
  * function Hook_rules_event_info

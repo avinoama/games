@@ -118,6 +118,7 @@ function game_service_services_resources() {
      ),
    ),
   'running_game'=>array(
+    'operations' => array(
      'retrieve' => array(
        'help' => 'Retrieve a running game',
        'file' => array('file' => 'inc', 'module' => 'game_service'),
@@ -172,6 +173,71 @@ function game_service_services_resources() {
          ),
        ),
      ),
+    ),
+ 		'actions' => array(
+        'trigger' => array(
+          'file' => array('type' => 'inc', 'module' => 'game_service', 'name' => 'resources/running_game_resource'),
+          'help'   => t('Trigger an Event to a game.'),
+          'access callback' => '_game_service_access',
+          'access arguments' => array('update'),
+          'access arguments append' => TRUE,
+          'callback' => '_running_game_resource_trigger',
+          'args'     => array(
+            array(
+              'name'         => 'id',
+              'type'         => 'int',
+              'description'  => t('The running game id.'),
+              'source'       => array('data' => 'id'),
+              'optional'     => TRUE,
+            ),
+          ),
+        ),
+        'commands' => array(
+          'file' => array('type' => 'inc', 'module' => 'game_service', 'name' => 'resources/running_game_resource'),
+          'help'   => t('get game commands.'),
+          'access callback' => '_game_service_access',
+          'access arguments' => array('view'),
+          'access arguments append' => TRUE,
+          'callback' => '_running_game_resource_commands',
+          'args'     => array(
+            array(
+              'name'         => 'id',
+              'type'         => 'int',
+              'description'  => t('The running game id.'),
+              //'source'       => array('data' => 'id'),
+              'optional'     => FALSE,
+            ),
+						array(
+              'name'         => 'time',
+              'type'         => 'int',
+              'description'  => t('The running game timestemp.'),
+              //'source'       => array('data' => 'id'),
+              'optional'     => TRUE,
+            ),
+						array(
+              'name'         => 'from',
+              'type'         => 'int',
+              'description'  => t('The running game id.'),
+              //'source'       => array('data' => 'id'),
+              'optional'     => TRUE,
+            ),
+          ),
+        ),        
+        'join' => array(
+          'file' => array('type' => 'inc', 'module' => 'game_service', 'name' => 'resources/running_game_resource'),
+          'help'   => t('join current running game.'),
+          'access callback' => '_game_service_access',
+          'access arguments' => array('view'),
+          'access arguments append' => TRUE,
+          'callback' => '_running_game_resource_join',
+          'args'     => array(
+            array(
+              'running_game' => 'id',
+            ),
+          ),
+        ),        
+        
+     ),/* End actions*/
    ),
    
    );
@@ -212,9 +278,10 @@ $access = FALSE;
       $access = $access || $game->uid == $user->uid && user_access('game resource view own notes');
       break;
     case 'update':
-      $game = game_load($args[0]->id);
+      return true;
+      //$game = game_load($args[0]->id);
       $access = user_access('game resource edit any note');
-      $access = $access || $game->uid == $user->uid && user_access('game resource edit own notes');
+      //$access = $access || $game->uid == $user->uid && user_access('game resource edit own notes');
       break;
     case 'delete':
       $game = game_load($args[0]);
@@ -224,53 +291,12 @@ $access = FALSE;
 	}
 return $access;
 }
-function game_service_default_services_endpoint() {
-  $export = array();
 
-    $endpoint = new stdClass();
-    $endpoint->disabled = FALSE; /* Edit this to true to make a default endpoint disabled initially */
-    $endpoint->api_version = 3;
-    $endpoint->name = 'games';
-    $endpoint->server = 'rest_server';
-    $endpoint->path = 'gameis';
-    $endpoint->authentication = array(
-      'services' => 'services',
-    );
-    $endpoint->server_settings = array();
-    $endpoint->resources = array(
-      'game' => array(
-        'operations' => array(
-          'create' => array(
-            'enabled' => '1',
-          ),
-          'retrieve' => array(
-            'enabled' => '1',
-          ),
-          'update' => array(
-            'enabled' => '1',
-          ),
-          'delete' => array(
-            'enabled' => '1',
-          ),
-          'index' => array(
-            'enabled' => '1',
-          ),
-        ),
-      ),
-      'running_game' => array(
-        'operations' => array(
-          'retrieve' => array(
-            'enabled' => '1',
-          ),
-          'index' => array(
-            'enabled' => '1',
-          ),
-        ),
-      ),
-    );
-    $endpoint->debug = 1;
-
-  $export['games'] = $endpoint;
-
-  return $export;
+/**
+ * Implementation of hook_ctools_plugin_api().
+ */
+function game_service_ctools_plugin_api($module, $api) {
+  if ($module == 'services' && $api == 'services') {
+    return array('version' => 3);
+  }
 }

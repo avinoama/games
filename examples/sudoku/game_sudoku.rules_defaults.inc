@@ -1,6 +1,9 @@
 <?php
 
-
+/**
+ * @file
+ * basic Rules setup needed to play sudoku
+ */
 
 /**
  * Implementing Hook_default_rules_configuration

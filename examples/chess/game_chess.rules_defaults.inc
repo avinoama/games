@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * basic Rules setup needed to play chess
+ */
 
 /**
  * Implementing Hook_default_rules_configuration

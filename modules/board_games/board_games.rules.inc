@@ -301,18 +301,19 @@ function _eval_single_pattern($string_pattern, &$matrix, $dimension, $equal_to =
 function evaluate_pattern(&$pattern) {
 
   if (!is_numeric($pattern['start']['x'])) {
-    $pattern['start']['x'] = eval($pattern['start']['x']);
+    $pattern['start']['x'] = calculate_string($pattern['start']['x']);
   }
   if (!is_numeric($pattern['start']['y'])) {
-    $pattern['start']['y'] = eval($pattern['start']['y']);
+    $pattern['start']['y'] = calculate_string($pattern['start']['y']);
   }
   if (!is_numeric($pattern['end']['x'])) {
-    $pattern['end']['x'] = eval($pattern['end']['x']);
+    $pattern['end']['x'] = calculate_string($pattern['end']['x']);
   }
   if (!is_numeric($pattern['end']['y'])) {
-    $pattern['end']['y'] = eval($pattern['end']['y']);
+    $pattern['end']['y'] = calculate_string($pattern['end']['y']);
   }
 }
+
 
 /**
  *

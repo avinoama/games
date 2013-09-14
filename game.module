@@ -1,8 +1,7 @@
 <?php
 
 /**
- * 
- * file : Game.module
+ * @file
  * Describe basic game entities needed for playing a game
  *
  */
@@ -187,7 +186,7 @@ function game_permission() {
 }
 
 /**
- *  implements hook_entity_property_info_alter(&$info)
+ * implements hook_entity_property_info_alter(&$info)
  * @param type $info 
  */
 function game_entity_property_info_alter(&$info) {
@@ -362,37 +361,10 @@ function running_game_delete_multiple($running_game_ids) {
   entity_delete_multiple('running_game', $running_game_ids);
 }
 
-/*
-  function game_trigger_info() {
-  return array(
-  'game' => array(
-  'game_create' => array(
-  'label' => t('When creating a new game'),
-  'type' => 'game',
-  ),
-  'game_start' => array(
-  'label' => t('When game status changes to game start'),
-  'type' => 'game',
-  ),
-  'game_turn_start' => array(
-  'label' => t('When player turn starts'),
-  'type' => 'game',
-  ),
-  'game_turn_end' => array(
-  'label' => t('When player turn ends'),
-  'type' => 'game',
-  ),
-  'game_end' => array(
-  'label' => t('When game status changes to game end'),
-  'type' => 'game',
-  ),
-  ),
-  );
-  }
- */
+
 
 /* * *
- *  ------------------------------------ dont know if im using this code
+ *  ------------------------------------ dont know if im using this hook action info
  *  maybe create a class that allowes me to send players message
  */
 
@@ -482,7 +454,7 @@ function game_cron() {
   $interval = variable_get('game_cron_interval', 60 * 60); //* 60
   // We usually don't want to act every time cron runs (which could be every
   // minute) so keep a time for the next run in a variable.
-  $always = true;
+  $always = TRUE;
   if (time() >= variable_get('game_cron_next_execution', 0) || $always) {
     // This is a silly example of a cron job.
     // It just makes it obvious that the job has run without

@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @file
+ * basic Rules setup needed to play tic tac toe
+ */
 /**
  * Implementing Hook_default_rules_configuration
  * This function will create my default game TicTacToe rules
