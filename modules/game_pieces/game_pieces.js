@@ -4,7 +4,7 @@
       pieces = Drupal.settings.GamePieces.pieces;
       piece_types = Drupal.settings.GamePieces.piece_types;
       patterns = Drupal.settings.GamePieces.patterns;
-      
+      console.log(patterns);
       if(!piece_types) {
         Drupal.settings.GamePieces.piece_types = Array();
       }
@@ -257,6 +257,7 @@
     }
     current_pattern = piece_types[pieces[id].type].move_pattern;
     pattern = patterns[current_pattern];
+    
     over_piece = pattern.field_over_piece['und'][0]['value'];
     
     for(i in pattern.field_pattern['und']) {

@@ -227,19 +227,23 @@ function game_pieces_game_init_load($game, $running_game) {
     foreach ($pieces as $p) {
       if (!isset($pieces_type[$p->type])) {
         $piece_type = reset(entity_load('piece_type', FALSE, array('type' => $p->type)));
-        //
         if (!empty($piece_type)) {
           $pieces_type[$p->type] = $piece_type;
-          if (property_exists($piece_type, 'piece_pattern')) {
-            if (!isset($patterns[$piece_type->piece_pattern])) {
-              $patterns[$piece_type->piece_pattern] = game_pattern_load_by_machine_name($piece_type->piece_pattern);
+          if (property_exists($piece_type, 'move_pattern')) {
+            if (!isset($patterns[$piece_type->move_pattern])) {
+              $patterns[$piece_type->move_pattern] = game_pattern_load_by_machine_name($piece_type->move_pattern);
             }
           }
-          // $p->type . "_move_conditions";
+          if (property_exists($piece_type, 'initiate_pattern')) {
+            if (!isset($patterns[$piece_type->initiate_pattern])) {
+              $patterns[$piece_type->initiate_pattern] = game_pattern_load_by_machine_name($piece_type->initiate_pattern);
+            }
+          }          // $p->type . "_move_conditions";
         }
       }
     }
   }
+  
   drupal_add_js(array('GamePieces' => array('pieces' => $pieces, 'piece_types' => $pieces_type, 'patterns' => $patterns)), 'setting');
 }
 
