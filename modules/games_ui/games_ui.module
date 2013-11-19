@@ -125,33 +125,6 @@ function games_ui_menu() {
   return $items;
 }
 
-/**
- * Implements hook_menu_alter().
- */
-/*
-  function games_ui_menu_alter(&$items) {
-  // Set the theme callback function for all node pages. As per the
-  // standard behavior for hook_menu() properties, this will be
-  // inherited by all paths underneath node/%node as well, unless
-  // they define their own theme callback.
-  dpm($items);
-  $play_uri = 'play/%running_game';
-  $items[$play_uri]['theme callback'] = 'games_ui_html5_play_default_theme';
-  } */
-
-function games_ui_custom_theme() {
-  // check path using arg(0)
-  // check $user
-  // do whatever special checking you want and simply return theme key (name of theme folder most of the time)
-  /*
-    if (arg(0) == 'play') {
-    // print_r(arg());
-    return 'games_ui_play_template';
-    }
-   *
-   */
-}
-
 function games_ui_theme() {
   return array(
       'games_ui_play_template' => array(

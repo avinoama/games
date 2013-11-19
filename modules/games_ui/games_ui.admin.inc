@@ -459,40 +459,24 @@ function game_delete_form_submit($form, &$form_state) {
  * @param type $op
  */
 function game_ui_setting_form($form, &$form_state, $op = 'edit') {
-/*
-  // Limit number of open games per
-  $form['game_limit_open_games'] = array(
-      '#title' => t('Limit open games'),
-      '#type' => 'textfield',
-      '#default_value' => variable_get('game_limit_open_games', '10'),
-      '#description' => t('Limits per game the amount of open game that can be created after that it removes the last game created'),
-      '#required' => TRUE,
-      '#size' => 30,
-  );
-  */
-
-  // long polling interval
-  $form['game_poll_interval'] = array(
-      '#title' => t('Long polling interval'),
-      '#type' => 'textfield',
-      '#default_value' => variable_get('game_poll_interval', '4000'),
-      '#description' => t('in millisecound'),
-      '#required' => TRUE,
-      '#size' => 30,
+  
+  $form['game'] = array(
+  '#type' => 'fieldset',
+  '#title' => t('Game settings'),
+  '#weight' => 4, 
+  '#collapsible' => FALSE, 
+  '#collapsed' => FALSE,
   );
 
-  // players time out interval
-
-  $form['player_idle_interval'] = array(
-      '#title' => t('Player idle interval'),
-      '#type' => 'textfield',
-      '#default_value' => variable_get('player_idle_interval', '30000'),
-      '#description' => t('in millisecound'),
-      '#required' => TRUE,
-      '#size' => 30,
+  $form['game']['client'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Client settings'),
+    '#weight' => 5, 
+    '#collapsible' => FALSE, 
+    '#collapsed' => FALSE,
   );
 
-  $form['time_to_show_each_message'] = array(
+  $form['game']['client']['time_to_show_each_message'] = array(
       '#title' => t('Time to show each message'),
       '#type' => 'textfield',
       '#default_value' => variable_get('time_to_show_each_message', '4000'),
@@ -500,7 +484,7 @@ function game_ui_setting_form($form, &$form_state, $op = 'edit') {
       '#required' => TRUE,
       '#size' => 30,
   );
-  $form['time_to_bold_each_message'] = array(
+  $form['game']['client']['time_to_bold_each_message'] = array(
       '#title' => t('Time to bold each message'),
       '#type' => 'textfield',
       '#default_value' => variable_get('time_to_bold_each_message', '2000'),
@@ -510,10 +494,84 @@ function game_ui_setting_form($form, &$form_state, $op = 'edit') {
   );
 
 
-  $form['actions']['submit'] = array(
+
+
+
+
+  $form['game']['server'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Server settings'),
+    '#weight' => 6, 
+    '#collapsible' => FALSE, 
+    '#collapsed' => FALSE,
+  );
+
+  $form['game']['server']['game_limit_open_games'] = array(
+      '#title' => t('Limit open games'),
+      '#type' => 'textfield',
+      '#default_value' => variable_get('game_limit_open_games', '10'),
+      '#description' => t('Limits per game the amount of open game that can be created after that it removes the last game created'),
+      '#required' => TRUE,
+      '#size' => 30,
+  );
+
+  $form['game']['server']['player_idle_interval'] = array(
+      '#title' => t('Player idle interval'),
+      '#type' => 'textfield',
+      '#default_value' => variable_get('player_idle_interval', '30000'),
+      '#description' => t('in millisecound. after x time the user is idle notify the game of an idle event triggered by user'),
+      '#required' => TRUE,
+      '#size' => 30,
+  );
+
+  $form['game']['server']['game_connection_type'] = array(
+      '#title' => t('Connection Type'),
+       '#type' => 'select',
+       '#options' => array(
+          1 => t('HTTP Longpolling'),
+          2 => t('Ratchet WebSockets'),
+       ),
+       '#default_value' => variable_get('game_connection_type', '1'),
+       '#description' => t('Set this to <em>Yes</em> if you would like this category to be selected by default.'),
+  );
+
+ $form['game']['http'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('HTTP longpolling settings'),
+    '#weight' => 8, 
+    '#collapsible' => FALSE, 
+    '#collapsed' => FALSE,
+  );
+
+  $form['game']['http']['game_poll_interval'] = array(
+      '#title' => t('Long polling interval'),
+      '#type' => 'textfield',
+      '#default_value' => variable_get('game_poll_interval', '4000'),
+      '#description' => t('in millisecound'),
+      '#required' => TRUE,
+      '#size' => 30,
+  );
+
+ $form['game']['ratchet'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Ratchet WebSockets settings'),
+    '#weight' => 8, 
+    '#collapsible' => FALSE, 
+    '#collapsed' => FALSE,
+  );
+  $form['game']['ratchet']['game_ratchet_port'] = array(
+      '#title' => t('port number'),
+      '#type' => 'textfield',
+      '#default_value' => variable_get('game_ratchet_port', '8080'),
+      '#description' => t('port number'),
+      '#required' => TRUE,
+      '#size' => 30,
+  );
+
+  $form['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Save Settings'),
-      '#weight' => 40,
+      '#weight' => 10,
   );
 
   return $form;
