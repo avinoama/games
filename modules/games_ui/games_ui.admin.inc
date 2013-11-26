@@ -585,6 +585,13 @@ function game_ui_setting_form_validate($form, &$form_state) {
   if (!empty($var['player_idle_interval']) && !is_numeric($var['player_idle_interval'])) {
     form_set_error('player_idle_interval', 'Most have numeric value');
   }
+  if (!empty($var['game_connection_type']) && !is_numeric($var['game_connection_type'])) {
+    form_set_error('game_connection_type', 'Most have numeric value');
+  }
+  if (!empty($var['game_ratchet_port']) && !is_numeric($var['game_ratchet_port'])) {
+    form_set_error('game_ratchet_port', 'Most have numeric value');
+  }
+
   if (!empty($var['time_to_show_each_message']) && !is_numeric($var['time_to_show_each_message'])) {
     form_set_error('time_to_show_each_message', 'Most have numeric value');
   }
@@ -596,6 +603,11 @@ function game_ui_setting_form_validate($form, &$form_state) {
       form_set_error('time_to_bold_each_message', 'Most be smaller then time to show message');
     }
   }
+
+
+
+
+
 }
 
 function game_ui_setting_form_submit($form, &$form_state) {
@@ -606,12 +618,24 @@ function game_ui_setting_form_submit($form, &$form_state) {
   if(isset($var['player_idle_interval'])) {
     variable_set('player_idle_interval', $var['player_idle_interval']);
   }
+
+
   if(isset($var['time_to_show_each_message'])) {
     variable_set('time_to_show_each_message', $var['time_to_show_each_message']);
   }
+  if(isset($var['game_connection_type'])) {
+    variable_set('game_connection_type', $var['game_connection_type']);
+  }
+  if(isset($var['game_ratchet_port'])) {
+    variable_set('game_ratchet_port', $var['game_ratchet_port']);
+  }
+
+  
   if(isset($var['time_to_bold_each_message'])) {
     variable_set('time_to_bold_each_message', $var['time_to_bold_each_message']);
   }
+
+  
 
   drupal_set_message("Configuration was saved");
 }

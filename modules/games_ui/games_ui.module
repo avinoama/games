@@ -144,8 +144,10 @@ function games_ui_views_api() {
 function games_ui_preprocess_page(&$vars) {
   if (arg(0) == 'play') {
     //drupal_add_library('system', 'ui.resizable');
+
     $path = drupal_get_path('module', 'games_ui');
-    drupal_add_js($path . "/games_instance.js", 'file');
+    $game_connection_type = variable_get('game_connection_type', '1');
+    drupal_add_js($path . "/games_instance_".$game_connection_type.".js", 'file');
     drupal_add_css($path . "/games_ui.css", 'file');
   }
 }
