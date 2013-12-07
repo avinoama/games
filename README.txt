@@ -39,3 +39,7 @@ avinoama2@gmail.com
 TODO:
 1. Add a module that will be an interface to services module
 2. Write test cases and Add game.test using simpletest
+3. building ratchet web socket engine for games
+4. creating installation profile
+5. Implement a UI for editing game rules more simple from now.
+6. D8 convertion
