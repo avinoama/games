@@ -6,7 +6,6 @@
       Drupal.settings.RunningGame.messages= new Array();
       //  Show Game Status
       setTimeout(getCommands,Drupal.settings.RunningGame.game_poll_interval);
-
     }, // end attach
     message: function(params){
       if(Drupal.settings.RunningGame.messages==undefined) {
@@ -16,7 +15,6 @@
         if(params[i]!=undefined && params[i]!="") {  
           Drupal.settings.RunningGame.messages.push(params[i]);
         }
-        
       }
       if(Drupal.settings.RunningGame.message_handler==null) {
         _recursive_handle_messages();
@@ -149,8 +147,6 @@
     Drupal.behaviors.RunningGame.trigger_rule(hook, params);
   }
   function _recursive_handle_messages() {
-    console.log(Drupal.settings.RunningGame.messages.length);
-    console.log(Drupal.settings.RunningGame.messages);
     if(Drupal.settings.RunningGame.messages.length==0) {
       Drupal.settings.RunningGame.message_handler=null
       return;
