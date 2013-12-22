@@ -1,4 +1,6 @@
 <?php
+$game_path = drupal_get_path("module","game");
+require_once ($game_path."/game.define.inc") ;
 
 function game_pieces_rules_condition_info() {
   return array(
