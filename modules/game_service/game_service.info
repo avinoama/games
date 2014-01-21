@@ -1,7 +1,0 @@
-name = Game Service
-description = Allow to consome a game as a service
-package = Games
-dependencies[] = services
-dependencies[] = game
-core = 7.x
-php = 5.2
