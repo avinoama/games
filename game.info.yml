@@ -1,4 +1,4 @@
-name: Games
+name: Game
 description: 'Allow you to create edit play games togther or seperatly.'
 package: Games
 type: module
